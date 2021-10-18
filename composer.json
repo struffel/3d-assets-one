@@ -1,0 +1,5 @@
+{
+    "require": {
+        "gliterd/backblaze-b2": "^1.5"
+    }
+}
