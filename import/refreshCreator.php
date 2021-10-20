@@ -1,6 +1,5 @@
 <?php
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/classes.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/json.php';
 

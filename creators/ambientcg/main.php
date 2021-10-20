@@ -1,8 +1,8 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/classes.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
 
-	class Ambientcg extends Creator{
-		 function findNewAssets():AssetCollection{
+	class Ambientcg extends CreatorInterface{
+		function findNewAssets():AssetCollection{
 			$tmpAsset = new Asset();
 			$tmpAsset->creatorId = "abc";
 			$tmpAsset->assetId = "def";
