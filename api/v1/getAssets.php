@@ -4,8 +4,8 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/json.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
 	$query = new AssetQuery();
-	
-	foreach (explode(",",$_GET['include']) as $i) {
+
+	foreach (explode(",",$_GET['include']??"") as $i) {
 		if(isset($query->include->$i)){
 			$query->include->$i = true;
 		}

@@ -1,7 +1,4 @@
 <?php
-
-	
-
 	function writeAssetToDatabase(Asset $newAsset){
 		
 	}
@@ -19,6 +16,7 @@
 			"tag" => ["Tag"],
 			"assetSlug" => [""],
 			"creatorSlug" => ["Creator"],
+			"creatorId" => ["Creator"],
 			"licenseSlug" => ["License"],
 			"typeSlug" => ["Type"],
 		];
@@ -39,7 +37,7 @@
 		];
 
 		$requiredColumnsForInclude = [
-			"asset" => ["AssetId","AssetName","AssetSlug","AssetUrl"],
+			"asset" => ["AssetId","AssetName","AssetSlug","AssetUrl","AssetDate"],
 			"tag" => ["GROUP_CONCAT(TagName SEPARATOR ',') as AssetTags"],
 			"creator" => ["CreatorId","CreatorSlug","CreatorName"],
 			"license" => ["LicenseId","LicenseSlug","LicenseName"],
@@ -96,6 +94,12 @@
 			$sql .= " AND FIND_IN_SET(CreatorSlug,?) ";
 		}
 
+		// Creators
+		if($query->filter->creatorId){
+			$sqlParameters []= implode(",",$query->filter->creatorId);
+			$sql .= " AND FIND_IN_SET(CreatorId,?) ";
+		}
+
 		// Licenses
 		if($query->filter->licenseSlug){
 			$sqlParameters []= implode(",",$query->filter->licenseSlug);
@@ -125,7 +129,8 @@
 				$newAsset->assetId = $row['AssetId'] ?? NULL;
 				$newAsset->assetSlug = $row['AssetSlug'] ?? NULL;
 				$newAsset->assetName = $row['AssetName'] ?? NULL;
-				$newAsset->assetUrl = $row['AssetUrl'] ?? NULL;
+				$newAsset->url = $row['AssetUrl'] ?? NULL;
+				$newAsset->date = $row['AssetDate'] ?? NULL;
 			}
 
 			if($query->include->tag){
@@ -201,8 +206,6 @@
 				die($GLOBALS['MYSQL']->error);
 			}
 		}
-		
-		
 		
 		return $result;
 	}

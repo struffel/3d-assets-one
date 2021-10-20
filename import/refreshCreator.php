@@ -3,10 +3,10 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/json.php';
 
-	$creatorSlug = onlySmallLetters($_GET['creator']);
-	require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorSlug/main.php";
+	$creatorId = onlyNumbers($_GET['creatorId']);
+	require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorId/main.php";
 
-	$creatorClass = ucfirst($creatorSlug);
+	$creatorClass = "Creator".$creatorId;
 	$creator = new $creatorClass();
 	outputJson($creator->findNewAssets());
 ?>

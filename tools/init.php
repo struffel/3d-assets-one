@@ -5,7 +5,9 @@
 	class Asset{
 		public ?string $assetId;
 		public ?string $assetSlug;
-		public ?string $assetUrl;
+		public ?string $assetName;
+		public ?string $url;
+		public ?string $date;
 		public ?array $tags;
 		public ?Type $type;
 		public ?License $license;
@@ -46,6 +48,7 @@
 		public ?array $tag = NULL;
 		public ?array $assetSlug = NULL;
 		public ?array $creatorSlug = NULL;
+		public ?array $creatorId = NULL;
 		public ?array $licenseSlug = NULL;
 		public ?array $typeSlug = NULL;
 	}
