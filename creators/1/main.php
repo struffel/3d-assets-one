@@ -4,10 +4,12 @@
 
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
+
 
 	class Creator1 extends CreatorInterface{
 		function findNewAssets():AssetCollection{
-
+			createLog("Start looking for new assets","INFO");
 			// Get existing Assets
 
 			$query = new AssetQuery();

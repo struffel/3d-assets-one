@@ -1,4 +1,6 @@
 <?php
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
+
 	function WriteAssetCollectionToDatabase(AssetCollection $newAssetCollection){
 		foreach ($newAssetCollection->assets as $a) {
 			writeAssetToDatabase($a);
@@ -190,6 +192,7 @@
 		// Create connection
 		if(!isset($GLOBALS['MYSQL'])){
 			$GLOBALS['MYSQL'] = new mysqli($loginData['servername'], $loginData['username'], $loginData['password']);
+			createLog("Initialized DB connection to: ".$loginData['servername'],"INFO");
 		}
 		
 		// Check connection
@@ -197,9 +200,11 @@
 			die("Connection failed: " . $GLOBALS['MYSQL']->connect_error);
 		}
 		$GLOBALS['MYSQL']->query("use ".$loginData['dbname']);
+		createLog("Selected DB: ".$loginData['dbname'],"INFO");
 	}
 
 	function runQuery($sql,$parameters){
+		createLog("Received query to run: ".$sql." ( ".implode(",",$parameters).")","INFO");
 		if(!isset($GLOBALS['MYSQL'])){
 			initializeDatabaseConnection();
 		}
@@ -211,15 +216,22 @@
 				$statement->execute();
 				$result = $statement->get_result();
 				if($GLOBALS['MYSQL']->error){
+					createLog("Prepared statement execution ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
 					die($GLOBALS['MYSQL']->error);
+				}else{
+					createLog("Prepared Statement OK","INFO");
 				}
 			}else{
+				createLog("Prepared statement preparation ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
 				die($GLOBALS['MYSQL']->error);
 			}
 		}else{
 			$result = $GLOBALS['MYSQL']->query($sql);
 			if($GLOBALS['MYSQL']->error){
+				createLog("Query ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
 				die($GLOBALS['MYSQL']->error);
+			}else{
+				createLog("Query OK","INFO");
 			}
 		}
 		
