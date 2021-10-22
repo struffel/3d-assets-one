@@ -45,7 +45,7 @@
 					$tmpAsset->url = $asset['shortLink'];
 					$tmpAsset->date = $asset['releaseDate'];
 					$tmpAsset->assetName = $asset['displayName'];
-					$tmpAsset->tags = $asset['tags'];
+					$tmpAsset->tags = array_unique($asset['tags']);
 
 					$tmpAsset->type = new Type();
 					$tmpAsset->type->typeId = $config['types'][$asset['dataType']];
