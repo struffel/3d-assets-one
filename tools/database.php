@@ -1,6 +1,23 @@
 <?php
+	function WriteAssetCollectionToDatabase(AssetCollection $newAssetCollection){
+		foreach ($newAssetCollection->assets as $a) {
+			writeAssetToDatabase($a);
+		}
+	}
+
 	function writeAssetToDatabase(Asset $newAsset){
-		
+
+		// Base Asset
+		$sql = "INSERT INTO Asset (AssetId, AssetSlug, AssetName, AssetUrl, AssetDate, LicenseId, TypeId, CreatorId) VALUES (NULL, GetRandomId8(), ?, ?, ?, ?, ?, ?);";
+		$parameters = [$newAsset->assetName, $newAsset->url,$newAsset->date,$newAsset->license->licenseId,$newAsset->type->typeId,$newAsset->creator->creatorId];
+		$result = runQuery($sql,$parameters);
+
+		// Tags
+		foreach ($newAsset->tags as $tag) {
+			$sql = "INSERT INTO Tag (AssetId,TagName) VALUES ((SELECT AssetId FROM Asset WHERE AssetUrl=?),?);";
+			$parameters = [$newAsset->url,$tag];
+			runQuery($sql,$parameters);
+		}
 	}
 
 	function loadAssetsFromDatabase(AssetQuery $query): AssetCollection{
@@ -186,7 +203,6 @@
 		if(!isset($GLOBALS['MYSQL'])){
 			initializeDatabaseConnection();
 		}
-		
 		if(sizeof($parameters) > 0){
 			$dataType = str_repeat('s',sizeof($parameters));
 			$statement = $GLOBALS['MYSQL']->prepare($sql);
@@ -194,7 +210,7 @@
 				$statement->bind_param($dataType, ...$parameters);
 				$statement->execute();
 				$result = $statement->get_result();
-				if(!$result){
+				if($GLOBALS['MYSQL']->error){
 					die($GLOBALS['MYSQL']->error);
 				}
 			}else{
@@ -202,7 +218,7 @@
 			}
 		}else{
 			$result = $GLOBALS['MYSQL']->query($sql);
-			if(!$result){
+			if($GLOBALS['MYSQL']->error){
 				die($GLOBALS['MYSQL']->error);
 			}
 		}

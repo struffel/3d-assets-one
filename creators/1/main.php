@@ -13,7 +13,7 @@
 			$query = new AssetQuery();
 			$query->filter->creatorId = [1];
 			$result = loadAssetsFromDatabase($query);
-			$existingUrls = array();
+			$existingUrls = [""];
 			foreach ($result->assets as $asset) {
 				$existingUrls []= $asset->url;
 			}
@@ -24,11 +24,11 @@
 			$initialParameters = [
 				"limit"=>100,
 				"offset"=>0,
-				"include"=>"displayData"
+				"include"=>"displayData,tagData"
 			];
 
 			$targetUrl = $config['main']['apiUrl']."?".http_build_query($initialParameters);
-			
+
 			// Prepare asset collection
 
 			$tmpCollection = new AssetCollection();
@@ -36,9 +36,6 @@
 			while($targetUrl != ""){
 
 				$result = json_decode(file_get_contents($targetUrl),true);
-
-				
-				
 
 				// Iterate through result
 
@@ -48,6 +45,7 @@
 					$tmpAsset->url = $asset['shortLink'];
 					$tmpAsset->date = $asset['releaseDate'];
 					$tmpAsset->assetName = $asset['displayName'];
+					$tmpAsset->tags = $asset['tags'];
 
 					$tmpAsset->type = new Type();
 					$tmpAsset->type->typeId = $config['types'][$asset['dataType']];
@@ -58,14 +56,17 @@
 					$tmpAsset->creator = new CreatorData();
 					$tmpAsset->creator->creatorId = 1;
 
-					$tmpCollection->assets[] = $tmpAsset;
+					if(!in_array($tmpAsset->url,$existingUrls)){
+						$tmpCollection->assets[] = $tmpAsset;
+						
+					}
 				}
 
 				$targetUrl = $result['nextPageHttp'] ?? "";
 			}
 				
-				$tmpCollection->numberOfResults = sizeof($tmpCollection->assets);
-				return $tmpCollection;
+			$tmpCollection->totalNumberOfAssets = sizeof($tmpCollection->assets);
+			return $tmpCollection;
 		}
 		function refreshAssetById(int $assetId):Asset{
 			return "bar";
