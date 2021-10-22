@@ -19,45 +19,53 @@
 			}
 
 			// Contact API and get new assets
+			$config = parse_ini_file('config.ini',true);
 
-			$parameters = [
+			$initialParameters = [
 				"limit"=>100,
 				"offset"=>0,
 				"include"=>"displayData"
 			];
 
-			$config = parse_ini_file('config.ini',true);
-			$targetUrl = $config['main']['apiUrl']."?".http_build_query($parameters);
-			$result = json_decode(file_get_contents($targetUrl),true);
-
+			$targetUrl = $config['main']['apiUrl']."?".http_build_query($initialParameters);
+			
 			// Prepare asset collection
+
 			$tmpCollection = new AssetCollection();
 
-			// Iterate through result
+			while($targetUrl != ""){
 
-			foreach ($result['foundAssets'] as $asset) {
-				$tmpAsset = new Asset();
+				$result = json_decode(file_get_contents($targetUrl),true);
 
-				$tmpAsset->url = $asset['shortLink'];
-				$tmpAsset->date = $asset['releaseDate'];
-				$tmpAsset->assetName = $asset['displayName'];
+				
+				
 
-				$tmpAsset->type = new Type();
-				$tmpAsset->type->typeId = $config['types'][$asset['dataType']];
+				// Iterate through result
 
-				$tmpAsset->license = new License();
-				$tmpAsset->license->licenseId = 1;
+				foreach ($result['foundAssets'] as $asset) {
+					$tmpAsset = new Asset();
 
-				$tmpAsset->creator = new CreatorData();
-				$tmpAsset->creator->creatorId = 1;
+					$tmpAsset->url = $asset['shortLink'];
+					$tmpAsset->date = $asset['releaseDate'];
+					$tmpAsset->assetName = $asset['displayName'];
 
-				$tmpCollection->assets[] = $tmpAsset;
+					$tmpAsset->type = new Type();
+					$tmpAsset->type->typeId = $config['types'][$asset['dataType']];
+
+					$tmpAsset->license = new License();
+					$tmpAsset->license->licenseId = 1;
+
+					$tmpAsset->creator = new CreatorData();
+					$tmpAsset->creator->creatorId = 1;
+
+					$tmpCollection->assets[] = $tmpAsset;
+				}
+
+				$targetUrl = $result['nextPageHttp'] ?? "";
 			}
-			
-			
-			
-			$tmpCollection->numberOfResults = 1;
-			return $tmpCollection;
+				
+				$tmpCollection->numberOfResults = sizeof($tmpCollection->assets);
+				return $tmpCollection;
 		}
 		function refreshAssetById(int $assetId):Asset{
 			return "bar";
