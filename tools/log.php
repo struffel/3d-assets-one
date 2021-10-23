@@ -17,6 +17,17 @@
             $GLOBALS['LOGNAME'] = $logName;
 
         }
-        createLog("--- Initialized New Logging","INIT");
+        createLog("--- Initialized new logging","INIT");
+    }
+
+    function trimCurrentLog(){
+        if(isset($GLOBALS['LOGNAME'])){
+            $logFile = $_SERVER['DOCUMENT_ROOT']."/log/".$GLOBALS['LOGNAME'].".log";
+            $lines = file($logFile); // reads the file into an array by line
+            $flipped = array_reverse($lines); // reverse the order of the array
+            $keep = array_slice($flipped,0, 5000); // keep the first 50 elements of the array
+            file_put_contents($logFile, implode("", $keep));
+        }
+           
     }
 ?>

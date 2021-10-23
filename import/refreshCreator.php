@@ -8,6 +8,7 @@
 
 	$creatorId = onlyNumbers($_GET['creatorId']);
 	initializeLog("refreshCreator-".$creatorId);
+	trimCurrentLog();
 	require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorId/main.php";
 
 	$creatorClass = "Creator".$creatorId;
@@ -15,5 +16,4 @@
 	$result = $creator->findNewAssets();
 	writeAssetCollectionToDatabase($result);
 	outputJson($result);
-	createLog("--- End","END")
 ?>

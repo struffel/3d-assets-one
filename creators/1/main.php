@@ -60,7 +60,9 @@
 
 					if(!in_array($tmpAsset->url,$existingUrls)){
 						$tmpCollection->assets[] = $tmpAsset;
-						
+						createLog("Found new asset: ".$tmpAsset->url,"INFO");
+					}else{
+						createLog("Skipping existing asset:".$tmpAsset->url,"INFO");
 					}
 				}
 

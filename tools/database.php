@@ -1,5 +1,6 @@
 <?php
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 
 	function WriteAssetCollectionToDatabase(AssetCollection $newAssetCollection){
 		foreach ($newAssetCollection->assets as $a) {
@@ -103,7 +104,7 @@
 		if($query->filter->tag){
 			foreach ($query->filter->tag as $i) {
 				$sqlParameters []= $i; 
-				$sql .= " AND AssetId IN (SELECT AssetId WHERE TagName = ?) ";
+				$sql .= " AND AssetId IN (SELECT AssetId FROM Tag WHERE TagName = ?) ";
 			}
 		}
 
@@ -119,6 +120,12 @@
 			$sql .= " AND FIND_IN_SET(CreatorId,?) ";
 		}
 
+		// Asset slug
+		if($query->filter->assetSlug){
+			$sqlParameters []= implode(",",$query->filter->assetSlug);
+			$sql .= " AND FIND_IN_SET(AssetSlug,?) ";
+		}
+
 		// Licenses
 		if($query->filter->licenseSlug){
 			$sqlParameters []= implode(",",$query->filter->licenseSlug);
@@ -130,9 +137,13 @@
 			$sqlParameters []= implode(",",$query->filter->typeSlug);
 			$sql .= " AND FIND_IN_SET(TypeSlug,?) ";
 		}
-
-		$sql .= " GROUP BY AssetId; ";
-
+		if(isset($query->limit) && isset($query->offset)){
+			$sql .= " GROUP BY AssetId LIMIT ".onlyNumbers($query->limit)." OFFSET ".onlyNumbers($query->offset)."; ";
+		}else if(isset($query->limit)){
+			$sql .= " GROUP BY AssetId LIMIT ".onlyNumbers($query->limit)."; ";
+		}else{
+			$sql .= " GROUP BY AssetId; ";
+		}
 		
 
 		$sqlResult = runQuery($sql,$sqlParameters);
@@ -217,19 +228,19 @@
 				$result = $statement->get_result();
 				if($GLOBALS['MYSQL']->error){
 					createLog("Prepared statement execution ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
-					die($GLOBALS['MYSQL']->error);
+					//die($GLOBALS['MYSQL']->error);
 				}else{
 					createLog("Prepared Statement OK","INFO");
 				}
 			}else{
 				createLog("Prepared statement preparation ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
-				die($GLOBALS['MYSQL']->error);
+				//die($GLOBALS['MYSQL']->error);
 			}
 		}else{
 			$result = $GLOBALS['MYSQL']->query($sql);
 			if($GLOBALS['MYSQL']->error){
 				createLog("Query ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
-				die($GLOBALS['MYSQL']->error);
+				//die($GLOBALS['MYSQL']->error);
 			}else{
 				createLog("Query OK","INFO");
 			}

@@ -18,6 +18,8 @@
 				$existingUrls []= $asset->url;
 			}
 
+            //createLog("Found existing URLs: ".implode($existingUrls),"INFO");
+
 			// Contact API and get new assets
             $config = parse_ini_file('config.ini',true);
 			$targetUrl = $config['main']['apiUrl'];
@@ -48,7 +50,9 @@
 
                 if(!in_array($tmpAsset->url,$existingUrls)){
                     $tmpCollection->assets[] = $tmpAsset;
-                    
+                    createLog("Found new asset: ".$tmpAsset->url,"INFO");
+                }else{
+                    createLog("Skipping existing asset:".$tmpAsset->url,"INFO");
                 }
             }
 				

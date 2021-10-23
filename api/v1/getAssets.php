@@ -16,6 +16,8 @@
 	$query->filter->licenseSlug = array_filter(explode(",",$_GET['license']??""));
 	$query->filter->typeSlug = array_filter(explode(",",$_GET['type']??""));
 	$query->filter->creatorSlug = array_filter(explode(",",$_GET['creator']??""));
+	$query->limit = intval($_GET['limit']??"100");
+	$query->offset = intval($_GET['offset']??"0");
 
 	$output = loadAssetsFromDatabase($query);
 	outputJson($output);
