@@ -32,12 +32,11 @@
 	}
 
 	function loadAssetsFromDatabase(AssetQuery $query): AssetCollection{
-
 		changeLogIndentation(true,__FUNCTION__);
 		createLog("Loading assets based on query: ".var_export($query, true));
 
 		// Begin defining SQL string and parameters for prepared statement
-		$sql = "SELECT ";
+		$sql = "SELECT SQL_CALC_FOUND_ROWS ";
 		$sqlParameters = array();
 
 		$requiredColumns = array();
@@ -158,10 +157,11 @@
 		
 
 		$sqlResult = runQuery($sql,$sqlParameters);
+		$sqlResultCount = runQuery("SELECT FOUND_ROWS() as Count;");
 
 		$output = new AssetCollection();
 
-
+		$output->totalNumberOfAssets = $sqlResultCount->fetch_assoc()['Count'];
 
 		while($row = $sqlResult->fetch_assoc()) {
 			$newAsset = new Asset();
@@ -202,7 +202,7 @@
 			
 		}
 
-		$output->totalNumberOfAssets = -1;
+		
 		changeLogIndentation(false,__FUNCTION__);
 		return $output;
 	}
@@ -228,9 +228,9 @@
 		changeLogIndentation(false,__FUNCTION__);
 	}
 
-	function runQuery($sql,$parameters){
+	function runQuery($sql,$parameters = []){
 		changeLogIndentation(true,__FUNCTION__);
-		createLog("Received SQL query to run: ".$sql." ( ".implode(",",$parameters).")");
+		createLog("Received SQL query to run: ".$sql." (".implode(",",$parameters).")");
 		
 		if(!isset($GLOBALS['MYSQL'])){
 			initializeDatabaseConnection();
