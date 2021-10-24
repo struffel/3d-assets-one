@@ -1,5 +1,49 @@
 <?php
-use BackblazeB2\Client;
-use BackblazeB2\Bucket;
+require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
+use obregonco\B2\Client;
+use obregonco\B2\Bucket;
+
+function initializeBackblazeB2(){
+	changeLogIndentation(true,__FUNCTION__);
+	createLog("Initializing connection to Backblaze B2");
+	if(!isset($GLOBALS['B2'])){
+		$loginData = parse_ini_file($_SERVER['DOCUMENT_ROOT'].'/../_logins/backblazeB2Images.ini');
+		$GLOBALS['B2'] = new Client($loginData['accountId'], [
+			'keyId' => $loginData['keyId'], // optional if you want to use master key (account Id)
+			'applicationKey' => $loginData['applicationKey'],
+		]);
+		$GLOBALS['B2']->version = 2; // By default will use version 1
+		$GLOBALS['B2BUCKET'] = $loginData['bucketName'];
+	}
+	changeLogIndentation(false,__FUNCTION__);
+}
+
+function uploadFileToBackblazeB2($localPath,$remotePath){
+	changeLogIndentation(true,__FUNCTION__);
+	createLog("Uploading file '$localPath' to '$remotePath'");
+	// Upload a file to a bucket. Returns a File object.
+	$file = $GLOBALS['B2']->upload([
+		'BucketName' => $GLOBALS['B2BUCKET'],
+		'FileName' => $remotePath,
+		'Body' => fopen($localPath, 'r')
+
+		// The file content can also be provided via a resource.
+		// 'Body' => fopen('/path/to/input', 'r')
+	]);
+	//var_dump($file);
+	changeLogIndentation(false,__FUNCTION__);
+}
+
+function testForFileOnBackblazeB2($fileName){
+	changeLogIndentation(true,__FUNCTION__);
+	createLog("Testing for file '$fileName'");
+	// Retrieve an array of file objects from a bucket.
+	$fileList = $GLOBALS['B2']->listFiles([
+		'BucketName' => $GLOBALS['B2BUCKET'],
+		'FileName'=>$fileName
+	]);
+	changeLogIndentation(false,__FUNCTION__);
+	return isset($fileList[0]);
+}
 
 ?>

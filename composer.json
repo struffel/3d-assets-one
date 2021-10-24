@@ -1,5 +1,5 @@
 {
     "require": {
-        "gliterd/backblaze-b2": "^1.5"
+        "obregonco/backblaze-b2": "^1.1"
     }
 }
