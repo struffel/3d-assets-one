@@ -11,4 +11,13 @@
 		}
 		echo json_encode($output,JSON_PRETTY_PRINT);
 	}
+
+	function getJsonFromUrl($targetUrl){
+		changeLogIndentation(true,__FUNCTION__);
+		createLog("Getting JSON from URL: ".$targetUrl);
+		$result = json_decode(file_get_contents($targetUrl),true);
+		createLog("Got JSON.");
+		changeLogIndentation(false,__FUNCTION__);
+		return $result;
+	}
 ?>

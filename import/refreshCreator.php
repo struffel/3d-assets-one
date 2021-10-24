@@ -8,12 +8,17 @@
 
 	$creatorId = onlyNumbers($_GET['creatorId']);
 	initializeLog("refreshCreator-".$creatorId);
-	trimCurrentLog();
 	require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorId/main.php";
 
 	$creatorClass = "Creator".$creatorId;
 	$creator = new $creatorClass();
+	createLog("Created creator object.");
 	$result = $creator->findNewAssets();
-	writeAssetCollectionToDatabase($result);
-	outputJson($result);
+	createLog("Found ".sizeof($result->assets)." new assets");
+	if(sizeof($result->assets) > 0){
+		createLog("Writing new assets to DB:");
+		writeAssetCollectionToDatabase($result);
+		createLog("Wrote new assets.");
+	}
+	echo file_get_contents($_SERVER['DOCUMENT_ROOT']."/log/".$GLOBALS['LOGNAME'].".log");
 ?>

@@ -3,15 +3,22 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 
 	function WriteAssetCollectionToDatabase(AssetCollection $newAssetCollection){
+		changeLogIndentation(true,__FUNCTION__);
+		createLog("Writing asset collection to DB");
 		foreach ($newAssetCollection->assets as $a) {
 			writeAssetToDatabase($a);
 		}
+		createLog("Finished writing asset collection to DB");
+		changeLogIndentation(false,__FUNCTION__);
 	}
 
 	function writeAssetToDatabase(Asset $newAsset){
+		changeLogIndentation(true,__FUNCTION__);
+		createLog("Inserting Asset: ".$newAsset->url);
+
 
 		// Base Asset
-		$sql = "INSERT INTO Asset (AssetId, AssetSlug, AssetName, AssetUrl, AssetDate, LicenseId, TypeId, CreatorId) VALUES (NULL, GetRandomId8(), ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO Asset (AssetId, AssetName, AssetUrl, AssetDate, LicenseId, TypeId, CreatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?);";
 		$parameters = [$newAsset->assetName, $newAsset->url,$newAsset->date,$newAsset->license->licenseId,$newAsset->type->typeId,$newAsset->creator->creatorId];
 		$result = runQuery($sql,$parameters);
 
@@ -21,9 +28,13 @@
 			$parameters = [$newAsset->url,$tag];
 			runQuery($sql,$parameters);
 		}
+		changeLogIndentation(false,__FUNCTION__);
 	}
 
 	function loadAssetsFromDatabase(AssetQuery $query): AssetCollection{
+
+		changeLogIndentation(true,__FUNCTION__);
+		createLog("Loading assets based on query: ".var_export($query, true));
 
 		// Begin defining SQL string and parameters for prepared statement
 		$sql = "SELECT ";
@@ -34,7 +45,7 @@
 
 		$requiredTablesForFilter = [
 			"tag" => ["Tag"],
-			"assetSlug" => [""],
+			"assetId" => [""],
 			"creatorSlug" => ["Creator"],
 			"creatorId" => ["Creator"],
 			"licenseSlug" => ["License"],
@@ -57,7 +68,7 @@
 		];
 
 		$requiredColumnsForInclude = [
-			"asset" => ["AssetId","AssetName","AssetSlug","AssetUrl","AssetDate"],
+			"asset" => ["AssetId","AssetName","AssetUrl","AssetDate"],
 			"tag" => ["GROUP_CONCAT(TagName SEPARATOR ',') as AssetTags"],
 			"creator" => ["CreatorId","CreatorSlug","CreatorName"],
 			"license" => ["LicenseId","LicenseSlug","LicenseName"],
@@ -121,9 +132,9 @@
 		}
 
 		// Asset slug
-		if($query->filter->assetSlug){
-			$sqlParameters []= implode(",",$query->filter->assetSlug);
-			$sql .= " AND FIND_IN_SET(AssetSlug,?) ";
+		if($query->filter->assetId){
+			$sqlParameters []= implode(",",$query->filter->assetId);
+			$sql .= " AND FIND_IN_SET(AssetId,?) ";
 		}
 
 		// Licenses
@@ -157,7 +168,6 @@
 
 			if($query->include->asset){
 				$newAsset->assetId = $row['AssetId'] ?? NULL;
-				$newAsset->assetSlug = $row['AssetSlug'] ?? NULL;
 				$newAsset->assetName = $row['AssetName'] ?? NULL;
 				$newAsset->url = $row['AssetUrl'] ?? NULL;
 				$newAsset->date = $row['AssetDate'] ?? NULL;
@@ -193,29 +203,35 @@
 		}
 
 		$output->totalNumberOfAssets = -1;
-		
+		changeLogIndentation(false,__FUNCTION__);
 		return $output;
 	}
 
 	function initializeDatabaseConnection(){
+		changeLogIndentation(true,__FUNCTION__);
+		createLog("Initializing DB Connection");
+		
 		$loginData = parse_ini_file($_SERVER['DOCUMENT_ROOT'].'/../_logins/mysql.ini');
 
 		// Create connection
 		if(!isset($GLOBALS['MYSQL'])){
 			$GLOBALS['MYSQL'] = new mysqli($loginData['servername'], $loginData['username'], $loginData['password']);
-			createLog("Initialized DB connection to: ".$loginData['servername'],"INFO");
+			createLog("Initialized DB connection to: ".$loginData['servername']);
 		}
 		
 		// Check connection
 		if ($GLOBALS['MYSQL']->connect_error) {
-			die("Connection failed: " . $GLOBALS['MYSQL']->connect_error);
+			createLog("Connection failed: " . $GLOBALS['MYSQL']->connect_error,"SQL-ERROR");
 		}
 		$GLOBALS['MYSQL']->query("use ".$loginData['dbname']);
-		createLog("Selected DB: ".$loginData['dbname'],"INFO");
+		createLog("Selected DB: ".$loginData['dbname']);
+		changeLogIndentation(false,__FUNCTION__);
 	}
 
 	function runQuery($sql,$parameters){
-		createLog("Received query to run: ".$sql." ( ".implode(",",$parameters).")","INFO");
+		changeLogIndentation(true,__FUNCTION__);
+		createLog("Received SQL query to run: ".$sql." ( ".implode(",",$parameters).")");
+		
 		if(!isset($GLOBALS['MYSQL'])){
 			initializeDatabaseConnection();
 		}
@@ -230,7 +246,7 @@
 					createLog("Prepared statement execution ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
 					//die($GLOBALS['MYSQL']->error);
 				}else{
-					createLog("Prepared Statement OK","INFO");
+					createLog("Prepared Statement OK");
 				}
 			}else{
 				createLog("Prepared statement preparation ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
@@ -242,10 +258,11 @@
 				createLog("Query ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
 				//die($GLOBALS['MYSQL']->error);
 			}else{
-				createLog("Query OK","INFO");
+				createLog("Query OK");
 			}
 		}
 		
+		changeLogIndentation(false,__FUNCTION__);
 		return $result;
 	}
 ?>

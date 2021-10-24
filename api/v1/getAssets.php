@@ -11,7 +11,7 @@
 		}
 	}
 
-	$query->filter->assetSlug = array_filter(explode(",",$_GET['asset']??""));
+	$query->filter->assetId = array_filter(explode(",",$_GET['asset']??""));
 	$query->filter->tag = array_filter(explode(",",$_GET['tags']??""));
 	$query->filter->licenseSlug = array_filter(explode(",",$_GET['license']??""));
 	$query->filter->typeSlug = array_filter(explode(",",$_GET['type']??""));

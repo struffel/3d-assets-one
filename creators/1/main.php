@@ -9,7 +9,7 @@
 
 	class Creator1 extends CreatorInterface{
 		function findNewAssets():AssetCollection{
-			createLog("Start looking for new assets","INFO");
+			createLog("Start looking for new assets");
 			// Get existing Assets
 
 			$query = new AssetQuery();
@@ -37,7 +37,7 @@
 
 			while($targetUrl != ""){
 
-				$result = json_decode(file_get_contents($targetUrl),true);
+				$result = getJsonFromUrl($targetUrl);
 
 				// Iterate through result
 
@@ -60,9 +60,9 @@
 
 					if(!in_array($tmpAsset->url,$existingUrls)){
 						$tmpCollection->assets[] = $tmpAsset;
-						createLog("Found new asset: ".$tmpAsset->url,"INFO");
+						createLog("Found new asset: ".$tmpAsset->url);
 					}else{
-						createLog("Skipping existing asset:".$tmpAsset->url,"INFO");
+						createLog("Skipping existing asset:".$tmpAsset->url);
 					}
 				}
 

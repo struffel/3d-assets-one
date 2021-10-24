@@ -18,7 +18,7 @@
 				$existingUrls []= $asset->url;
 			}
 
-            //createLog("Found existing URLs: ".implode($existingUrls),"INFO");
+            //createLog("Found existing URLs: ".implode($existingUrls));
 
 			// Contact API and get new assets
             $config = parse_ini_file('config.ini',true);
@@ -27,7 +27,7 @@
 			// Prepare asset collection
 			$tmpCollection = new AssetCollection();
 
-            $result = json_decode(file_get_contents($targetUrl),true);
+            $result = getJsonFromUrl($targetUrl);
 
             // Iterate through result
 
@@ -50,9 +50,9 @@
 
                 if(!in_array($tmpAsset->url,$existingUrls)){
                     $tmpCollection->assets[] = $tmpAsset;
-                    createLog("Found new asset: ".$tmpAsset->url,"INFO");
+                    createLog("Found new asset: ".$tmpAsset->url);
                 }else{
-                    createLog("Skipping existing asset:".$tmpAsset->url,"INFO");
+                    createLog("Skipping existing asset:".$tmpAsset->url);
                 }
             }
 				

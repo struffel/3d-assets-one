@@ -8,4 +8,8 @@
 		$output = preg_replace('/[^0-9]/','',$input);
 		return $output;
 	}
+	function removeNewline($string)
+	{
+		return str_replace(array("\n\r", "\n", "\r"), '', $string);
+	}
 ?>

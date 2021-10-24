@@ -4,7 +4,6 @@
 
 	class Asset{
 		public ?string $assetId;
-		public ?string $assetSlug;
 		public ?string $assetName;
 		public ?string $url;
 		public ?string $date;
@@ -45,8 +44,8 @@
 	}
 
 	class AssetFilter{
+		public ?array $assetId = NULL;
 		public ?array $tag = NULL;
-		public ?array $assetSlug = NULL;
 		public ?array $creatorSlug = NULL;
 		public ?array $creatorId = NULL;
 		public ?array $licenseSlug = NULL;
