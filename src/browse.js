@@ -6,15 +6,21 @@ var assetList = new Vue({
         type:"",
         tags:"",
         offset:0,
-        numberOfAssets:5
+		perPage:100
     },
     methods: {
         nextPage: function(){
-            this.offset += 100
+            if(this.offset + this.perPage < this.assetData.totalNumberOfAssets){
+				this.offset += this.perPage
+			}
         },
         previousPage: function(){
-            this.offset -= 100
-        }
+			tmp = this.offset - this.perPage;
+			this.offset = Math.max(0,tmp);
+        },
+		resetOffset: function(){
+			this.offset=0;
+		}
     },
     computed:{
         url:function(){
@@ -27,12 +33,12 @@ var assetList = new Vue({
               });
             return '/api/v1/getAssets?' + params.toString()
         },
-        assets: function(){
-            var Httpreq = new XMLHttpRequest(); // a new request
+        assetData: function(){
+            var Httpreq = new XMLHttpRequest();
             Httpreq.open("GET",this.url,false);
             console.log(this.url);
             Httpreq.send(null);
-            return JSON.parse(Httpreq.responseText).result.assets;   
+            return JSON.parse(Httpreq.responseText).result;   
         }
     }
   })

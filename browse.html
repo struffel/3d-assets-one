@@ -3,23 +3,28 @@
     <head>
         <!-- development version, includes helpful console warnings -->
         <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-        
+        <style>
+			@import url(https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.17/tailwind.min.css);
+		</style>
     </head>
     <body>
         <div id="assetList">
-            <select v-model="creator" >
-                <option value="ambientCG">ambientCG</option>
-                <option value="polyhaven">Poly Haven</option>
-            </select>
-            <input v-model.lazy="tags" placeholder="tags">
-            <button v-on:click="previousPage()">Previous</button>
-            <button v-on:click="nextPage()">Next</button>
+			<form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+				<select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="creator" >
+					<option value="ambientCG">ambientCG</option>
+					<option value="polyhaven">Poly Haven</option>
+				</select>
+				<input class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model.lazy="tags" @change="resetOffset();" placeholder="tags">
+				<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-on:click="previousPage()">Previous</button>
+				<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-on:click="nextPage()">Next</button>
+			</form>
+            
             <div class="assets">
-              <div v-for="asset in assets">
+              <div v-for="asset in assetData.assets">
                 <a v-bind:href="asset.url">
                     <p>
                         {{asset.assetName}}
-                    </p>    
+                    </p>
                 </a>
               </div>
             </div>
