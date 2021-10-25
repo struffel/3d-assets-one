@@ -71,4 +71,11 @@
 			$this->include = new AssetInclusion();
 		}
 	}
+
+	class Thumbnail{
+		public string $assetId;
+		public string $extension;
+		public string $variation;
+		public $imageData;
+	}
 ?>

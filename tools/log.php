@@ -1,5 +1,6 @@
 <?php
     require_once $_SERVER['DOCUMENT_ROOT'].'/tools/files.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 
     function createLog($message,$logType = ""){
         if(isset($GLOBALS['LOGNAME'])){
@@ -34,4 +35,10 @@
 		$GLOBALS['LOGINDENT'] = 0;
         createLog("Initialized logging","INIT");
     }
+
+	function echoCurrentLog(){
+		if(isset($GLOBALS['LOGNAME'])){
+			echo file_get_contents($_SERVER['DOCUMENT_ROOT']."/log/".$GLOBALS['LOGNAME'].".log");
+		}
+	}
 ?>

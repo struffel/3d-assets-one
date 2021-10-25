@@ -18,20 +18,24 @@ function initializeBackblazeB2(){
 	changeLogIndentation(false,__FUNCTION__);
 }
 
-function uploadFileToBackblazeB2($localPath,$remotePath){
+function uploadDataToBackblazeB2($fileData,$remotePath){
 	changeLogIndentation(true,__FUNCTION__);
-	createLog("Uploading file '$localPath' to '$remotePath'");
+	createLog("Uploading data to '$remotePath'");
 	// Upload a file to a bucket. Returns a File object.
 	$file = $GLOBALS['B2']->upload([
 		'BucketName' => $GLOBALS['B2BUCKET'],
 		'FileName' => $remotePath,
-		'Body' => fopen($localPath, 'r')
+		'Body' => $fileData
 
 		// The file content can also be provided via a resource.
 		// 'Body' => fopen('/path/to/input', 'r')
 	]);
 	//var_dump($file);
 	changeLogIndentation(false,__FUNCTION__);
+}
+
+function uploadFileToBackblazeB2($localPath,$remotePath){
+	uploadDataToBackblazeB2(fopen($localPath, 'r'),$remotePath);
 }
 
 function testForFileOnBackblazeB2($fileName){
@@ -42,6 +46,7 @@ function testForFileOnBackblazeB2($fileName){
 		'BucketName' => $GLOBALS['B2BUCKET'],
 		'FileName'=>$fileName
 	]);
+	createLog("Result: ".isset($fileList[0]));
 	changeLogIndentation(false,__FUNCTION__);
 	return isset($fileList[0]);
 }

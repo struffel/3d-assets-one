@@ -20,5 +20,5 @@
 		writeAssetCollectionToDatabase($result);
 		createLog("Wrote new assets.");
 	}
-	echo file_get_contents($_SERVER['DOCUMENT_ROOT']."/log/".$GLOBALS['LOGNAME'].".log");
+	echoCurrentLog();
 ?>
