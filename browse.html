@@ -9,7 +9,7 @@
     </head>
     <body>
         <div id="assetList">
-			<form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+			<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 				<select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="creator" >
 					<option value="ambientCG">ambientCG</option>
 					<option value="polyhaven">Poly Haven</option>
@@ -17,13 +17,14 @@
 				<input class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model.lazy="tags" @change="resetOffset();" placeholder="tags">
 				<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-on:click="previousPage()">Previous</button>
 				<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-on:click="nextPage()">Next</button>
-			</form>
+			</div>
             
             <div class="assets">
               <div v-for="asset in assetData.assets">
                 <a v-bind:href="asset.url">
                     <p>
                         {{asset.assetName}}
+						<img width="256" height="256" v-bind:src="'https://f003.backblazeb2.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
                     </p>
                 </a>
               </div>

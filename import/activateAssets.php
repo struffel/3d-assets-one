@@ -11,7 +11,7 @@
 	$query = new AssetQuery();
 	$query->filter->active=false;
 	$query->include->internal=true;
-	$query->limit = 1;
+	$query->limit = 2;
 	$assetsToActivate = loadAssetsFromDatabase($query);
 	fetchAndUploadThumbnailsToBackblazeB2ForAssetCollection($assetsToActivate);
 	activateAssetCollection($assetsToActivate);

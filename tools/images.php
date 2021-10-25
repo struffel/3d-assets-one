@@ -7,17 +7,15 @@
 		$output = [];
 		$output []=	["JPG","FFFFFF",128];
 		$output []=	["JPG","FFFFFF",256];
-		$output []=	["JPG","FFFFFF",512];
 		$output []=	["PNG",NULL,128];
 		$output []=	["PNG",NULL,256];
-		$output []=	["PNG",NULL,512];
 		return $output;
 	}
 
 	function getBackblazeB2ThumbnailPath($size,$extension,$backgroundColor,$assetId){
 		$variation = strtoupper(implode("-",array_filter([$size,$extension,$backgroundColor])));
 		$extension = strtolower($extension);
-		return "thumbnails/$variation/$assetId.$extension";
+		return "thumbnail/$variation/$assetId.$extension";
 	}
 
 	function testForThumbnailsOnBackblazeB2(Asset $asset) : bool{
