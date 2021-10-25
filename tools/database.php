@@ -12,14 +12,24 @@
 		changeLogIndentation(false,__FUNCTION__);
 	}
 
+	function activateAssetCollection(AssetCollection $assetCollection){
+		foreach ($assetCollection->assets as $a) {
+			activateAsset($a);
+		}
+	}
+
+	function activateAsset(Asset $asset){
+		runQuery("UPDATE Asset SET AssetActive = '1' WHERE AssetId = ?",[$asset->assetId]);
+	}
+
 	function writeAssetToDatabase(Asset $newAsset){
 		changeLogIndentation(true,__FUNCTION__);
 		createLog("Inserting Asset: ".$newAsset->url);
 
 
 		// Base Asset
-		$sql = "INSERT INTO Asset (AssetId, AssetName, AssetUrl, AssetDate, LicenseId, TypeId, CreatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?);";
-		$parameters = [$newAsset->assetName, $newAsset->url,$newAsset->date,$newAsset->license->licenseId,$newAsset->type->typeId,$newAsset->creator->creatorId];
+		$sql = "INSERT INTO Asset (AssetId, AssetName, AssetUrl, AssetThumbnailUrl, AssetDate, LicenseId, TypeId, CreatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
+		$parameters = [$newAsset->assetName, $newAsset->url,$newAsset->thumbnailUrl,$newAsset->date,$newAsset->license->licenseId,$newAsset->type->typeId,$newAsset->creator->creatorId];
 		$result = runQuery($sql,$parameters);
 
 		// Tags
@@ -43,6 +53,7 @@
 		$requiredTables = array();
 
 		$requiredTablesForFilter = [
+			"active" => [""],
 			"tag" => ["Tag"],
 			"assetId" => [""],
 			"creatorSlug" => ["Creator"],
@@ -53,6 +64,7 @@
 
 		$requiredTablesForInclude = [
 			"asset" => [""],
+			"internal" => [""],
 			"tag" => ["Tag"],
 			"creator" => ["Creator"],
 			"license" => ["License"],
@@ -72,6 +84,7 @@
 			"creator" => ["CreatorId","CreatorSlug","CreatorName"],
 			"license" => ["LicenseId","LicenseSlug","LicenseName"],
 			"type" => ["TypeId","TypeSlug","TypeName"],
+			"internal" => ["AssetActive","AssetThumbnailUrl"]
 		];
 
 		foreach ($query->filter as $key => $value) {
@@ -106,7 +119,13 @@
 			$sql .= " LEFT JOIN $table USING (".$requiredTablesJoinOn[$table].") ";
 		}
 
-		$sql .= " WHERE TRUE ";
+		if($query->filter->active === NULL){
+			$sql .= " WHERE TRUE ";
+		}else if ($query->filter->active) {
+			$sql .= " WHERE AssetActive != 0 ";
+		}else{
+			$sql .= " WHERE AssetActive = 0 ";
+		}
 
 		// FILTERS
 
@@ -164,6 +183,8 @@
 		$output->totalNumberOfAssets = $sqlResultCount->fetch_assoc()['Count'];
 
 		while($row = $sqlResult->fetch_assoc()) {
+
+
 			$newAsset = new Asset();
 
 			if($query->include->asset){
@@ -196,6 +217,12 @@
 				$newAsset->creator->creatorId = $row['CreatorId'] ?? NULL;
 				$newAsset->creator->creatorSlug = $row['CreatorSlug'] ?? NULL;
 				$newAsset->creator->creatorName = $row['CreatorName'] ?? NULL;
+			}
+			
+			if($query->include->internal){
+				$newAsset->active = $row['AssetActive'] ?? NULL;
+				$newAsset->thumbnailUrl = $row['AssetThumbnailUrl'] ?? NULL;
+
 			}
 			
 			$output->assets []=$newAsset;

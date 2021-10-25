@@ -54,12 +54,6 @@
                     $tmpCollection->assets[] = $tmpAsset;
                     createLog("Found new asset: ".$tmpAsset->url);
                 }
-
-				$count++;
-				if($count >= $maxCount){
-					createLog("Aborting after $maxCount assets.");
-					break;
-				}
             }
 				
 			$tmpCollection->totalNumberOfAssets = sizeof($tmpCollection->assets);

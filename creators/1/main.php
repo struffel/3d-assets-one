@@ -8,12 +8,13 @@
 
 
 	class Creator1 extends CreatorInterface{
-		function findNewAssets($maxCount):AssetCollection{
+		function findNewAssets():AssetCollection{
 			createLog("Start looking for new assets");
 			// Get existing Assets
 
 			$query = new AssetQuery();
 			$query->filter->creatorId = [1];
+			$query->filter->active = NULL;
 			$result = loadAssetsFromDatabase($query);
 			$existingUrls = [""];
 			foreach ($result->assets as $asset) {
@@ -26,7 +27,7 @@
 			$initialParameters = [
 				"limit"=>100,
 				"offset"=>0,
-				"include"=>"displayData,tagData"
+				"include"=>"displayData,tagData,imageData"
 			];
 
 			$targetUrl = $config['main']['apiUrl']."?".http_build_query($initialParameters);
@@ -34,9 +35,6 @@
 			// Prepare asset collection
 
 			$tmpCollection = new AssetCollection();
-
-			$count = 0;
-			$keepLoadingJson = true;
 
 			while($targetUrl != ""){
 
@@ -50,6 +48,7 @@
 					$tmpAsset = new Asset();
 
 					$tmpAsset->url = $asset['shortLink'];
+					$tmpAsset->thumbnailUrl = $asset['previewImage']['512-PNG'];
 					$tmpAsset->date = $asset['releaseDate'];
 					$tmpAsset->assetName = $asset['displayName'];
 					$tmpAsset->tags = array_unique($asset['tags']);
@@ -67,19 +66,9 @@
 						$tmpCollection->assets[] = $tmpAsset;
 						createLog("Found new asset: ".$tmpAsset->url);
 					}
-					$count++;
-					if($count >= $maxCount){
-						createLog("Aborting after $maxCount assets.");
-						$keepLoadingJson = false;
-						break;
-					}
-				}
-				if($keepLoadingJson){
-					$targetUrl = $result['nextPageHttp'] ?? "";
-				}else{
-					$targetUrl = "";
 				}
 				
+				$targetUrl = $result['nextPageHttp'] ?? "";	
 			}
 				
 			$tmpCollection->totalNumberOfAssets = sizeof($tmpCollection->assets);

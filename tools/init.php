@@ -11,6 +11,9 @@
 		public ?Type $type;
 		public ?License $license;
 		public ?CreatorData $creator;
+
+		public bool $active;
+		public string $thumbnailUrl;
 	}
 
 	class Type{
@@ -32,7 +35,7 @@
 	}
 	
 	abstract class CreatorInterface{
-		abstract function findNewAssets($maxCount):AssetCollection;
+		abstract function findNewAssets():AssetCollection;
 		abstract function refreshAssetById(int $assetId):Asset;
 	}
 	
@@ -50,6 +53,7 @@
 		public ?array $creatorId = NULL;
 		public ?array $licenseSlug = NULL;
 		public ?array $typeSlug = NULL;
+		public ?bool $active = true;
 	}
 
 	class AssetInclusion{
@@ -58,6 +62,7 @@
 		public bool $creator = false;
 		public bool $license = false;
 		public bool $type = false;
+		public bool $internal = false;
 	}
 
 	class AssetQuery{
@@ -70,12 +75,5 @@
 			$this->filter = new AssetFilter();
 			$this->include = new AssetInclusion();
 		}
-	}
-
-	class Thumbnail{
-		public string $assetId;
-		public string $extension;
-		public string $variation;
-		public $imageData;
 	}
 ?>

@@ -22,14 +22,31 @@ function uploadDataToBackblazeB2($fileData,$remotePath){
 	changeLogIndentation(true,__FUNCTION__);
 	createLog("Uploading data to '$remotePath'");
 	// Upload a file to a bucket. Returns a File object.
-	$file = $GLOBALS['B2']->upload([
-		'BucketName' => $GLOBALS['B2BUCKET'],
-		'FileName' => $remotePath,
-		'Body' => $fileData
-
-		// The file content can also be provided via a resource.
-		// 'Body' => fopen('/path/to/input', 'r')
-	]);
+	
+	if(!isset($GLOBALS['B2'])){
+		initializeBackblazeB2();
+	}
+	$successfulUpload = false;
+	while(!$successfulUpload){
+		try {
+			$file = $GLOBALS['B2']->upload([
+				'BucketName' => $GLOBALS['B2BUCKET'],
+				'FileName' => $remotePath,
+				'Body' => $fileData
+		
+				// The file content can also be provided via a resource.
+				// 'Body' => fopen('/path/to/input', 'r')
+			]);
+			$successfulUpload = true;
+			createLog("Upload OK");
+		} catch (\Throwable $th) {
+			createLog("Upload FAILED: ".$th->getMessage(),"B2-ERROR");
+			$successfulUpload = false;
+			sleep(1);
+			createLog("Trying upload again...");
+		}
+	}
+	
 	//var_dump($file);
 	changeLogIndentation(false,__FUNCTION__);
 }
