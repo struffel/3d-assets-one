@@ -32,7 +32,7 @@
 	}
 	
 	abstract class CreatorInterface{
-		abstract function findNewAssets():AssetCollection;
+		abstract function findNewAssets($maxCount):AssetCollection;
 		abstract function refreshAssetById(int $assetId):Asset;
 	}
 	

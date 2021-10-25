@@ -6,7 +6,7 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
 
 	class Creator2 extends CreatorInterface{
-		function findNewAssets():AssetCollection{
+		function findNewAssets($maxCount):AssetCollection{
 
 			// Get existing Assets
 
@@ -31,6 +31,8 @@
 
             // Iterate through result
 
+			$count = 0;
+
             foreach ($result as $key => $asset) {
                 $tmpAsset = new Asset();
 
@@ -52,6 +54,12 @@
                     $tmpCollection->assets[] = $tmpAsset;
                     createLog("Found new asset: ".$tmpAsset->url);
                 }
+
+				$count++;
+				if($count >= $maxCount){
+					createLog("Aborting after $maxCount assets.");
+					break;
+				}
             }
 				
 			$tmpCollection->totalNumberOfAssets = sizeof($tmpCollection->assets);

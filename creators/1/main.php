@@ -8,7 +8,7 @@
 
 
 	class Creator1 extends CreatorInterface{
-		function findNewAssets():AssetCollection{
+		function findNewAssets($maxCount):AssetCollection{
 			createLog("Start looking for new assets");
 			// Get existing Assets
 
@@ -35,11 +35,16 @@
 
 			$tmpCollection = new AssetCollection();
 
+			$count = 0;
+			$keepLoadingJson = true;
+
 			while($targetUrl != ""){
 
 				$result = getJsonFromUrl($targetUrl);
 
 				// Iterate through result
+
+				
 
 				foreach ($result['foundAssets'] as $asset) {
 					$tmpAsset = new Asset();
@@ -62,9 +67,19 @@
 						$tmpCollection->assets[] = $tmpAsset;
 						createLog("Found new asset: ".$tmpAsset->url);
 					}
+					$count++;
+					if($count >= $maxCount){
+						createLog("Aborting after $maxCount assets.");
+						$keepLoadingJson = false;
+						break;
+					}
 				}
-
-				$targetUrl = $result['nextPageHttp'] ?? "";
+				if($keepLoadingJson){
+					$targetUrl = $result['nextPageHttp'] ?? "";
+				}else{
+					$targetUrl = "";
+				}
+				
 			}
 				
 			$tmpCollection->totalNumberOfAssets = sizeof($tmpCollection->assets);

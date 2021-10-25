@@ -7,13 +7,14 @@
 
 
 	$creatorId = onlyNumbers($_GET['creatorId']);
+	$maxNumberOfAssets = intval($_GET['max']??3);
 	initializeLog("refreshCreator-".$creatorId);
 	require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorId/main.php";
 
 	$creatorClass = "Creator".$creatorId;
 	$creator = new $creatorClass();
 	createLog("Created creator object.");
-	$result = $creator->findNewAssets();
+	$result = $creator->findNewAssets($maxNumberOfAssets);
 	createLog("Found ".sizeof($result->assets)." new assets");
 	if(sizeof($result->assets) > 0){
 		createLog("Writing new assets to DB:");
