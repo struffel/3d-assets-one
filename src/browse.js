@@ -6,7 +6,9 @@ var assetList = new Vue({
         type:"",
         tags:"",
         offset:0,
-		perPage:100
+		perPage:200,
+		assetCache: [],
+		totalNumberOfAssets:0
     },
     methods: {
         nextPage: function(){
@@ -14,31 +16,42 @@ var assetList = new Vue({
 				this.offset += this.perPage
 			}
         },
-        previousPage: function(){
-			tmp = this.offset - this.perPage;
-			this.offset = Math.max(0,tmp);
-        },
 		resetOffset: function(){
 			this.offset=0;
 		}
     },
     computed:{
-        url:function(){
-            params = new URLSearchParams({
-                creator: this.creator,
+		query:function(){
+			this.assetCache=[];
+			this.offset = 0;
+			return {
+				creator: this.creator,
                 license: this.license,
                 type: this.type,
-                tags: this.tags,
-                offset:this.offset
-              });
+                tags: this.tags
+			};
+		},
+		queryPosition:function(){
+			return {
+				offset:this.offset,
+				limit:this.perPage
+			}
+		},
+        url:function(){
+            params = new URLSearchParams(Object.assign({},this.query,this.queryPosition));
             return '/api/v1/getAssets?' + params.toString()
         },
         assetData: function(){
             var Httpreq = new XMLHttpRequest();
             Httpreq.open("GET",this.url,false);
-            console.log(this.url);
             Httpreq.send(null);
-            return JSON.parse(Httpreq.responseText).result;   
+			var result = JSON.parse(Httpreq.responseText).result
+			this.assetCache = this.assetCache.concat(result.assets);
+			this.totalNumberOfAssets = result.totalNumberOfAssets;
+            return {
+				assets:this.assetCache,
+				totalNumberOfAssets:this.totalNumberOfAssets
+			};   
         }
     }
   })

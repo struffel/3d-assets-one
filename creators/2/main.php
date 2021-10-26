@@ -6,7 +6,7 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
 
 	class Creator2 extends CreatorInterface{
-		function findNewAssets($maxCount):AssetCollection{
+		function findNewAssets():AssetCollection{
 
 			// Get existing Assets
 
@@ -40,6 +40,7 @@
                 $tmpAsset->date = date('Y-m-d',$asset['date_published']);
                 $tmpAsset->assetName = $asset['name'];
                 $tmpAsset->tags = array_unique($asset['tags']);
+				$tmpAsset->thumbnailUrl = $config['main']['thumbnailUrlBase'].$key.".png?height=512";
 
                 $tmpAsset->type = new Type();
                 $tmpAsset->type->typeId = $config['types'][$asset['type']];
