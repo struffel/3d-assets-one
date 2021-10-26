@@ -12,6 +12,7 @@
 	$query->filter->active=false;
 	$query->include->internal=true;
 	$query->limit = 2;
+	$query->sort="random";
 	$assetsToActivate = loadAssetsFromDatabase($query);
 	fetchAndUploadThumbnailsToBackblazeB2ForAssetCollection($assetsToActivate);
 	activateAssetCollection($assetsToActivate);

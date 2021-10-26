@@ -68,6 +68,7 @@
 	class AssetQuery{
 		public int $offset;
 		public int $limit;
+		public string $sort = "latest";
 		public AssetFilter $filter;
 		public AssetInclusion $include;
 		

@@ -166,12 +166,28 @@
 			$sqlParameters []= implode(",",$query->filter->typeSlug);
 			$sql .= " AND FIND_IN_SET(TypeSlug,?) ";
 		}
+
+		$sql .= " GROUP BY AssetId ";
+
+		switch ($query->sort ?? "") {
+			case 'latest':
+				$sql .= " ORDER BY AssetDate DESC , AssetId ASC ";
+				break;
+			case 'oldest':
+				$sql .= " ORDER BY AssetDate ASC , AssetId ASC ";
+				break;
+			case 'random':
+				$sql .= " ORDER BY RAND() ";
+				break;
+			default:
+				$sql .= " ORDER BY AssetDate DESC , AssetId ASC ";
+				break;
+		}
+
 		if(isset($query->limit) && isset($query->offset)){
-			$sql .= " GROUP BY AssetId LIMIT ".onlyNumbers($query->limit)." OFFSET ".onlyNumbers($query->offset)."; ";
+			$sql .= " LIMIT ".onlyNumbers($query->limit)." OFFSET ".onlyNumbers($query->offset)."; ";
 		}else if(isset($query->limit)){
-			$sql .= " GROUP BY AssetId LIMIT ".onlyNumbers($query->limit)."; ";
-		}else{
-			$sql .= " GROUP BY AssetId; ";
+			$sql .= " LIMIT ".onlyNumbers($query->limit)."; ";
 		}
 		
 
