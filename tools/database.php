@@ -179,6 +179,12 @@
 			case 'random':
 				$sql .= " ORDER BY RAND() ";
 				break;
+			case 'id_desc':
+				$sql .= " ORDER BY AssetID DESC ";
+				break;
+			case 'id_asc':
+				$sql .= " ORDER BY AssetID ASC ";
+				break;
 			default:
 				$sql .= " ORDER BY AssetDate DESC , AssetId ASC ";
 				break;
