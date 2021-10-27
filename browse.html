@@ -4,27 +4,37 @@
         <!-- development version, includes helpful console warnings -->
         <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
         <style>
-			@import url("/style/bulma.min.css");
-			/*@import url("/style/init.css");
-			@import url("/style/browse.css");*/
+			@import url("./style/bulma.min.css");
+			@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
 			.thumbnail{
 				transition: ease-in-out 0.1s;
+				position:absolute;
+				top:0px;
+				left:0px;
 			}
 			.box:hover .thumbnail{
-				transform: scale(1.125);
+				transform: scale(1.05);
+			}
+			.logo{
+				font-family: 'Red Hat Display', sans-serif;
 			}
 		</style>
     </head>
     <body class="has-navbar-fixed-bottom">
         <div id="assetList" >
-			<header class="is-flex">
+			<header class="is-flex is-justify-content-center">
+				<div class="logo has-text-centered is-size-1 mx-0 my-6">
+					3Dassets.one
+				</div>
 				<nav class="navbar box is-bordered is-fixed-bottom">
 					<div class="is-flex navbar-start">
 						<div class="select is-multiple">
 							<select multiple size="3"  v-model="creator" >
 								<option selected="selected" value="">Any creator</option>
-								<option value="ambientCG">ambientCG</option>
+								<option value="ambientcg">ambientCG</option>
 								<option value="polyhaven">Poly Haven</option>
+								<option value="sharetextures">Share Textures</option>
+								<option value="3dtextures">3D Textures</option>
 							</select>
 						</div>
 						<div class="select is-multiple">
@@ -62,10 +72,10 @@
 			
             
             <main class="assets is-flex is-justify-content-center is-flex-wrap-wrap">
-              <div v-for="asset in assetData.assets" >
+              <div v-for="asset in assetData.assets" :key="asset.assetId" >
                 <a style="z-index:99;" v-bind:href="asset.url" class=" box is-clipped is-bordered mx-1 my-1 " v-on:mouseover="setHoveringAssetData(asset.assetId)">
 					<figure class="image is-128x128">
-						<img class="thumbnail" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://f003.backblazeb2.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
+						<img class="thumbnail thumbnail256" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://f003.backblazeb2.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
 					</figure>
 				</a>
               </div>
