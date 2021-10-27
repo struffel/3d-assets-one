@@ -12,6 +12,7 @@
 
 			$query = new AssetQuery();
 			$query->filter->creatorId = [2];
+			$query->filter->active = NULL;
 			$result = loadAssetsFromDatabase($query);
 			$existingUrls = [""];
 			foreach ($result->assets as $asset) {

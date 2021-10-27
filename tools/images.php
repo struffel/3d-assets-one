@@ -2,11 +2,16 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/backblaze.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/fetch.php';
 
 	function getThumbnailTemplate(){
 		$output = [];
+		$output []=	["JPG","FFFFFF",32];
+		$output []=	["JPG","FFFFFF",64];
 		$output []=	["JPG","FFFFFF",128];
 		$output []=	["JPG","FFFFFF",256];
+		$output []=	["PNG",NULL,32];
+		$output []=	["PNG",NULL,64];
 		$output []=	["PNG",NULL,128];
 		$output []=	["PNG",NULL,256];
 		return $output;
@@ -40,7 +45,7 @@
 
 	function fetchAndUploadThumbnailsToBackblazeB2(Asset $asset){
 		changeLogIndentation(true,__FUNCTION__);
-		$originalImageData = fetchImageFromUrl($asset->thumbnailUrl);
+		$originalImageData = fetchRemoteData($asset->thumbnailUrl);
 		foreach (getThumbnailTemplate() as $t) {
 			$tmpThumbnail = createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1],$asset->assetId);
 			uploadDataToBackblazeB2($tmpThumbnail,getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset->assetId));
@@ -52,27 +57,43 @@
 		changeLogIndentation(true,__FUNCTION__);
 
 		createLog("Building variation: $size/$extension/$backgroundColor/$assetId ");
+
+		// Read image using GD to ensure webP-compatibility and proper alpha handling
+		$tmpImage = imagecreatefromstring($originalImageData);
+		$tmpImage = imagescale($tmpImage,$size);
+		imagealphablending($tmpImage, false);
+		imagesavealpha($tmpImage, true);
+		$stream = fopen('php://memory','r+');
+		imagepng($tmpImage,$stream);
+		rewind($stream);
+		$originalImageData = stream_get_contents($stream);
+
+		// Read image using Imagick for further processing
 		$tmpImage = new Imagick();
 		$tmpImage->readImageBlob($originalImageData);
+		$tmpImage->setbackgroundcolor('transparent');
+		$tmpImage->setGravity(imagick::GRAVITY_CENTER);
+		$tmpImage->setImageAlphaChannel(imagick::ALPHACHANNEL_ACTIVATE);
 
-		if(strtolower($extension) == "jpg"){
-			$tmpImage->setbackgroundcolor('#'.$backgroundColor);
-			$tmpImage = $tmpImage->flattenImages();
-			$tmpImage->setImageFormat('jpg');
+		$tmpImage->thumbnailImage($size,$size,true);
+		$offsetX = ($size-$tmpImage->getImageWidth())/2 ;
+		$offsetY = ($size-$tmpImage->getImageHeight())/2;
+		
+		$outputImage = new Imagick();
+		$outputImage->newImage($size,$size,'transparent','png');
+		$outputImage->compositeImage($tmpImage, imagick::COMPOSITE_DEFAULT, $offsetX, $offsetY);
+
+		$outputImage->setImageFormat(strtolower($extension));
+
+		if($backgroundColor ?? "" != ""){
+			$outputImage->setbackgroundcolor('#'.$backgroundColor);
+			$outputImage = $outputImage->flattenImages();
 		}
 		
-		$tmpImage->thumbnailImage($size,0);
+		
 		
 		changeLogIndentation(false,__FUNCTION__);
-		return $tmpImage->getImageBlob();
-	}
-
-	function fetchImageFromUrl($url){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Fetching: ".$url);
-		$image = file_get_contents($url);
-		changeLogIndentation(false,__FUNCTION__);
-		return $image;
+		return $outputImage->getImageBlob();
 	}
 
 ?>

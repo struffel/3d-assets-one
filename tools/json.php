@@ -1,4 +1,9 @@
 <?php
+
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/fetch.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
+
 	function outputJson($result,array $debugArray = NULL,int $statusCode = 200,string $statusComment = NULL){
 		$output = array();
 		$output['result']=$result;
@@ -15,7 +20,7 @@
 	function getJsonFromUrl($targetUrl){
 		changeLogIndentation(true,__FUNCTION__);
 		createLog("Getting JSON from URL: ".$targetUrl);
-		$result = json_decode(file_get_contents($targetUrl),true);
+		$result = json_decode(fetchRemoteData($targetUrl),true);
 		createLog("Got JSON.");
 		changeLogIndentation(false,__FUNCTION__);
 		return $result;
