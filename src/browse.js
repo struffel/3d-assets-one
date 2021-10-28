@@ -5,6 +5,7 @@ var assetList = new Vue({
         license:[],
         type:[],
         tags:[],
+		sort:"latest",
         offset:0,
 		perPage:200,
 		assetCache: [],
@@ -26,7 +27,7 @@ var assetList = new Vue({
 				if(self.currentlyHoveringAsset != null){
 					self.currentlyHoveringAsset.assetId = assetId;
 				}
-				fetch('/api/v1/getAssets?include=creator,license,type&asset='+assetId)
+				fetch('/api/v1/getAssets?include=tag,creator,license,type&asset='+assetId)
 				.then(res => res.json())
 				.then(out =>{
 					self.currentlyHoveringAsset = out.result.assets[0];
@@ -43,7 +44,8 @@ var assetList = new Vue({
 				creator: this.creator.join(','),
                 license: this.license.join(','),
                 type: this.type.join(','),
-                tags: this.tags
+                tags: this.tags,
+				sort:this.sort
 			};
 		},
 		queryPosition:function(){
@@ -60,6 +62,7 @@ var assetList = new Vue({
 			var Httpreq = new XMLHttpRequest();
 			Httpreq.open("GET",this.url,false);
 			Httpreq.send(null);
+			console.log(this.url);
 			var result = JSON.parse(Httpreq.responseText).result
 			this.assetCache = this.assetCache.concat(result.assets);
 			this.totalNumberOfAssets = result.totalNumberOfAssets;
@@ -69,7 +72,33 @@ var assetList = new Vue({
 			};   
         }
     }
-  })
+  });
+function idleConfirmTags() {
+	var t;
+	var leftTagsBar =true;
+	var tagsBar = document.getElementById('tagsBar');
+	window.onload = resetTimer;
+	window.onkeydown = resetTimer;
 
+	function yourFunction() {
+		
+		if(tagsBar === document.activeElement ){
+			leftTagsBar = false;
+			document.getElementById('tagsBar').blur();
+			document.getElementById('tagsBar').focus();
+		}else{
+			if(!leftTagsBar){
+				document.getElementById('tagsBar').focus();
+				document.getElementById('tagsBar').blur();
+				leftTagsBar = true;
+			}
+		}
+		resetTimer();
+	}
 
-
+	function resetTimer() {
+	clearTimeout(t);
+	t = setTimeout(yourFunction, 750);  // time is in milliseconds
+	}
+}
+idleConfirmTags();

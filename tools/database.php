@@ -217,7 +217,7 @@
 			}
 
 			if($query->include->tag){
-				$newAsset->tags = array_filter(explode(",",$row['AssetTags']));
+				$newAsset->tags = array_map('trim',array_filter(explode(",",$row['AssetTags'])));
 			}
 			
 			if($query->include->type){

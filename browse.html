@@ -7,10 +7,13 @@
 			@import url("./style/bulma.min.css");
 			@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
 			.thumbnail{
-				transition: ease-in-out 0.1s;
+				transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
 				position:absolute;
 				top:0px;
 				left:0px;
+			}
+			.hidden{
+				opacity: 0%;
 			}
 			.box:hover .thumbnail{
 				transform: scale(1.05);
@@ -19,17 +22,18 @@
 				font-family: 'Red Hat Display', sans-serif;
 			}
 		</style>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body class="has-navbar-fixed-bottom">
         <div id="assetList" >
 			<header class="is-flex is-justify-content-center">
 				<div class="logo has-text-centered is-size-1 mx-0 my-6">
-					3Dassets.one
+					<span style="color:#CB6CE6;">3D</span><span>assets</span><span style="color:#7ED957;">.</span><span>one</span>
 				</div>
-				<nav class="navbar box is-bordered is-fixed-bottom">
-					<div class="is-flex navbar-start">
-						<div class="select is-multiple">
-							<select multiple size="3"  v-model="creator" >
+				<nav class="navbar has-background-white-ter box is-bordered is-fixed-bottom">
+					<div class="is-flex is-size-7 navbar-start">
+						<div class="select mx-1 is-multiple">
+							<select multiple title="Crtl-click to select multiple options." size="4"  v-model="creator" >
 								<option selected="selected" value="">Any creator</option>
 								<option value="ambientcg">ambientCG</option>
 								<option value="polyhaven">Poly Haven</option>
@@ -37,34 +41,51 @@
 								<option value="3dtextures">3D Textures</option>
 							</select>
 						</div>
-						<div class="select is-multiple">
-							<select multiple size="3" v-model="type" >
+						<div class="select mx-1 is-multiple">
+							<select multiple title="Ctrl-click to select multiple options." size="4" v-model="type" >
 								<option selected="selected" value="">Any type</option>
 								<option value="hdri">HDRI</option>
 								<option value="pbr-material">PBR Material</option>
 								<option value="3d-model">3D Model</option>
 							</select>
 						</div>
-						<div class="select is-multiple">
-							<select multiple size="3" v-model="license" >
+						<div class="select mx-1 is-multiple">
+							<select multiple title="Ctrl-click to select multiple options." size="4" v-model="license" >
 								<option selected="selected" value="">Any license</option>
 								<option value="cc-0">Creative Commons CC0</option>
 							</select>
 						</div>
+						<div class="menu">
+							<input class="input mx-1 mb-1" id="tagsBar" size="15" v-model.lazy="tags" @change="resetOffset();" placeholder="Query">
+							<div class="select mx-1 mt-1">
+								<select v-model="sort" >
+									<option selected="selected" value="latest">Latest</option>
+									<option value="oldest">Oldest</option>
+									<option value="random">Random</option>
+								</select>
+							</div>
+						</div>
 						
-						<input class="input" v-model.lazy="tags" @change="resetOffset();" placeholder="tags">
+						
 						
 					</div>
 
 					<div class="navbar-end is-flex is-hidden-touch is-justify-content-flex-end is-align-content-center" v-if="currentlyHoveringAsset != null">
-						<div class="block">
-							<img v-bind:alt="currentlyHoveringAsset.creator.CreatorName" v-bind:title="currentlyHoveringAsset.creator.CreatorName" loading="lazy" width="32" height="32" v-bind:src="'https://f003.backblazeb2.com/file/3D-Assets-One/creator-icon/64-PNG/' + currentlyHoveringAsset.creator.creatorId + '.png'">
-						</div>
 						<div v-if="currentlyHoveringAsset != null">
-							{{currentlyHoveringAsset.assetName}}
+							<div class=" is-flex is-align-items-center is-justify-content-flex-end">
+								<span class="is-size-5">{{currentlyHoveringAsset.assetName}}</span>
+								<div class="image is-24x24 m-2">
+									<img v-bind:alt="currentlyHoveringAsset.creator.CreatorName" v-bind:title="currentlyHoveringAsset.creator.CreatorName" loading="lazy" width="32" height="32" v-bind:src="'https://f003.backblazeb2.com/file/3D-Assets-One/creator-icon/64-PNG/' + currentlyHoveringAsset.creator.creatorId + '.png'">
+								</div>
+							</div>
+							<div class="has-text-right is-size-7 mx-2 mb-2">
+								{{currentlyHoveringAsset.license.licenseName}}
+							</div>
+							<div class="has-text-right">
+								<span class=" is-white mx-1 tag" v-for="tag in currentlyHoveringAsset.tags.slice(0,5)">{{tag}}</span>
+								<span class=" is-white mx-1 tag" v-if="currentlyHoveringAsset.tags.length > 5">...</span>
+							</div>
 						</div>
-						
-						
 					</div>
 				</nav>
 
@@ -72,13 +93,14 @@
 			
             
             <main class="assets is-flex is-justify-content-center is-flex-wrap-wrap">
-              <div v-for="asset in assetData.assets" :key="asset.assetId" >
-                <a style="z-index:99;" v-bind:href="asset.url" class=" box is-clipped is-bordered mx-1 my-1 " v-on:mouseover="setHoveringAssetData(asset.assetId)">
-					<figure class="image is-128x128">
-						<img class="thumbnail thumbnail256" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://f003.backblazeb2.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
-					</figure>
-				</a>
-              </div>
+				<div class="" v-if="totalNumberOfAssets < 1">No results for this query.</div>
+            	<div v-for="asset in assetData.assets" :key="asset.assetId" >
+                	<a style="z-index:99;" v-bind:href="asset.url" class=" box is-clipped is-bordered mx-1 my-1 " v-on:mouseover="setHoveringAssetData(asset.assetId)">
+						<figure class="image is-128x128">
+							<img class="thumbnail thumbnail256" style="opacity: 0%;" onload="this.style.opacity = '100%'" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://f003.backblazeb2.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
+						</figure>
+					</a>
+              	</div>
             </main>
 			<div class="has-text-centered">
 				<button class="mx-5 my-5 button is-large" v-if="this.assetData.assets.length < this.assetData.totalNumberOfAssets" v-on:click="nextPage()">Load more</button>
