@@ -33,8 +33,32 @@ var assetList = new Vue({
 					self.currentlyHoveringAsset = out.result.assets[0];
 				});
 			}
+		},
+		getQueryVariables:function() {
+			var query = window.location.hash.substring(1);
+			var vars = query.split('&');
+			var output = [];
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split('=');
+				output[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+			}
+			return output;
 		}
     },
+	beforeMount(){
+		params = this.getQueryVariables();
+		this.creator = params.creator.split(',');
+		this.license = params.license.split(',');
+		this.type = params.type.split(',');
+		this.tags = params.tags.split(',');
+		this.sort = params.sort;
+	},
+	watch:{
+		query: function(){
+			params = new URLSearchParams(this.query);
+			location.href = '#'+params.toString();
+		}
+	},
     computed:{
 		query:function(){
 			this.assetCache=[];
