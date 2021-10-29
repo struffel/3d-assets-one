@@ -1,5 +1,6 @@
 on: push
 name: 🚀 Deploy website on push
+concurrency: deploy
 jobs:
   web-deploy:
     name: 🎉 Deploy
