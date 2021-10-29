@@ -56,6 +56,16 @@ var assetList = new Vue({
 	watch:{
 		query: function(){
 			params = new URLSearchParams(this.query);
+			let keysForDel = [];
+			params.forEach((value, key) => {
+			if (value == '') {
+				keysForDel.push(key);
+			}
+			});
+
+			keysForDel.forEach(key => {
+			params.delete(key);
+			});
 			location.href = '#'+params.toString();
 		}
 	},
