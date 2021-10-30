@@ -12,9 +12,6 @@
 				top:0px;
 				left:0px;
 			}
-			.hidden{
-				opacity: 0%;
-			}
 			.box:hover .thumbnail{
 				transform: scale(1.05);
 			}
@@ -60,12 +57,13 @@
 						<div class="menu">
 							<input class="input mx-1 mb-1" id="tagsBar" size="15" v-model.lazy="tags" @change="resetOffset();" placeholder="Query">
 							<div class="select mx-1 mt-1">
-								<select v-model="sort" >
+								<select v-model="order" >
 									<option selected="selected" value="latest">Latest</option>
 									<option value="oldest">Oldest</option>
 									<option value="random">Random</option>
 								</select>
 							</div>
+							Currently listing {{totalNumberOfAssets}} assets.
 						</div>
 						
 						
@@ -109,7 +107,7 @@
 			</div>
 			
         </div>
-		<div style="min-height:200px;"></div>
+		<div style="min-height:150px;"></div>
         <script src="./src/browse.js"></script>
     </body>
 </html>

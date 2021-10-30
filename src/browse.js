@@ -5,7 +5,7 @@ var assetList = new Vue({
         license:[],
         type:[],
         tags:[],
-		sort:"latest",
+		order:"latest",
         offset:0,
 		perPage:200,
 		assetCache: [],
@@ -47,15 +47,15 @@ var assetList = new Vue({
     },
 	beforeMount(){
 		params = this.getQueryVariables();
-		this.creator = params.creator.split(',');
-		this.license = params.license.split(',');
-		this.type = params.type.split(',');
-		this.tags = params.tags.split(',');
-		this.sort = params.sort;
+		this.creator = (params.creator ?? "").split(',');
+		this.license = (params.license ?? "").split(',');
+		this.type = (params.type ?? "").split(',');
+		this.tags = (params.tags ?? "").split(',');
+		this.order = (params.order ?? "latest");
 	},
 	watch:{
-		query: function(){
-			params = new URLSearchParams(this.query);
+		hashQuery: function(){
+			params = new URLSearchParams(this.hashQuery);
 			let keysForDel = [];
 			params.forEach((value, key) => {
 			if (value == '') {
@@ -70,7 +70,7 @@ var assetList = new Vue({
 		}
 	},
     computed:{
-		query:function(){
+		apiQuery:function(){
 			this.assetCache=[];
 			this.offset = 0;
 			window.scrollTo(0,0);
@@ -79,7 +79,16 @@ var assetList = new Vue({
                 license: this.license.join(','),
                 type: this.type.join(','),
                 tags: this.tags,
-				sort:this.sort
+				sort:this.order
+			};
+		},
+		hashQuery:function(){
+			return {
+				creator: this.creator.join(','),
+                license: this.license.join(','),
+                type: this.type.join(','),
+                tags: this.tags,
+				order:this.order
 			};
 		},
 		queryPosition:function(){
@@ -89,7 +98,7 @@ var assetList = new Vue({
 			}
 		},
         url:function(){
-            params = new URLSearchParams(Object.assign({},this.query,this.queryPosition));
+            params = new URLSearchParams(Object.assign({},this.apiQuery,this.queryPosition));
             return '/api/v1/getAssets?' + params.toString()
         },
         assetData: function(){
