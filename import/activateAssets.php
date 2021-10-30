@@ -11,10 +11,22 @@
 	$query = new AssetQuery();
 	$query->filter->active=false;
 	$query->include->internal=true;
+	$query->include->creator = true;
 	$query->limit = 2;
-	$query->sort="random";
+	$query->sort="oldest";
 	$assetsToActivate = loadAssetsFromDatabase($query);
-	fetchAndUploadThumbnailsToBackblazeB2ForAssetCollection($assetsToActivate);
+	foreach ($assetsToActivate->assets as $a) {
+		$creatorId = $a->creator->creatorId;
+		$creatorClass = "Creator".$creatorId;
+
+		$imageData = fetchRemoteData($a->thumbnailUrl);
+
+		require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorId/main.php";
+		$creator = new $creatorClass();
+		$imageData = $creator->postProcessThumbnail($imageData);
+
+		buildAndUploadThumbnailsToBackblazeB2($a->assetId,$imageData);
+	}
 	activateAssetCollection($assetsToActivate);
 	echoCurrentLog();
 ?>

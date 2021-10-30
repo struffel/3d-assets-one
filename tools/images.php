@@ -37,36 +37,31 @@
 		return $isPresent;
 	}
 
-	function fetchAndUploadThumbnailsToBackblazeB2ForAssetCollection(AssetCollection $assetCollection){
-		foreach ($assetCollection->assets as $a) {
-			fetchAndUploadThumbnailsToBackblazeB2($a);
-		}
-	}
-
-	function fetchAndUploadThumbnailsToBackblazeB2(Asset $asset){
+	function buildAndUploadThumbnailsToBackblazeB2($assetId,$originalImageData){
 		changeLogIndentation(true,__FUNCTION__);
-		$originalImageData = fetchRemoteData($asset->thumbnailUrl);
 		foreach (getThumbnailTemplate() as $t) {
-			$tmpThumbnail = createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1],$asset->assetId);
-			uploadDataToBackblazeB2($tmpThumbnail,getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset->assetId));
+			$tmpThumbnail = createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1],$assetId);
+			uploadDataToBackblazeB2($tmpThumbnail,getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$assetId));
 		}
 		changeLogIndentation(false,__FUNCTION__);
 	}
 
-	function createThumbnailFromImageData($originalImageData,$size,$extension,$backgroundColor,$assetId){
-		changeLogIndentation(true,__FUNCTION__);
-
-		createLog("Building variation: $size/$extension/$backgroundColor/$assetId ");
-
+	function parseImageIntoPng(string $imageBlob):string{
 		// Read image using GD to ensure webP-compatibility and proper alpha handling
-		$tmpImage = imagecreatefromstring($originalImageData);
-		$tmpImage = imagescale($tmpImage,$size);
+		$tmpImage = imagecreatefromstring($imageBlob);
 		imagealphablending($tmpImage, false);
 		imagesavealpha($tmpImage, true);
 		$stream = fopen('php://memory','r+');
 		imagepng($tmpImage,$stream);
 		rewind($stream);
-		$originalImageData = stream_get_contents($stream);
+		return stream_get_contents($stream);
+
+	}
+
+	function createThumbnailFromImageData($originalImageData,$size,$extension,$backgroundColor,$assetId){
+		changeLogIndentation(true,__FUNCTION__);
+		createLog("Building variation: $size/$extension/$backgroundColor/$assetId ");
+		$originalImageData = parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing
 		$tmpImage = new Imagick();
@@ -90,10 +85,17 @@
 			$outputImage = $outputImage->flattenImages();
 		}
 		
-		
-		
 		changeLogIndentation(false,__FUNCTION__);
 		return $outputImage->getImageBlob();
+	}
+
+	function removeUniformBackground($imageBlob,$targetX,$targetY,$fuzz):string{
+		$imageBlob = parseImageIntoPng($imageBlob);
+		$tmpImage = new Imagick();
+		$tmpImage->readImageBlob($imageBlob);
+		$targetColor = $tmpImage->getImagePixelColor($targetX,$targetY);
+		$tmpImage->transparentPaintImage($targetColor,0,$fuzz,false);
+		return $tmpImage->getImageBlob();
 	}
 
 ?>

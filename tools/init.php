@@ -37,6 +37,7 @@
 	abstract class CreatorInterface{
 		abstract function findNewAssets():AssetCollection;
 		abstract function refreshAssetById(int $assetId):Asset;
+		abstract function postProcessThumbnail(string $imageBlob):string;
 	}
 	
 	class AssetCollection{

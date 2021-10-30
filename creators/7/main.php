@@ -1,6 +1,6 @@
 <?php
 
-	// sharetextures
+	// noemotionshdr
 
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
@@ -51,7 +51,10 @@
 			return $tmpCollection;
 		}
 		function refreshAssetById(int $assetId):Asset{
-			return "bar";
+			return new Asset();
+		}
+		function postProcessThumbnail(string $imageBlob): string{
+			return $imageBlob;
 		}
 	}
 ?>

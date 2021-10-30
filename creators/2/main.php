@@ -62,7 +62,10 @@
 			return $tmpCollection;
 		}
 		function refreshAssetById(int $assetId):Asset{
-			return "bar";
+			return new Asset();
+		}
+		function postProcessThumbnail(string $imageBlob): string{
+			return $imageBlob;
 		}
 	}
 ?>
