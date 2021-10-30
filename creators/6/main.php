@@ -72,7 +72,7 @@
 			return new Asset();
 		}
 		function postProcessThumbnail(string $imageBlob): string{
-			return $imageBlob;
+			return removeUniformBackground($imageBlob,2,2,750);
 		}
 	}
 ?>
