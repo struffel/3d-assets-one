@@ -7,9 +7,19 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/images.php';
 
 
-	$creatorId = onlyNumbers($_GET['creatorId']);
+	$refreshConfig = parse_ini_file("importConfig.ini",true);
+	if(isset($_GET['creatorId'])){
+		$creatorId = onlyNumbers($_GET['creatorId']);
+	}else{
+		$randomTargets = explode(",",$refreshConfig['refreshCreator']['randomTargets']);
+		$randomIndex = array_rand($randomTargets);
+		$creatorId = $randomTargets[$randomIndex];
+	}
+		
+	
 	$maxNumberOfAssets = intval($_GET['max']??1);
 	initializeLog("refreshCreator-".$creatorId);
+	createLog("Refreshing Creator: $creatorId");
 	require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorId/main.php";
 
 	$creatorClass = "Creator".$creatorId;
