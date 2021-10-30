@@ -12,7 +12,6 @@
 	$query->filter->active=false;
 	$query->include->internal=true;
 	$query->include->creator = true;
-	$query->filter->creatorId = [5];
 	$query->limit = 2;
 	$query->sort="random";
 	$assetsToActivate = loadAssetsFromDatabase($query);
