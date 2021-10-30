@@ -1,5 +1,6 @@
 {
     "require": {
-        "obregonco/backblaze-b2": "^1.1"
+        "obregonco/backblaze-b2": "^1.1",
+        "guzzlehttp/guzzle": "^7.4"
     }
 }
