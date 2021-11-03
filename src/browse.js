@@ -4,7 +4,7 @@ var assetList = new Vue({
         creator:[],
         license:[],
         type:[],
-        tags:[],
+        tags:"",
 		order:"latest",
         offset:0,
 		perPage:200,
@@ -13,6 +13,13 @@ var assetList = new Vue({
 		currentlyHoveringAsset:null
     },
     methods: {
+		reset:function(){
+			this.creator=[""];
+			this.license=[""];
+			this.type=[""];
+			this.tags="";
+			this.order="latest";
+		},
         nextPage: function(){
             if(this.offset + this.perPage < this.assetData.totalNumberOfAssets){
 				this.offset += this.perPage
@@ -50,7 +57,7 @@ var assetList = new Vue({
 		this.creator = (params.creator ?? "").split(',');
 		this.license = (params.license ?? "").split(',');
 		this.type = (params.type ?? "").split(',');
-		this.tags = (params.tags ?? "").split(',');
+		this.tags = decodeURIComponent(params.tags ?? "");
 		this.order = (params.order ?? "latest");
 	},
 	watch:{
@@ -58,9 +65,9 @@ var assetList = new Vue({
 			params = new URLSearchParams(this.hashQuery);
 			let keysForDel = [];
 			params.forEach((value, key) => {
-			if (value == '') {
-				keysForDel.push(key);
-			}
+				if (value == '') {
+					keysForDel.push(key);
+				}
 			});
 
 			keysForDel.forEach(key => {
@@ -87,7 +94,7 @@ var assetList = new Vue({
 				creator: this.creator.join(','),
                 license: this.license.join(','),
                 type: this.type.join(','),
-                tags: this.tags,
+                tags: encodeURI(this.tags),
 				order:this.order
 			};
 		},
@@ -105,7 +112,6 @@ var assetList = new Vue({
 			var Httpreq = new XMLHttpRequest();
 			Httpreq.open("GET",this.url,false);
 			Httpreq.send(null);
-			console.log(this.url);
 			var result = JSON.parse(Httpreq.responseText).result
 			this.assetCache = this.assetCache.concat(result.assets);
 			this.totalNumberOfAssets = result.totalNumberOfAssets;

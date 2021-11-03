@@ -2,10 +2,14 @@
 <html lang="en">
     <head>
         <!-- development version, includes helpful console warnings -->
-        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+		<?php
+        	//echo '<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>';
+			echo '<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>';
+		?>
         <style>
 			@import url("./style/bulma.min.css");
 			@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
+
 			.thumbnail{
 				transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
 			}
@@ -21,11 +25,21 @@
     <body class="has-navbar-fixed-bottom">
         <div id="assetList" >
 			<header class="is-flex is-justify-content-center">
-				<div class="logo has-text-centered is-size-1 mx-0 my-6">
-					<span style="color:#CB6CE6;">3D</span><span>assets</span><span style="color:#7ED957;">.</span><span>one</span>
+				<div>
+					<div class="logo has-text-centered is-size-1 mx-0 mt-3 mb-1">
+						<span style="color:#CB6CE6;">3D</span><span>assets</span><span style="color:#7ED957;">.</span><span>one</span>
+					</div>
+					<div class="has-text-centered">
+						Currently listing {{totalNumberOfAssets}} free assets for 3D/CG.
+					</div>
+					<!--<div class="has-text-centered my-3 is-size-6">
+						<a class="mx-2" href="https://example.com">Meet the Creators</a>
+						<a class="mx-2" href="https://example.com">About this site</a>
+					</div>-->
 				</div>
+				
 				<nav class="navbar has-background-white-ter box is-bordered is-fixed-bottom">
-					<div class="is-flex is-size-7 navbar-start">
+					<div id="mainForm" class="is-flex is-size-7 navbar-start">
 						<div class="select mx-1 is-multiple">
 							<select multiple title="Crtl-click to select multiple options." size="4"  v-model="creator" >
 								<option selected="selected" value="">Any creator</option>
@@ -55,18 +69,23 @@
 						</div>
 						<div class="menu">
 							<input class="input mx-1 mb-1" id="tagsBar" size="15" v-model.lazy="tags" @change="resetOffset();" placeholder="Query">
-							<div class="select mx-1 mt-1">
-								<select v-model="order" >
-									<option selected="selected" value="latest">Latest</option>
-									<option value="oldest">Oldest</option>
-									<option value="random">Random</option>
-								</select>
+							<div class="is-flex">
+								<div class="select mx-1 mt-1">
+									<select v-model="order" >
+										<option selected="selected" value="latest">Latest</option>
+										<option value="oldest">Oldest</option>
+										<option value="random">Random</option>
+									</select>
+								</div>
+								<button class="button mt-1 ml-1" @click="reset();">
+									<span>
+										<svg class="image is-16x16" viewBox="0 0 24 24">
+											<path fill="currentColor" d="M2 12C2 16.97 6.03 21 11 21C13.39 21 15.68 20.06 17.4 18.4L15.9 16.9C14.63 18.25 12.86 19 11 19C4.76 19 1.64 11.46 6.05 7.05C10.46 2.64 18 5.77 18 12H15L19 16H19.1L23 12H20C20 7.03 15.97 3 11 3C6.03 3 2 7.03 2 12Z" />
+										</svg>
+									</span>
+								</button>
 							</div>
-							Currently listing {{totalNumberOfAssets}} assets.
 						</div>
-						
-						
-						
 					</div>
 
 					<div class="navbar-end is-flex is-hidden-touch is-justify-content-flex-end is-align-content-center" v-if="currentlyHoveringAsset != null">
@@ -81,7 +100,7 @@
 								{{currentlyHoveringAsset.license.licenseName}}
 							</div>
 							<div class="has-text-right">
-								<span class=" is-white mx-1 tag" v-for="tag in currentlyHoveringAsset.tags.slice(0,5)">{{tag}}</span>
+								<span class=" is-white mx-1 tag" v-for="tag in currentlyHoveringAsset.tags.slice(0,4)">{{tag}}</span>
 								<span class=" is-white mx-1 tag" v-if="currentlyHoveringAsset.tags.length > 5">...</span>
 							</div>
 						</div>

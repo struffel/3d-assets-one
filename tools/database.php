@@ -131,6 +131,7 @@
 
 		// Tags
 		if($query->filter->tag){
+			$query->filter->tag = array_map('trim',array_filter($query->filter->tag));
 			foreach ($query->filter->tag as $i) {
 				$sqlParameters []= $i; 
 				$sql .= " AND AssetId IN (SELECT AssetId FROM Tag WHERE TagName = ?) ";
@@ -217,7 +218,7 @@
 			}
 
 			if($query->include->tag){
-				$newAsset->tags = array_map('trim',array_filter(explode(",",$row['AssetTags'])));
+				$newAsset->tags = array_filter(explode(",",$row['AssetTags']));
 			}
 			
 			if($query->include->type){

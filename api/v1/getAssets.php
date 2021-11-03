@@ -12,7 +12,13 @@
 	}
 
 	$query->filter->assetId = array_filter(explode(",",$_GET['asset']??""));
-	$query->filter->tag = array_filter(explode(",",$_GET['tags']??""));
+	if(str_contains($_GET['tags']??"",",")){
+		$query->filter->tag = array_filter(explode(",",$_GET['tags']??""));
+	}else{
+		$query->filter->tag = array_filter(explode(" ",$_GET['tags']??""));
+	}
+		
+
 	$query->filter->licenseSlug = array_filter(explode(",",$_GET['license']??""));
 	$query->filter->typeSlug = array_filter(explode(",",$_GET['type']??""));
 	$query->filter->creatorSlug = array_filter(explode(",",$_GET['creator']??""));
