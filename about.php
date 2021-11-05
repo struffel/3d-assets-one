@@ -20,7 +20,7 @@
 
             <h2>Meet the creators featured on 3Dassets.one:</h2>
             <p>
-                <div v-for="c in creators" class="box is-flex is-align-items-center">
+                <div v-for="c in creators" class="box is-bordered scaleHover scaleHoverSubtle is-flex is-align-items-center">
                     
                     <div class="image is-64x64 mr-5"><img v-bind:src="'https://cdn3.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/'+c.CreatorId+'.png'" v-bind:alt="c.CreatorName + ' logo'"></div>
                     <span>

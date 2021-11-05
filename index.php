@@ -80,9 +80,9 @@
             <main class="assets is-flex is-justify-content-center is-flex-wrap-wrap">
 				<div class="" v-if="totalNumberOfAssets < 1">No results for this query.</div>
             	<div v-for="asset in assetData.assets" :key="asset.assetId" >
-                	<a style="z-index:99;" v-bind:href="asset.url" class="thumbnail box is-clipped is-bordered mx-1 my-1 " v-on:mouseover="setHoveringAssetData(asset.assetId)">
+                	<a style="z-index:99;" v-bind:href="asset.url" class="scaleHover scaleHoverStrong box is-clipped is-bordered mx-1 my-1 " v-on:mouseover="setHoveringAssetData(asset.assetId)">
 						<figure class="image is-128x128">
-							<img class=" thumbnail256" style="opacity: 0%;" onload="this.style.opacity = '100%'" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://cdn3.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
+							<img style="opacity: 0%;" onload="this.style.opacity = '100%'" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://cdn3.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
 						</figure>
 					</a>
               	</div>
