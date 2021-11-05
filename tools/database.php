@@ -1,4 +1,5 @@
 <?php
+	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
 	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 
@@ -20,6 +21,16 @@
 
 	function activateAsset(Asset $asset){
 		runQuery("UPDATE Asset SET AssetActive = '1' WHERE AssetId = ?",[$asset->assetId]);
+	}
+
+	function loadCreatorsFromDatabase(){
+		$sql = "SELECT * FROM Creator;";
+		$sqlResult = runQuery($sql);
+		$output = [];
+		while($row = $sqlResult->fetch_assoc()){
+			$output []= $row;
+		}
+		return $output;
 	}
 
 	function writeAssetToDatabase(Asset $newAsset){
