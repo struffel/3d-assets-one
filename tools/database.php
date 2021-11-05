@@ -24,7 +24,7 @@
 	}
 
 	function loadCreatorsFromDatabase(){
-		$sql = "SELECT * FROM Creator;";
+		$sql = "SELECT CreatorId,CreatorSlug,CreatorName,CreatorDescription,BaseUrl,( SELECT COUNT(AssetId) FROM Asset WHERE Asset.AssetActive = 1 AND Asset.CreatorId = Creator.CreatorId ) as AssetCount FROM Creator;";
 		$sqlResult = runQuery($sql);
 		$output = [];
 		while($row = $sqlResult->fetch_assoc()){

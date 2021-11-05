@@ -30,7 +30,7 @@
                         </p>
                         
                         <p>
-                            <a class="button is-small" v-bind:href="'/#creator='+c.CreatorSlug">Browse collection</a>
+                            <a class="button is-small" v-bind:href="'/#creator='+c.CreatorSlug">Browse all {{c.AssetCount}} assets</a>
                             <a class="button is-small" v-bind:href="c.BaseUrl">Visit creator website</a>
                         </p>
                         
