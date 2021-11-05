@@ -9,7 +9,7 @@
             
             <h2>What is 3Dassets.one?</h2>
             <p>
-                3Dassets.one is a search engine that combines the libraries of many independent CG asset websites like polyhaven, ambientCG and others and allows you to look for the right texture, HDRI or model without having to open half a dozen browser tabs.
+                3Dassets.one is a search engine that combines the libraries of many independent CG asset websites like Poly Haven, ambientCG and others and allows you to look for the right texture, HDRI or model without having to open half a dozen browser tabs.
             </p>
 
             <h2>How does this site work?</h2>
