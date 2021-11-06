@@ -74,6 +74,21 @@ var assetList = new Vue({
 			params.delete(key);
 			});
 			location.href = '#'+params.toString();
+		},
+		creator:function(){
+			if(this.creator.length > 1 && this.creator.some(function(n){return n == false;})){
+				this.creator = this.creator.filter(Boolean);
+			}
+		},
+		type:function(){
+			if(this.type.length > 1 && this.type.some(function(n){return n == false;})){
+				this.type = this.type.filter(Boolean);
+			}
+		},
+		license:function(){
+			if(this.license.length > 1 && this.license.some(function(n){return n == false;})){
+				this.license = this.license.filter(Boolean);
+			}
 		}
 	},
     computed:{
