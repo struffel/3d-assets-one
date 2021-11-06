@@ -33,6 +33,21 @@
 		return $output;
 	}
 
+	function loadUrlFromDatabase($assetId){
+		$sql = "SELECT AssetUrl FROM Asset WHERE AssetId = ? LIMIT 1;";
+		$sqlParameters = [intval($assetId)];
+		$sqlResult = runQuery($sql,$sqlParameters);
+		
+		$row = $sqlResult->fetch_assoc();
+		return $row['AssetUrl'];
+	}
+
+	function countAssetClick($assetId){
+		$sql = "INSERT INTO Click(AssetId,Day,Count) VALUES (?,NOW(),1) ON DUPLICATE KEY UPDATE Count = Count+1;";
+		$sqlParameters = [intval($assetId)];
+		$sqlResult = runQuery($sql,$sqlParameters);
+	}
+
 	function writeAssetToDatabase(Asset $newAsset){
 		changeLogIndentation(true,__FUNCTION__);
 		createLog("Inserting Asset: ".$newAsset->url);

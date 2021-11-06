@@ -5,7 +5,7 @@ var assetList = new Vue({
         license:[],
         type:[],
         tags:"",
-		order:"latest",
+		order:"",
         offset:0,
 		perPage:200,
 		assetCache: [],
