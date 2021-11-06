@@ -74,7 +74,7 @@
 			</nav>
 			
 			<div class="has-text-centered m-3">
-				Showing {{totalNumberOfAssets}} assets.
+				<strong>Showing {{totalNumberOfAssets}} assets.</strong>
 			</div>
 
             <main class="assets is-flex is-justify-content-center is-flex-wrap-wrap">
