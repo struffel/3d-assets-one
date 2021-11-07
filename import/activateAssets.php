@@ -13,7 +13,7 @@
 	$query->include->internal=true;
 	$query->include->creator = true;
 	$query->limit = 2;
-	$query->sort="random";
+	$query->sort="latest";
 	$assetsToActivate = loadAssetsFromDatabase($query);
 	foreach ($assetsToActivate->assets as $a) {
 		$creatorId = $a->creator->creatorId;
