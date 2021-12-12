@@ -148,7 +148,7 @@
 		if($query->filter->active === NULL){
 			$sql .= " WHERE TRUE ";
 		}else if ($query->filter->active) {
-			$sql .= " WHERE AssetActive != 0 ";
+			$sql .= " WHERE AssetActive = 1 ";
 		}else{
 			$sql .= " WHERE AssetActive = 0 ";
 		}
