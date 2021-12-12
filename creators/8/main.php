@@ -49,8 +49,7 @@
                     $tmpAsset->license = new License();
                     $tmpAsset->license->licenseId = 1;
                     $tmpAsset->thumbnailUrl = $config['imageList'][$countIteration];
-                    createLog(var_export($tmpAsset,true));
-                    //$tmpCollection->assets []= $tmpAsset;
+                    $tmpCollection->assets []= $tmpAsset;
 
                     $countProcessed++;
                 }
@@ -69,7 +68,7 @@
 			return new Asset();
 		}
 		function postProcessThumbnail(string $imageBlob): string{
-			return removeUniformBackground($imageBlob,2,2,125);
+			return removeUniformBackground($imageBlob,10,10,1250);
 		}
 	}
 ?>
