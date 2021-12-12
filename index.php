@@ -17,6 +17,7 @@
 							<option value="3dtextures">3D Textures</option>
 							<option value="texturecan">TextureCan</option>
 							<option value="noemotionhdrs">NoEmotion HDRs</option>
+							<option value="benianus3d">Benianus 3D</option>
 						</select>
 					</div>
 					<div class="select mx-1 is-multiple">
