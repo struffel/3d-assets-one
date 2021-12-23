@@ -4,8 +4,7 @@
 
 	function readMetatagsFromHtmlString($htmlString){
 		$output = [];
-    	$document = new DOMDocument();
-    	@$document->loadHTML($htmlString);
+    	$document = domObjectFromHtmlString($htmlString);
 
     	$metaTags = $document->getElementsByTagName('meta');
     	foreach ($metaTags as $tag) {
@@ -16,6 +15,12 @@
 			}
 		}
 		return $output;
+	}
+
+	function domObjectFromHtmlString($htmlString){
+		$document = new DOMDocument();
+    	@$document->loadHTML($htmlString);
+		return $document;
 	}
 
 ?>
