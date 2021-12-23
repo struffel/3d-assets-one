@@ -23,4 +23,11 @@
 		return $document;
 	}
 
+	function getElementsByClassName($dom,$className,$startAtNode = NULL,){
+		// https://stackoverflow.com/a/6366390
+		$finder = new DomXPath($dom);
+		$nodes = $finder->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' $className ')]",$startAtNode);
+		return $nodes;
+	}
+
 ?>
