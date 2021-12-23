@@ -4,8 +4,7 @@
 
 	function readMetatagsFromHtmlString($htmlString){
 		$output = [];
-    	$document = new DOMDocument();
-    	@$document->loadHTML($htmlString);
+    	$document = domObjectFromHtmlString($htmlString);
 
     	$metaTags = $document->getElementsByTagName('meta');
     	foreach ($metaTags as $tag) {
@@ -16,6 +15,19 @@
 			}
 		}
 		return $output;
+	}
+
+	function domObjectFromHtmlString($htmlString){
+		$document = new DOMDocument();
+    	@$document->loadHTML($htmlString);
+		return $document;
+	}
+
+	function getElementsByClassName($dom,$className,$startAtNode = NULL,){
+		// https://stackoverflow.com/a/6366390
+		$finder = new DomXPath($dom);
+		$nodes = $finder->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' $className ')]",$startAtNode);
+		return $nodes;
 	}
 
 ?>

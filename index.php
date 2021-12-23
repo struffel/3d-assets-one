@@ -18,6 +18,7 @@
 							<option value="texturecan">TextureCan</option>
 							<option value="noemotionhdrs">NoEmotion HDRs</option>
 							<option value="benianus3d">Benianus 3D</option>
+							<option value="chocofur">Chocofur (Freebies)</option>
 						</select>
 					</div>
 					<div class="select mx-1 is-multiple">
@@ -26,6 +27,7 @@
 							<option value="hdri">HDRI</option>
 							<option value="pbr-material">PBR Material</option>
 							<option value="3d-model">3D Model</option>
+							<option value="sbsar">SBSAR</option>
 						</select>
 					</div>
 					<div class="select mx-1 is-multiple">
