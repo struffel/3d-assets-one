@@ -66,7 +66,7 @@
 							</div>
 						</div>
 						<div class="has-text-right is-size-7 mx-2 mb-2">
-							{{currentlyHoveringAsset.license.licenseName}}
+							via <strong>{{currentlyHoveringAsset.creator.creatorName}}</strong> ({{currentlyHoveringAsset.license.licenseName}})
 						</div>
 						<div class="has-text-right">
 							<span class=" is-white mx-1 tag" v-for="tag in currentlyHoveringAsset.tags.slice(0,4)">{{tag}}</span>
