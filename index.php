@@ -19,6 +19,7 @@
 							<option value="noemotionhdrs">NoEmotion HDRs</option>
 							<option value="benianus3d">Benianus 3D</option>
 							<option value="chocofur">Chocofur (Freebies)</option>
+							<option value="gpuopen-matlib">AMD GPUOpen MaterialX Library</option>
 						</select>
 					</div>
 					<div class="select mx-1 is-multiple">
@@ -35,6 +36,7 @@
 							<option selected="selected" value="">Any license</option>
 							<option value="cc-0">Creative Commons CC0</option>
 							<option value="cc-by-nd">Creative Commons BY ND</option>
+							<option value="apache-2-0">Apache 2.0 License</option>
 						</select>
 					</div>
 					<div class="menu">
