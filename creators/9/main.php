@@ -39,8 +39,8 @@
 					$name = trim($name);
 
 					// decide whether model or shader/material
-					$isMaterial = preg_match('/material(s)?|shader(s)?/',$link);
-					$isBundle = preg_match('/bundle|pack/',$link);
+					$isMaterial = preg_match($config['main']['isMaterialRegex'],$link);
+					$isBundle = preg_match($config['main']['isBundleRegex'],$link);
 
 					if(!$isBundle && !in_array($link,$existingUrls)){
 						$tmpAsset = new Asset();
@@ -67,26 +67,6 @@
 				}
 				$pageCounter++;
 			}while(sizeof($dom->getElementsByTagName('button')) == 1);
-			
-			
-			/*
-			if(!in_array($url,$existingUrls)){
-
-				$pageContent = fetchRemoteData($url);
-				$pageMetaTags = readMetatagsFromHtmlString($pageContent);
-
-				
-
-				$countProcessed++;
-			}
-
-			if($countProcessed >= $maxAssets){
-				break;
-			}
-			$countIteration++;
-            
-			*/
-			
 
 			return $tmpCollection;
 		}
