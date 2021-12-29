@@ -37,6 +37,62 @@
                 </ul>
             </p>
 
+			<h2>Can I use the 3dassets.one-API for something else?</h2>
+			<p>
+				<strong>Generally, yes.</strong> I'll try to keep it as stable as possible, but I can't give any guarantees.
+			</p>
+			<p>
+				<a href="/api/v1/getCreators">/api/v1/getCreators</a> lists all creators. It does not accept any filters.
+			</p>
+			<p>
+				<a href="/api/v1/getAssets">/api/v1/getAssets</a> lists assets. You can apply the following filters:
+				<ul>
+					<li><strong>?asset=id,id,...</strong> loads information about one or several specific assets.</li>
+					<li><strong>?tags=tag,tag,...</strong> loads information about all assets with <i>all</i> the given tags. Spaces in the input string will also be interpreted as commas.</li>
+					<li><strong>?asset=licenseSlug,licenseSlug,...</strong> loads information about all assets that have one of the licenses listed. License slugs are: <pre>cc-0
+cc-by
+cc-by-sa
+cc-by-nc
+cc-by-nd
+cc-by-nc-sa
+cc-by-nc-nd
+apache-2-0
+</pre></li>
+					<li><strong>?type=typeSlug,typeSlug,...</strong> loads information about all assets that have one of the types listed. Type slugs are: <pre>
+other
+pbr-material
+3d-model
+sbsar
+hdri
+brush
+</pre></li>
+					<li><strong>?creator=creatorSlug,creatorSlug,...</strong> loads information about all assets that were made by the creators listed. Creator slugs are: <pre>
+ambientcg
+polyhaven
+sharetextures
+3dtextures
+cgbookcase
+texturecan
+noemotionhdrs
+benianus3d
+chocofur
+gpuopen-matlib
+</pre></li>
+					<li><strong>?sort=order</strong> defines the sorting order. Possible Options are: <pre>
+latest
+oldest
+random
+</pre></li>
+					<li><strong>?limit=X&offset=Y</strong> allows for pagination. The default limit is 100 items.</li>
+					<li><strong>?include=attribute,attribute,...</strong> defines which attributes are included in the JSON output. Only assetId, assetName, url and date are included by default. Possible other attributes are:<pre>
+tag
+creator
+license
+type
+</pre>
+				</ul>
+			</p>
+
             <h2>Who is building this website?</h2>
             <p>
                 3Dassets.one is a side project to ambientCG.com. Check the <a href="https://ambientCG.com/legal">Imprint</a> for details.
