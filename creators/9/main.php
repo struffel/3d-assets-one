@@ -40,9 +40,11 @@
 
 					// decide whether model or shader/material
 					$isMaterial = preg_match($config['main']['isMaterialRegex'],$link);
-					$isBundle = preg_match($config['main']['isBundleRegex'],$link);
 
-					if(!$isBundle && !in_array($link,$existingUrls)){
+					// decide whether asset should be skipped
+					$isSkipped = preg_match($config['main']['isSkippedRegex'],$link);
+
+					if(!$isSkipped && !in_array($link,$existingUrls)){
 						$tmpAsset = new Asset();
 						$tmpAsset->assetName = $name;
 						$tmpAsset->url = $link;
@@ -62,8 +64,6 @@
 						$tmpAsset->thumbnailUrl = $image;
 						$tmpCollection->assets []= $tmpAsset;
 					}
-
-					//var_dump([$link,$image,$name,$isMaterial,$isBundle]);
 				}
 				$pageCounter++;
 			}while(sizeof($dom->getElementsByTagName('button')) == 1);
