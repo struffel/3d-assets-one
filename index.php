@@ -20,6 +20,7 @@
 							<option value="benianus3d">Benianus 3D</option>
 							<option value="chocofur">Chocofur (Freebies)</option>
 							<option value="gpuopen-matlib">AMD GPUOpen MaterialX Library</option>
+							<option value="rawcatalog">Raw Catalog</option>
 						</select>
 					</div>
 					<div class="select mx-1 is-multiple">
