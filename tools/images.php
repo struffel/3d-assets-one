@@ -94,7 +94,7 @@
 		$tmpImage = new Imagick();
 		$tmpImage->readImageBlob($imageBlob);
 		$targetColor = $tmpImage->getImagePixelColor($targetX,$targetY);
-		$tmpImage->transparentPaintImage($targetColor,0,$fuzz,false);
+		$tmpImage->transparentPaintImage($targetColor,0,Imagick::getQuantum() * $fuzz,false);
 		return $tmpImage->getImageBlob();
 	}
 
