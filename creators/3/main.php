@@ -50,7 +50,7 @@
 					$tmpAsset->type = new Type();
 					$tmpAsset->type->typeId = $config['types'][$metaTags['tex1:type']];
 					$tmpAsset->license = new License();
-					$tmpAsset->license->licenseId = $config['licenses'][$metaTags['tex1:license']];
+					$tmpAsset->license->licenseId = $config['licenses'][strtolower($metaTags['tex1:license'])];
 					$tmpAsset->creator = new CreatorData();
 					$tmpAsset->creator->creatorId = 3;
 
@@ -74,7 +74,7 @@
 			return new Asset();
 		}
 		function postProcessThumbnail(string $imageBlob): string{
-			return removeUniformBackground($imageBlob,2,2,125);
+			return removeUniformBackground($imageBlob,5,5,250);
 		}
 	}
 ?>
