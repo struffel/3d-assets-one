@@ -77,6 +77,8 @@ noemotionhdrs
 benianus3d
 chocofur
 gpuopen-matlib
+hdri-workshop
+pbrmaterials-com
 </pre></li>
 					<li><strong>?sort=order</strong> defines the sorting order. Possible Options are: <pre>
 latest
