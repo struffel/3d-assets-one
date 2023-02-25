@@ -22,6 +22,7 @@
 							<option value="gpuopen-matlib">AMD GPUOpen MaterialX Library</option>
 							<option value="rawcatalog">Raw Catalog</option>
 							<option value="hdri-workshop">hdri workshop</option>
+							<option value="pbrmaterials-com">PBRMaterials.com</option>
 						</select>
 					</div>
 					<div class="select mx-1 is-multiple">
