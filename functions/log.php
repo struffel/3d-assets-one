@@ -1,6 +1,4 @@
 <?php
-    require_once $_SERVER['DOCUMENT_ROOT'].'/tools/files.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 
     function createLog($message,$logType = ""){
         if(isset($GLOBALS['LOGNAME'])){

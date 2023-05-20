@@ -1,7 +1,4 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
-
 	function fetchRemoteData($url){
 		changeLogIndentation(true,__FUNCTION__);
 		createLog("Fetching URL: $url");

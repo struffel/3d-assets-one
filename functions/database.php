@@ -1,7 +1,4 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 
 	function WriteAssetCollectionToDatabase(AssetCollection $newAssetCollection){
 		changeLogIndentation(true,__FUNCTION__);

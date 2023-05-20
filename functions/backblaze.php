@@ -1,5 +1,4 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
 use obregonco\B2\Client;
 use obregonco\B2\Bucket;
 

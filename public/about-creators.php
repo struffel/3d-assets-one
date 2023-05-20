@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <?php
-        include $_SERVER['DOCUMENT_ROOT']."/components/head.php";
+        include $_SERVER['DOCUMENT_ROOT']."/../components/head.php";
     ?>
     <body>
-        <?php include $_SERVER['DOCUMENT_ROOT']."/components/header.php";?>
+        <?php include $_SERVER['DOCUMENT_ROOT']."/../components/header.php";?>
         <main id="aboutText" class="content container">
             
             <div v-for="c in creators" class="box is-bordered is-flex is-align-items-center">
@@ -26,6 +26,6 @@
             
 
         </main>
-        <script src="./src/about-creators.js"></script>
+        <script src="./js/about-creators.js"></script>
     </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <?php
-        include $_SERVER['DOCUMENT_ROOT']."/components/head.php";
+        include $_SERVER['DOCUMENT_ROOT']."/../components/head.php";
     ?>
     <body>
-        <?php include $_SERVER['DOCUMENT_ROOT']."/components/header.php";?>
+        <?php include $_SERVER['DOCUMENT_ROOT']."/../components/header.php";?>
         <main id="aboutText" class="content container">
             
             <h2>What is 3Dassets.one?</h2>

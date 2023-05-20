@@ -1,8 +1,4 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/backblaze.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/fetch.php';
 
 	function getThumbnailTemplate(){
 		$output = [];

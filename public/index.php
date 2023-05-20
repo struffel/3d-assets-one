@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-	<?php include $_SERVER['DOCUMENT_ROOT']."/components/head.php";?>
+	<?php include $_SERVER['DOCUMENT_ROOT']."/../components/head.php";?>
     <body class="has-navbar-fixed-bottom">
         <div id="assetList" >
-			<?php include $_SERVER['DOCUMENT_ROOT']."/components/header.php";?>
+			<?php include $_SERVER['DOCUMENT_ROOT']."/../components/header.php";?>
 
 			<nav class="navbar p-3 has-shadow has-background-white-ter is-bordered is-fixed-bottom">
 				<div id="mainForm" class="is-flex is-size-7 navbar-start">
@@ -101,6 +101,6 @@
 			
         </div>
 		<div style="min-height:150px;"></div>
-        <script src="./src/browse.js"></script>
+        <script src="./js/browse.js"></script>
     </body>
 </html>
