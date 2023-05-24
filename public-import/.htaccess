@@ -1,4 +1,4 @@
 AuthType Basic
-AuthName "Password Protected Area"
-AuthUserFile /var/www/vhosts/upegruei.host243.checkdomain.de/_logins/.htpasswd
+AuthName "Import Area"
+AuthUserFile /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/.htpasswd
 Require valid-user

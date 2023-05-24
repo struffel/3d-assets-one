@@ -2,11 +2,7 @@
 
 	// benianus 3d
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/html.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/images.php';
-    require_once $_SERVER['DOCUMENT_ROOT'].'/tools/fetch.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
 
 	class Creator12 extends CreatorInterface{
 		function findNewAssets():AssetCollection{
@@ -69,6 +65,9 @@
 		}
 		function postProcessThumbnail(string $imageBlob): string{
 			return $imageBlob;
+		}
+		function generateThumbnailFetchingHeaders(): array{
+			return [];
 		}
 	}
 ?>

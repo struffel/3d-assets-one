@@ -1,11 +1,12 @@
 <?php
-	function fetchRemoteData($url){
+	function fetchRemoteData(string $url, array $headers = []){
 		changeLogIndentation(true,__FUNCTION__);
 		createLog("Fetching URL: $url");
 
 		$client = new GuzzleHttp\Client();
 		try{
-			$result = $client->request('GET',$url,[]);
+			$options = ['headers' => $headers]; 				// GPT: Add headers to the request options
+			$result = $client->request('GET',$url,$options);
 			$content = $result->getBody();
 			createLog("Request successful!");
 		}catch(GuzzleHttp\Exception\ClientException $e){

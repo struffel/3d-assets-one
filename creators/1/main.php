@@ -2,9 +2,7 @@
 
 	// ambientCG
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
 
 
 	class Creator1 extends CreatorInterface{
@@ -79,6 +77,9 @@
 		}
 		function postProcessThumbnail(string $imageBlob): string{
 			return $imageBlob;
+		}
+		function generateThumbnailFetchingHeaders(): array{
+			return [];
 		}
 	}
 ?>

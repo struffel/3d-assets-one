@@ -1,5 +1,5 @@
 <?php 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
 
 	$query = new AssetQuery();
 
