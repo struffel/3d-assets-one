@@ -1,7 +1,4 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
 
 	function WriteAssetCollectionToDatabase(AssetCollection $newAssetCollection){
 		changeLogIndentation(true,__FUNCTION__);
@@ -287,20 +284,21 @@
 		changeLogIndentation(true,__FUNCTION__);
 		createLog("Initializing DB Connection");
 		
-		$loginData = parse_ini_file($_SERVER['DOCUMENT_ROOT'].'/../_logins/mysql.ini');
 
 		// Create connection
 		if(!isset($GLOBALS['MYSQL'])){
-			$GLOBALS['MYSQL'] = new mysqli($loginData['servername'], $loginData['username'], $loginData['password']);
-			createLog("Initialized DB connection to: ".$loginData['servername']);
+			$GLOBALS['MYSQL'] = new mysqli(getenv("3D1_DB_SERVER"), getenv("3D1_DB_USERNAME"), getenv("3D1_DB_PASSWORD"));
+			createLog("Initialized DB connection to: ".getenv("3D1_DB_SERVER"));
 		}
 		
 		// Check connection
 		if ($GLOBALS['MYSQL']->connect_error) {
 			createLog("Connection failed: " . $GLOBALS['MYSQL']->connect_error,"SQL-ERROR");
 		}
-		$GLOBALS['MYSQL']->query("use ".$loginData['dbname']);
-		createLog("Selected DB: ".$loginData['dbname']);
+
+		$query = "use ".getenv("3D1_DB_NAME").";";
+		$GLOBALS['MYSQL']->query($query);
+		createLog("Selected DB: ".getenv("3D1_DB_NAME"));
 		changeLogIndentation(false,__FUNCTION__);
 	}
 

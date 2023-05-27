@@ -2,9 +2,7 @@
 
 	// pbrmaterials.com
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/json.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
 
 	class Creator13 extends CreatorInterface{
 		function findNewAssets():AssetCollection{
@@ -117,6 +115,11 @@
 		}
         function postProcessThumbnail(string $imageBlob): string{
 			return $imageBlob;
+		}
+		function generateThumbnailFetchingHeaders(): array{
+			return [
+				"referer" => "https://pbrmaterials.com/"
+			];
 		}
 	}
 ?>

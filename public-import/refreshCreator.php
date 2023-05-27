@@ -1,10 +1,5 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/strings.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/json.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/images.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
 
 
 	$refreshConfig = parse_ini_file("importConfig.ini",true);
@@ -20,7 +15,7 @@
 	$maxNumberOfAssets = intval($_GET['max']??1);
 	initializeLog("refreshCreator-".$creatorId);
 	createLog("Refreshing Creator: $creatorId");
-	require_once $_SERVER['DOCUMENT_ROOT']."/creators/$creatorId/main.php";
+	require_once $_SERVER['DOCUMENT_ROOT']."/../creators/$creatorId/main.php";
 
 	$creatorClass = "Creator".$creatorId;
 	$creator = new $creatorClass();

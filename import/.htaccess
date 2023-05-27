@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName "Password Protected Area"
-AuthUserFile /var/www/vhosts/upegruei.host243.checkdomain.de/_logins/.htpasswd
-Require valid-user

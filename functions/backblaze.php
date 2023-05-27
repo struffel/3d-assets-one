@@ -1,5 +1,4 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
 use obregonco\B2\Client;
 use obregonco\B2\Bucket;
 
@@ -7,13 +6,12 @@ function initializeBackblazeB2(){
 	changeLogIndentation(true,__FUNCTION__);
 	createLog("Initializing connection to Backblaze B2");
 	if(!isset($GLOBALS['B2'])){
-		$loginData = parse_ini_file($_SERVER['DOCUMENT_ROOT'].'/../_logins/backblazeB2Images.ini');
-		$GLOBALS['B2'] = new Client($loginData['accountId'], [
-			'keyId' => $loginData['keyId'], // optional if you want to use master key (account Id)
-			'applicationKey' => $loginData['applicationKey'],
+		$GLOBALS['B2'] = new Client(getenv("3D1_B2_ACCOUNTID"), [
+			'keyId' => getenv("3D1_B2_KEYID"), // optional if you want to use master key (account Id)
+			'applicationKey' => getenv("3D1_B2_APPKEY"),
 		]);
 		$GLOBALS['B2']->version = 2; // By default will use version 1
-		$GLOBALS['B2BUCKET'] = $loginData['bucketName'];
+		$GLOBALS['B2BUCKET'] = getenv("3D1_B2_BUCKETNAME");
 	}
 	changeLogIndentation(false,__FUNCTION__);
 }

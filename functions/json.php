@@ -1,9 +1,5 @@
 <?php
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/fetch.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/log.php';
-
 	function outputJson($result,array $debugArray = NULL,int $statusCode = 200,string $statusComment = NULL){
 		$output = array();
 		$output['result']=$result;

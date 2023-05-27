@@ -1,6 +1,9 @@
 <?php
 	header('Content-type: application/json');
-	require_once $_SERVER['DOCUMENT_ROOT'].'/vendor/autoload.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../vendor/autoload.php';
+	foreach (glob($_SERVER['DOCUMENT_ROOT'] . '/../functions/*.php') as $file) {
+		require_once $file;
+	}
 
 	class Asset{
 		public ?string $assetId;
@@ -38,6 +41,7 @@
 		abstract function findNewAssets():AssetCollection;
 		abstract function refreshAssetById(int $assetId):Asset;
 		abstract function postProcessThumbnail(string $imageBlob):string;
+		abstract function generateThumbnailFetchingHeaders():array;
 	}
 	
 	class AssetCollection{

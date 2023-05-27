@@ -5,7 +5,7 @@
         echo '<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>';
     ?>
     <style>
-        @import url("./style/bulma.min.css");
+        @import url("./css/bulma.min.css");
         @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
 
         .scaleHover{

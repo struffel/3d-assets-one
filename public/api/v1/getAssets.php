@@ -1,8 +1,6 @@
 <?php 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/init.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/backblaze.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/json.php';
-	require_once $_SERVER['DOCUMENT_ROOT'].'/tools/database.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
+
 	$query = new AssetQuery();
 
 	foreach (explode(",",$_GET['include']??"") as $i) {
