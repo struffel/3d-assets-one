@@ -17,7 +17,8 @@ jobs:
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.1.0
       with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_LOGIN }}
+        server: ${{ vars.FTP_SERVER }}
+        username: ${{ vars.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: 3dassets.one/
+        server-dir: /
+        dry-run: true
