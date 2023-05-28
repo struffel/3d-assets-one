@@ -1,6 +1,6 @@
 <?php
 
-	// benianus 3d
+	// hdri workshop
 
 	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
 
@@ -18,24 +18,17 @@
 				$existingUrls []= $asset->url;
 			}
 
-            // Get URL list
-
+			// Load configuration
 			$config = parse_ini_file("config.ini",true);
 
+			$apiOutput = getJsonFromUrl($config['main']['apiUrl']);
+
 			$tmpCollection = new AssetCollection();
-
-            $maxAssets = 5;
-			$countProcessed = 0;
-            $countIteration = 0;
-			foreach ($config['urlList'] as $url) {
-                if(!in_array($url,$existingUrls)){
-
-                    $pageContent = fetchRemoteData($url);
-                    $pageMetaTags = readMetatagsFromHtmlString($pageContent);
-
-                    $tmpAsset = new Asset();
-                    $tmpAsset->assetName = $pageMetaTags['og:title'];
-                    $tmpAsset->url = $url;
+			foreach($apiOutput as $asset){
+				if(!in_array($asset['fullUrl'],$existingUrls)){
+					$tmpAsset = new Asset();
+                    $tmpAsset->assetName = $asset['name'];
+                    $tmpAsset->url = $asset['fullUrl'];
                     $tmpAsset->date = date("Y-m-d");
                     $tmpAsset->tags = explode(" ",$tmpAsset->assetName);
                     $tmpAsset->type = new Type();
@@ -44,19 +37,10 @@
                     $tmpAsset->creator->creatorId = 12;
                     $tmpAsset->license = new License();
                     $tmpAsset->license->licenseId = 0;
-                    $tmpAsset->thumbnailUrl = $config['imageList'][$countIteration];
+                    $tmpAsset->thumbnailUrl = $asset['fullUrlThumb'];
                     $tmpCollection->assets []= $tmpAsset;
-
-                    $countProcessed++;
-                }
-
-                if($countProcessed >= $maxAssets){
-                    break;
-                }
-                $countIteration++;
-            }
-			
-			
+				}
+			}
 
 			return $tmpCollection;
 		}
