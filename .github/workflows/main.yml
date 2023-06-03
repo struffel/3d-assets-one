@@ -13,6 +13,8 @@ jobs:
       
     - name: Run PHP Composer
       uses: php-actions/composer@v6
+      with:
+        args: -d ./src
     
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.1.0
@@ -20,4 +22,5 @@ jobs:
         server: ${{ vars.FTP_SERVER }}
         username: ${{ vars.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./src/
         server-dir: /
