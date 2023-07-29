@@ -24,3 +24,9 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./src/
         server-dir: /
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          .htaccess
+          src/.htaccess

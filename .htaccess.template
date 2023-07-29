@@ -9,3 +9,11 @@ SetEnv	3D1_B2_KEYNAME
 SetEnv	3D1_B2_APPKEY		
 SetEnv	3D1_B2_BUCKETID		
 SetEnv	3D1_B2_BUCKETNAME	
+
+# Require login
+<If true >
+	AuthType Basic
+	AuthName "Import Area"
+	AuthUserFile /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/.htpasswd
+	Require valid-user
+</If>

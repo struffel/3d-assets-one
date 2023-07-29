@@ -1,5 +1,7 @@
-## GoodSync
+# GoodSync
 _gsdata_/*
+src/_gsdata_/*
 
 # Composer
 src/vendor/
+
