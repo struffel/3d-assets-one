@@ -97,7 +97,7 @@ type
 
             <h2>Who is building this website?</h2>
             <p>
-                3Dassets.one is a side project to ambientCG.com. Check the <a href="https://ambientCG.com/legal">Imprint</a> for details.
+                3Dassets.one is a side project to ambientCG.com. Check the <a href="https://docs.ambientCG.com/legal">Imprint</a> for details.
             </p>
 
         </main>
