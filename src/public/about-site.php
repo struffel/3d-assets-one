@@ -99,6 +99,9 @@ type
             <p>
                 3Dassets.one is a side project to ambientCG.com. Check the <a href="https://docs.ambientCG.com/legal">Imprint</a> for details.
             </p>
+			<p>
+
+			</p>
 
         </main>
     </body>
