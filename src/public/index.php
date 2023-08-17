@@ -67,7 +67,7 @@
 						<div class=" is-flex is-align-items-center is-justify-content-flex-end">
 							<span class="is-size-5">{{currentlyHoveringAsset.assetName}}</span>
 							<div class="image is-24x24 m-2">
-								<img v-bind:alt="currentlyHoveringAsset.creator.CreatorName" v-bind:title="currentlyHoveringAsset.creator.CreatorName" loading="lazy" width="32" height="32" v-bind:src="'https://cdn3.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/' + currentlyHoveringAsset.creator.creatorId + '.png'">
+								<img v-bind:alt="currentlyHoveringAsset.creator.CreatorName" v-bind:title="currentlyHoveringAsset.creator.CreatorName" loading="lazy" width="32" height="32" v-bind:src="'https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/' + currentlyHoveringAsset.creator.creatorId + '.png'">
 							</div>
 						</div>
 						<div class="has-text-right is-size-7 mx-2 mb-2">
@@ -90,7 +90,7 @@
             	<div v-for="asset in assetData.assets" :key="asset.assetId" >
                 	<a style="z-index:99;" v-bind:href="'/go?id='+asset.assetId" class="scaleHover scaleHoverStrong box is-clipped is-bordered mx-1 my-1 " v-on:mouseover="setHoveringAssetData(asset.assetId)">
 						<figure class="image is-128x128">
-							<img style="opacity: 0%;" onload="this.style.opacity = '100%'" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://cdn3.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
+							<img style="opacity: 0%;" onload="this.style.opacity = '100%'" v-bind:alt="asset.assetName" width="256" height="256" loading="lazy" v-bind:src="'https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/' + asset.assetId + '.jpg'">
 						</figure>
 					</a>
               	</div>

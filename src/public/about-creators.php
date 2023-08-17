@@ -9,7 +9,7 @@
             
             <div v-for="c in creators" class="box is-bordered is-flex is-align-items-center">
                 
-                <div class="image is-64x64 mr-5"><img v-bind:src="'https://cdn3.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/'+c.CreatorId+'.png'" v-bind:alt="c.CreatorName + ' logo'"></div>
+                <div class="image is-64x64 mr-5"><img v-bind:src="'https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/'+c.CreatorId+'.png'" v-bind:alt="c.CreatorName + ' logo'"></div>
                 <span>
                     <p>
                         <strong>{{c.CreatorName}}</strong><br>
