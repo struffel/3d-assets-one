@@ -3,11 +3,11 @@
 
     $assetId = intval($_GET['id']??"0");
 
-    $url = loadUrlFromDatabase($assetId);
+    $url = DatabaseLogic::getUrlFromAssetId($assetId);
     if($url){
         header("Location: $url");
     }else{
         die("3Dassets.one\nURL could not be resolved.");
     }
-    countAssetClick($assetId);
+    DatabaseLogic::addAssetClickByAssetId($assetId);
 ?>

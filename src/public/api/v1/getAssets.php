@@ -24,6 +24,6 @@
 	$query->limit = intval($_GET['limit']??"100");
 	$query->offset = intval($_GET['offset']??"0");
 
-	$output = loadAssetsFromDatabase($query);
-	outputJson($output);
+	$output = DatabaseLogic::getAssets($query);
+	JsonLogic::output($output);
 ?>
