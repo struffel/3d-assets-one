@@ -2,68 +2,82 @@
 use obregonco\B2\Client;
 use obregonco\B2\Bucket;
 
-function initializeBackblazeB2(){
-	changeLogIndentation(true,__FUNCTION__);
-	createLog("Initializing connection to Backblaze B2");
-	if(!isset($GLOBALS['B2'])){
-		$GLOBALS['B2'] = new Client(getenv("3D1_B2_ACCOUNTID"), [
-			'keyId' => getenv("3D1_B2_KEYID"), // optional if you want to use master key (account Id)
-			'applicationKey' => getenv("3D1_B2_APPKEY"),
-		]);
-		$GLOBALS['B2']->version = 2; // By default will use version 1
-		$GLOBALS['B2BUCKET'] = getenv("3D1_B2_BUCKETNAME");
-	}
-	changeLogIndentation(false,__FUNCTION__);
-}
+class BackblazeB2Logic {
 
-function uploadDataToBackblazeB2($fileData,$remotePath){
-	changeLogIndentation(true,__FUNCTION__);
-	createLog("Uploading data to '$remotePath'");
-	// Upload a file to a bucket. Returns a File object.
-	
-	if(!isset($GLOBALS['B2'])){
-		initializeBackblazeB2();
-	}
-	$successfulUpload = false;
-	while(!$successfulUpload){
-		try {
-			$file = $GLOBALS['B2']->upload([
-				'BucketName' => $GLOBALS['B2BUCKET'],
-				'FileName' => $remotePath,
-				'Body' => $fileData
-		
-				// The file content can also be provided via a resource.
-				// 'Body' => fopen('/path/to/input', 'r')
+	private static bool $initialized = false;
+
+	private static Client $client;
+
+	private static string $bucketName;
+
+	private static int $version;
+
+	public static function initialize(){
+		LogLogic::stepIn(__FUNCTION__);
+		if(!BackblazeB2Logic::$initialized){
+			LogLogic::write("Initializing connection to Backblaze B2");
+
+			BackblazeB2Logic::$client = new Client(getenv("3D1_B2_ACCOUNTID"), [
+				'keyId' => getenv("3D1_B2_KEYID"), // optional if you want to use master key (account Id)
+				'applicationKey' => getenv("3D1_B2_APPKEY"),
 			]);
-			$successfulUpload = true;
-			createLog("Upload OK");
-		} catch (\Throwable $th) {
-			createLog("Upload FAILED: ".$th->getMessage(),"B2-ERROR");
-			$successfulUpload = false;
-			sleep(1);
-			createLog("Trying upload again...");
+			BackblazeB2Logic::$bucketName = getenv("3D1_B2_BUCKETNAME");
+			BackblazeB2Logic::$version = 2;
+		}else{
+			LogLogic::write("Already initialized.");
 		}
+		LogLogic::stepOut(__FUNCTION__);
 	}
-	
-	//var_dump($file);
-	changeLogIndentation(false,__FUNCTION__);
+
+	public static function uploadData(string $fileData,string $remotePath) : void {
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Uploading data to '$remotePath'");
+		// Upload a file to a bucket. Returns a File object.
+		
+		$successfulUpload = false;
+		while(!$successfulUpload){
+			try {
+				BackblazeB2Logic::$client->upload([
+					'BucketName' => $GLOBALS['B2BUCKET'],
+					'FileName' => $remotePath,
+					'Body' => $fileData
+			
+					// The file content can also be provided via a resource.
+					// 'Body' => fopen('/path/to/input', 'r')
+				]);
+				$successfulUpload = true;
+				LogLogic::write("Upload OK");
+			} catch (\Throwable $th) {
+				LogLogic::write("Upload FAILED: ".$th->getMessage(),"B2-ERROR");
+				$successfulUpload = false;
+				sleep(1);
+				LogLogic::write("Trying upload again...");
+			}
+		}
+		
+		//var_dump($file);
+		LogLogic::stepOut(__FUNCTION__);
+	}
+
+	public static function uploadFile(string $localPath,string $remotePath) : void{
+		BackblazeB2Logic::uploadData(fopen($localPath, 'r'),$remotePath);
+	}
+
+	public static function testForFile(string $remotePath) : bool{
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Testing for file '$remotePath'");
+		// Retrieve an array of file objects from a bucket.
+		$fileList = BackblazeB2Logic::$client->listFiles([
+			'BucketName' => $GLOBALS['B2BUCKET'],
+			'FileName'=>$remotePath
+		]);
+		LogLogic::write("Result: ".isset($fileList[0]));
+		LogLogic::stepOut(__FUNCTION__);
+		return isset($fileList[0]);
+	}
 }
 
-function uploadFileToBackblazeB2($localPath,$remotePath){
-	uploadDataToBackblazeB2(fopen($localPath, 'r'),$remotePath);
-}
-
-function testForFileOnBackblazeB2($fileName){
-	changeLogIndentation(true,__FUNCTION__);
-	createLog("Testing for file '$fileName'");
-	// Retrieve an array of file objects from a bucket.
-	$fileList = $GLOBALS['B2']->listFiles([
-		'BucketName' => $GLOBALS['B2BUCKET'],
-		'FileName'=>$fileName
-	]);
-	createLog("Result: ".isset($fileList[0]));
-	changeLogIndentation(false,__FUNCTION__);
-	return isset($fileList[0]);
-}
+// Initalization call
+BackblazeB2Logic::initialize();
 
 ?>

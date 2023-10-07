@@ -1,26 +1,27 @@
 <?php
 
-	function WriteAssetCollectionToDatabase(AssetCollection $newAssetCollection){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Writing asset collection to DB");
+class DatabaseLogic{
+	public static function writeAssetCollection(AssetCollection $newAssetCollection){
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Writing asset collection to DB");
 		foreach ($newAssetCollection->assets as $a) {
 			writeAssetToDatabase($a);
 		}
-		createLog("Finished writing asset collection to DB");
-		changeLogIndentation(false,__FUNCTION__);
+		LogLogic::write("Finished writing asset collection to DB");
+		LogLogic::stepOut(__FUNCTION__);
 	}
 
-	function activateAssetCollection(AssetCollection $assetCollection){
+	public static function activateAssetCollection(AssetCollection $assetCollection){
 		foreach ($assetCollection->assets as $a) {
-			activateAsset($a);
+			DatabaseLogic::activateAsset($a);
 		}
 	}
 
-	function activateAsset(Asset $asset){
+	public static function activateAsset(Asset $asset){
 		runQuery("UPDATE Asset SET AssetActive = '1' WHERE AssetId = ?",[$asset->assetId]);
 	}
 
-	function loadCreatorsFromDatabase(){
+	public static function getCreators(){
 		$sql = "SELECT CreatorId,CreatorSlug,CreatorName,CreatorDescription,BaseUrl,( SELECT COUNT(AssetId) FROM Asset WHERE Asset.AssetActive = 1 AND Asset.CreatorId = Creator.CreatorId ) as AssetCount FROM Creator;";
 		$sqlResult = runQuery($sql);
 		$output = [];
@@ -30,7 +31,7 @@
 		return $output;
 	}
 
-	function loadUrlFromDatabase($assetId){
+	public static function getUrlFromAssetId(string $assetId) : string{
 		$sql = "SELECT AssetUrl FROM Asset WHERE AssetId = ? LIMIT 1;";
 		$sqlParameters = [intval($assetId)];
 		$sqlResult = runQuery($sql,$sqlParameters);
@@ -39,15 +40,15 @@
 		return $row['AssetUrl'];
 	}
 
-	function countAssetClick($assetId){
+	public static function addAssetClickByAssetId($assetId){
 		$sql = "INSERT INTO Click(AssetId,Day,Count) VALUES (?,NOW(),1) ON DUPLICATE KEY UPDATE Count = Count+1;";
 		$sqlParameters = [intval($assetId)];
-		$sqlResult = runQuery($sql,$sqlParameters);
+		runQuery($sql,$sqlParameters);
 	}
 
-	function writeAssetToDatabase(Asset $newAsset){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Inserting Asset: ".$newAsset->url);
+	public static function writeAssetToDatabase(Asset $newAsset){
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Inserting Asset: ".$newAsset->url);
 
 
 		// Base Asset
@@ -61,12 +62,12 @@
 			$parameters = [$newAsset->url,$tag];
 			runQuery($sql,$parameters);
 		}
-		changeLogIndentation(false,__FUNCTION__);
+		LogLogic::stepOut(__FUNCTION__);
 	}
 
-	function loadAssetsFromDatabase(AssetQuery $query): AssetCollection{
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Loading assets based on query: ".var_export($query, true));
+	public static function getAssets(AssetQuery $query): AssetCollection{
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Loading assets based on query: ".var_export($query, true));
 
 		// Begin defining SQL string and parameters for prepared statement
 		$sql = "SELECT SQL_CALC_FOUND_ROWS ";
@@ -215,9 +216,9 @@
 		}
 
 		if(isset($query->limit) && isset($query->offset)){
-			$sql .= " LIMIT ".onlyNumbers($query->limit)." OFFSET ".onlyNumbers($query->offset)."; ";
+			$sql .= " LIMIT ".StringLogic::onlyNumbers($query->limit)." OFFSET ".StringLogic::onlyNumbers($query->offset)."; ";
 		}else if(isset($query->limit)){
-			$sql .= " LIMIT ".onlyNumbers($query->limit)."; ";
+			$sql .= " LIMIT ".StringLogic::onlyNumbers($query->limit)."; ";
 		}
 		
 
@@ -229,7 +230,6 @@
 		$output->totalNumberOfAssets = $sqlResultCount->fetch_assoc()['Count'];
 
 		while($row = $sqlResult->fetch_assoc()) {
-
 
 			$newAsset = new Asset();
 
@@ -276,67 +276,70 @@
 		}
 
 		
-		changeLogIndentation(false,__FUNCTION__);
+		LogLogic::stepOut(__FUNCTION__);
 		return $output;
 	}
 
-	function initializeDatabaseConnection(){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Initializing DB Connection");
+	private static mysqli $connection;
+	public static function initializeConnection(){
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Initializing DB Connection");
 		
 
 		// Create connection
-		if(!isset($GLOBALS['MYSQL'])){
-			$GLOBALS['MYSQL'] = new mysqli(getenv("3D1_DB_SERVER"), getenv("3D1_DB_USERNAME"), getenv("3D1_DB_PASSWORD"));
-			createLog("Initialized DB connection to: ".getenv("3D1_DB_SERVER"));
+		if(!isset(DatabaseLogic::$connection)){
+			DatabaseLogic::$connection = new mysqli(getenv("3D1_DB_SERVER"), getenv("3D1_DB_USERNAME"), getenv("3D1_DB_PASSWORD"));
+			LogLogic::write("Initialized DB connection to: ".getenv("3D1_DB_SERVER"));
 		}
 		
 		// Check connection
-		if ($GLOBALS['MYSQL']->connect_error) {
-			createLog("Connection failed: " . $GLOBALS['MYSQL']->connect_error,"SQL-ERROR");
+		if (DatabaseLogic::$connection->connect_error) {
+			LogLogic::write("Connection failed: " . DatabaseLogic::$connection->connect_error,"SQL-ERROR");
 		}
 
 		$query = "use ".getenv("3D1_DB_NAME").";";
-		$GLOBALS['MYSQL']->query($query);
-		createLog("Selected DB: ".getenv("3D1_DB_NAME"));
-		changeLogIndentation(false,__FUNCTION__);
+		DatabaseLogic::$connection->query($query);
+		LogLogic::write("Selected DB: ".getenv("3D1_DB_NAME"));
+		LogLogic::stepOut(__FUNCTION__);
 	}
 
 	function runQuery($sql,$parameters = []){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Received SQL query to run: ".$sql." (".implode(",",$parameters).")");
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Received SQL query to run: ".$sql." (".implode(",",$parameters).")");
 		
-		if(!isset($GLOBALS['MYSQL'])){
-			initializeDatabaseConnection();
+		if(!isset(DatabaseLogic::$connection)){
+			DatabaseLogic::initializeConnection();
 		}
 		if(sizeof($parameters) > 0){
 			$dataType = str_repeat('s',sizeof($parameters));
-			$statement = $GLOBALS['MYSQL']->prepare($sql);
+			$statement = DatabaseLogic::$connection->prepare($sql);
 			if($statement){
 				$statement->bind_param($dataType, ...$parameters);
 				$statement->execute();
 				$result = $statement->get_result();
-				if($GLOBALS['MYSQL']->error){
-					createLog("Prepared statement execution ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
-					//die($GLOBALS['MYSQL']->error);
+				if(DatabaseLogic::$connection->error){
+					LogLogic::write("Prepared statement execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
+					//die(DatabaseLogic::$connection->error);
 				}else{
-					createLog("Prepared Statement OK");
+					LogLogic::write("Prepared Statement OK");
 				}
 			}else{
-				createLog("Prepared statement preparation ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
-				//die($GLOBALS['MYSQL']->error);
+				LogLogic::write("Prepared statement preparation ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
+				//die(DatabaseLogic::$connection->error);
 			}
 		}else{
-			$result = $GLOBALS['MYSQL']->query($sql);
-			if($GLOBALS['MYSQL']->error){
-				createLog("Query ERROR: ".$GLOBALS['MYSQL']->error,"SQL-ERROR");
-				//die($GLOBALS['MYSQL']->error);
+			$result = DatabaseLogic::$connection->query($sql);
+			if(DatabaseLogic::$connection->error){
+				LogLogic::write("Query ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
+				//die(DatabaseLogic::$connection->error);
 			}else{
-				createLog("Query OK");
+				LogLogic::write("Query OK");
 			}
 		}
 		
-		changeLogIndentation(false,__FUNCTION__);
+		LogLogic::stepOut(__FUNCTION__);
 		return $result;
 	}
+}
+DatabaseLogic::initializeConnection();
 ?>

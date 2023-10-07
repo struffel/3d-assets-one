@@ -1,22 +1,26 @@
 <?php
-	function fetchRemoteData(string $url, array $headers = []){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Fetching URL: $url");
+
+class FetchLogic{
+	function fetchRemoteData(string $url, array $headers = []) : string{
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Fetching URL: $url");
 
 		$client = new GuzzleHttp\Client();
 		try{
 			$options = ['headers' => $headers]; 				// GPT: Add headers to the request options
 			$result = $client->request('GET',$url,$options);
 			$content = $result->getBody();
-			createLog("Request successful!");
+			LogLogic::write("Request successful!");
 		}catch(GuzzleHttp\Exception\ClientException $e){
-			createLog("Request error, Status code: ".$e->getResponse()->getBody()->getContents(),"HTTP-ERROR");
+			LogLogic::write("Request error, Status code: ".$e->getResponse()->getBody()->getContents(),"HTTP-ERROR");
 			$content = "";
 		}
 		
-		createLog("Content length: ".strlen($content)."");
-		changeLogIndentation(false,__FUNCTION__);
+		LogLogic::write("Content length: ".strlen($content)."");
+		LogLogic::stepOut(__FUNCTION__);
 		return $content;
 	}
+}
+	
 
 ?>

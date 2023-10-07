@@ -56,7 +56,7 @@
                             try{
                                 $tmpAsset->thumbnailUrl = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['square']['source_url'];
                             }catch(Throwable $e){
-                                createLog($e->getMessage()." / 1st attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
+                                LogLogic::write($e->getMessage()." / 1st attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
                             }
 
                             // 2nd attempt
@@ -64,7 +64,7 @@
                                 try{
                                     $tmpAsset->thumbnailUrl = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'];
                                 }catch(Throwable $e){
-                                    createLog($e->getMessage()." / 2nd attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
+                                    LogLogic::write($e->getMessage()." / 2nd attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
                                 }
                             }
 
@@ -73,7 +73,7 @@
                                 try{
                                     $tmpAsset->thumbnailUrl = $wpPost['jetpack_featured_media_url'];
                                 }catch(Throwable $e){
-                                    createLog($e->getMessage()." / 3rd attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
+                                    LogLogic::write($e->getMessage()." / 3rd attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
                                 }
                             }
 

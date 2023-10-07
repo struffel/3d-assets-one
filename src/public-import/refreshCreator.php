@@ -14,18 +14,18 @@
 	
 	$maxNumberOfAssets = intval($_GET['max']??1);
 	initializeLog("refreshCreator-".$creatorId);
-	createLog("Refreshing Creator: $creatorId");
+	LogLogic::write("Refreshing Creator: $creatorId");
 	require_once $_SERVER['DOCUMENT_ROOT']."/../creators/$creatorId/main.php";
 
 	$creatorClass = "Creator".$creatorId;
 	$creator = new $creatorClass();
-	createLog("Created creator object.");
+	LogLogic::write("Created creator object.");
 	$result = $creator->findNewAssets();
-	createLog("Found ".sizeof($result->assets)." new assets");
+	LogLogic::write("Found ".sizeof($result->assets)." new assets");
 	if(sizeof($result->assets) > 0){
-		createLog("Writing new assets to DB:");
+		LogLogic::write("Writing new assets to DB:");
 		writeAssetCollectionToDatabase($result);
-		createLog("Wrote ".sizeof($result->assets)." new assets.");
+		LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
 	}
 	echoCurrentLog();
 ?>

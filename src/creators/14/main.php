@@ -1,19 +1,19 @@
 <?php
 
-	// pbrmaterials.com
+	// poliigon.com
 
 	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
 
-	class Creator13 extends CreatorInterface{
+	class Creator14 extends CreatorInterface{
 		function findNewAssets():AssetCollection{
 
 			// Get existing Assets
 
 			$query = new AssetQuery();
-			$query->filter->creatorId = [13];
+			$query->filter->creatorId = [14];
 			$query->filter->active = NULL;
 			$result = loadAssetsFromDatabase($query);
-			$existingUrls = [""];
+			$existingUrls = [];
 			foreach ($result->assets as $asset) {
 				$existingUrls []= $asset->url;
 			}
@@ -22,7 +22,7 @@
             $tmpCollection = new AssetCollection();
 
             $page = 1;
-            $wpOutput=[];
+            $htmlOutput=[];
             $fetchedList = [];
             $continue = true;
 
@@ -30,7 +30,7 @@
             $maxAssets = $config['main']['maxAssetsPerRound'];
 
             while($continue){
-                $wpLink=$config['main']['apiUrl']."product?_embed&per_page=100&page=$page&orderby=date";
+                $mainUrl=$config['main']['mainUrl'];
                 $wpOutput=getJsonFromUrl($wpLink);
                 if($wpOutput){
                     $page++;

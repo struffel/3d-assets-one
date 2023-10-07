@@ -18,7 +18,7 @@
 				$existingUrls []= $asset->url;
 			}
 
-            //createLog("Found existing URLs: ".implode($existingUrls));
+            //LogLogic::write("Found existing URLs: ".implode($existingUrls));
 
 			// Contact API and get new assets
             $config = parse_ini_file('config.ini',true);
@@ -53,7 +53,7 @@
 
                 if(!in_array($tmpAsset->url,$existingUrls)){
                     $tmpCollection->assets[] = $tmpAsset;
-                    createLog("Found new asset: ".$tmpAsset->url);
+                    LogLogic::write("Found new asset: ".$tmpAsset->url);
                 }
             }
 				

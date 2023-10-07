@@ -7,7 +7,7 @@
 
 	class Creator1 extends CreatorInterface{
 		function findNewAssets():AssetCollection{
-			createLog("Start looking for new assets");
+			LogLogic::write("Start looking for new assets");
 			// Get existing Assets
 
 			$query = new AssetQuery();
@@ -62,7 +62,7 @@
 
 					if(!in_array($tmpAsset->url,$existingUrls)){
 						$tmpCollection->assets[] = $tmpAsset;
-						createLog("Found new asset: ".$tmpAsset->url);
+						LogLogic::write("Found new asset: ".$tmpAsset->url);
 					}
 				}
 				

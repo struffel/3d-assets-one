@@ -1,48 +1,48 @@
 <?php
 
-	function getThumbnailTemplate(){
-		$output = [];
-		$output []=	["JPG","FFFFFF",32];
-		$output []=	["JPG","FFFFFF",64];
-		$output []=	["JPG","FFFFFF",128];
-		$output []=	["JPG","FFFFFF",256];
-		$output []=	["PNG",NULL,32];
-		$output []=	["PNG",NULL,64];
-		$output []=	["PNG",NULL,128];
-		$output []=	["PNG",NULL,256];
-		return $output;
-	}
+class ImageLogic{
+	private static array $thumbnailTemplate = [
+		["JPG","FFFFFF",32],
+		["JPG","FFFFFF",64],
+		["JPG","FFFFFF",128],
+		["JPG","FFFFFF",256],
+		["PNG",NULL,32],
+		["PNG",NULL,64],
+		["PNG",NULL,128],
+		["PNG",NULL,256]
+	];
 
-	function getBackblazeB2ThumbnailPath($size,$extension,$backgroundColor,$assetId){
+	public static function getBackblazeB2ThumbnailPath(?int $size,?string $extension,?string $backgroundColor,?string $assetId){
 		$variation = strtoupper(implode("-",array_filter([$size,$extension,$backgroundColor])));
 		$extension = strtolower($extension);
 		return "thumbnail/$variation/$assetId.$extension";
 	}
 
-	function testForThumbnailsOnBackblazeB2(Asset $asset) : bool{
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Testing thumbnails for ".$asset->assetId);
+	public static function testForThumbnailsOnBackblazeB2(Asset $asset) : bool{
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Testing thumbnails for ".$asset->assetId);
 		
 		$isPresent = true;
 
-		foreach (getThumbnailTemplate() as $t) {
-			$isPresent &= testForFileOnBackblazeB2(getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset->assetId));
+		foreach (ImageLogic::$thumbnailTemplate as $t) {
+			$isPresent &= BackblazeB2Logic::testForFile(ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset->assetId));
 		}
-		createLog("Result: ".$isPresent);
-		changeLogIndentation(false,__FUNCTION__);
+		
+		LogLogic::write("Result: ".$isPresent);
+		LogLogic::stepOut(__FUNCTION__);
 		return $isPresent;
 	}
 
-	function buildAndUploadThumbnailsToBackblazeB2($assetId,$originalImageData){
-		changeLogIndentation(true,__FUNCTION__);
-		foreach (getThumbnailTemplate() as $t) {
+	public static function buildAndUploadThumbnailsToBackblazeB2(string $assetId,string $originalImageData){
+		LogLogic::stepIn(__FUNCTION__);
+		foreach (ImageLogic::$thumbnailTemplate as $t) {
 			$tmpThumbnail = createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1],$assetId);
-			uploadDataToBackblazeB2($tmpThumbnail,getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$assetId));
+			BackblazeB2Logic::uploadData($tmpThumbnail,ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$assetId));
 		}
-		changeLogIndentation(false,__FUNCTION__);
+		LogLogic::stepOut(__FUNCTION__);
 	}
 
-	function parseImageIntoPng(string $imageBlob):string{
+	public static function parseImageIntoPng(string $imageBlob):string{
 		// Read image using GD to ensure webP-compatibility and proper alpha handling
 		$tmpImage = imagecreatefromstring($imageBlob);
 		imagealphablending($tmpImage, false);
@@ -54,10 +54,10 @@
 
 	}
 
-	function createThumbnailFromImageData($originalImageData,$size,$extension,$backgroundColor,$assetId){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Building variation: $size/$extension/$backgroundColor/$assetId ");
-		$originalImageData = parseImageIntoPng($originalImageData);
+	public static function createThumbnailFromImageData(string $originalImageData,int $size,string $extension,string $backgroundColor,string $assetId) : string{
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Building variation: $size/$extension/$backgroundColor/$assetId ");
+		$originalImageData = ImageLogic::parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing
 		$tmpImage = new Imagick();
@@ -81,12 +81,12 @@
 			$outputImage = $outputImage->flattenImages();
 		}
 		
-		changeLogIndentation(false,__FUNCTION__);
+		LogLogic::stepOut(__FUNCTION__);
 		return $outputImage->getImageBlob();
 	}
 
-	function removeUniformBackground($imageBlob,$targetX,$targetY,$fuzz):string{
-		$imageBlob = parseImageIntoPng($imageBlob);
+	function removeUniformBackground(string $imageBlob,int $targetX,int $targetY,int $fuzz):string{
+		$imageBlob = ImageLogic::parseImageIntoPng($imageBlob);
 		$tmpImage = new Imagick();
 		$tmpImage->readImageBlob($imageBlob);
 		$targetColor = $tmpImage->getImagePixelColor($targetX,$targetY);
@@ -94,4 +94,5 @@
 		return $tmpImage->getImageBlob();
 	}
 
+}
 ?>

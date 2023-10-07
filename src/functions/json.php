@@ -1,6 +1,7 @@
 <?php
 
-	function outputJson($result,array $debugArray = NULL,int $statusCode = 200,string $statusComment = NULL){
+class JsonLogic{
+	public static function output($result,array $debugArray = NULL,int $statusCode = 200,string $statusComment = NULL){
 		$output = array();
 		$output['result']=$result;
 		$output['statusCode']=$statusCode;
@@ -13,12 +14,14 @@
 		echo json_encode($output,JSON_PRETTY_PRINT);
 	}
 
-	function getJsonFromUrl($targetUrl){
-		changeLogIndentation(true,__FUNCTION__);
-		createLog("Getting JSON from URL: ".$targetUrl);
-		$result = json_decode(fetchRemoteData($targetUrl),true);
-		createLog("Got JSON.");
-		changeLogIndentation(false,__FUNCTION__);
+	public static function getFromUrl(string $url) : string{
+		LogLogic::stepIn(__FUNCTION__);
+		LogLogic::write("Getting JSON from URL: ".$url);
+		$result = json_decode(fetchRemoteData($url),true);
+		LogLogic::write("Got JSON.");
+		LogLogic::stepOut(__FUNCTION__);
 		return $result;
 	}
+}
+	
 ?>
