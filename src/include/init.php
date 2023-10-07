@@ -1,7 +1,7 @@
 <?php
 	header('Content-type: application/json');
 	require_once $_SERVER['DOCUMENT_ROOT'].'/../vendor/autoload.php';
-	foreach (glob($_SERVER['DOCUMENT_ROOT'] . '/../functions/*.php') as $file) {
+	foreach (glob($_SERVER['DOCUMENT_ROOT'] . '/../include/*.php') as $file) {
 		require_once $file;
 	}
 
