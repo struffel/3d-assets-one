@@ -17,7 +17,7 @@ class JsonLogic{
 	public static function getFromUrl(string $url) : string{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Getting JSON from URL: ".$url);
-		$result = json_decode(fetchRemoteData($url),true);
+		$result = json_decode(FetchLogic::fetchRemoteData($url),true);
 		LogLogic::write("Got JSON.");
 		LogLogic::stepOut(__FUNCTION__);
 		return $result;

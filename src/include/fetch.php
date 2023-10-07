@@ -1,7 +1,7 @@
 <?php
 
 class FetchLogic{
-	function fetchRemoteData(string $url, array $headers = []) : string{
+	public static function fetchRemoteData(string $url, array $headers = []) : string{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Fetching URL: $url");
 
