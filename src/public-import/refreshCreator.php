@@ -1,5 +1,5 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 
 	$refreshConfig = parse_ini_file("importConfig.ini",true);

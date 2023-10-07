@@ -2,7 +2,7 @@
 
 	// sharetextures
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 	class Creator3 extends CreatorInterface{
 		function findNewAssets():AssetCollection{

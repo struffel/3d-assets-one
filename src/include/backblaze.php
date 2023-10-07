@@ -77,7 +77,4 @@ class BackblazeB2Logic {
 	}
 }
 
-// Initalization call
-BackblazeB2Logic::initialize();
-
 ?>

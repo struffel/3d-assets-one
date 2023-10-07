@@ -18,12 +18,12 @@ class DatabaseLogic{
 	}
 
 	public static function activateAsset(Asset $asset){
-		runQuery("UPDATE Asset SET AssetActive = '1' WHERE AssetId = ?",[$asset->assetId]);
+		DatabaseLogic::runQuery("UPDATE Asset SET AssetActive = '1' WHERE AssetId = ?",[$asset->assetId]);
 	}
 
 	public static function getCreators(){
 		$sql = "SELECT CreatorId,CreatorSlug,CreatorName,CreatorDescription,BaseUrl,( SELECT COUNT(AssetId) FROM Asset WHERE Asset.AssetActive = 1 AND Asset.CreatorId = Creator.CreatorId ) as AssetCount FROM Creator;";
-		$sqlResult = runQuery($sql);
+		$sqlResult = DatabaseLogic::runQuery($sql);
 		$output = [];
 		while($row = $sqlResult->fetch_assoc()){
 			$output []= $row;
@@ -34,7 +34,7 @@ class DatabaseLogic{
 	public static function getUrlFromAssetId(string $assetId) : string{
 		$sql = "SELECT AssetUrl FROM Asset WHERE AssetId = ? LIMIT 1;";
 		$sqlParameters = [intval($assetId)];
-		$sqlResult = runQuery($sql,$sqlParameters);
+		$sqlResult = DatabaseLogic::runQuery($sql,$sqlParameters);
 		
 		$row = $sqlResult->fetch_assoc();
 		return $row['AssetUrl'];
@@ -43,7 +43,7 @@ class DatabaseLogic{
 	public static function addAssetClickByAssetId($assetId){
 		$sql = "INSERT INTO Click(AssetId,Day,Count) VALUES (?,NOW(),1) ON DUPLICATE KEY UPDATE Count = Count+1;";
 		$sqlParameters = [intval($assetId)];
-		runQuery($sql,$sqlParameters);
+		DatabaseLogic::runQuery($sql,$sqlParameters);
 	}
 
 	public static function writeAssetToDatabase(Asset $newAsset){
@@ -60,7 +60,7 @@ class DatabaseLogic{
 		foreach ($newAsset->tags as $tag) {
 			$sql = "INSERT INTO Tag (AssetId,TagName) VALUES ((SELECT AssetId FROM Asset WHERE AssetUrl=?),?);";
 			$parameters = [$newAsset->url,$tag];
-			runQuery($sql,$parameters);
+			DatabaseLogic::runQuery($sql,$parameters);
 		}
 		LogLogic::stepOut(__FUNCTION__);
 	}
@@ -222,8 +222,8 @@ class DatabaseLogic{
 		}
 		
 
-		$sqlResult = runQuery($sql,$sqlParameters);
-		$sqlResultCount = runQuery("SELECT FOUND_ROWS() as Count;");
+		$sqlResult = DatabaseLogic::runQuery($sql,$sqlParameters);
+		$sqlResultCount = DatabaseLogic::runQuery("SELECT FOUND_ROWS() as Count;");
 
 		$output = new AssetCollection();
 
@@ -303,7 +303,7 @@ class DatabaseLogic{
 		LogLogic::stepOut(__FUNCTION__);
 	}
 
-	function runQuery($sql,$parameters = []){
+	public static function runQuery($sql,$parameters = []){
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Received SQL query to run: ".$sql." (".implode(",",$parameters).")");
 		
@@ -341,5 +341,4 @@ class DatabaseLogic{
 		return $result;
 	}
 }
-DatabaseLogic::initializeConnection();
 ?>
