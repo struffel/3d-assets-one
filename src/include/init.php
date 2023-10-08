@@ -37,11 +37,33 @@
 		public ?string $creatorName;
 	}
 	
-	abstract class CreatorInterface{
-		abstract function findNewAssets():AssetCollection;
-		abstract function refreshAssetById(int $assetId):Asset;
-		abstract function postProcessThumbnail(string $imageBlob):string;
-		abstract function generateThumbnailFetchingHeaders():array;
+	abstract class CreatorFetcher{
+		// standard class functions
+		function __construct(){
+			$this->config = parse_ini_file('config.ini',true);
+		}
+		private function getExistingUrls() : array{
+			$query = new AssetQuery();
+			$query->filter->creatorId = [$this->creatorId];
+			$query->filter->active = NULL;
+			$result = DatabaseLogic::getAssets($query);
+			$existingUrls = [""];
+			foreach ($result->assets as $asset) {
+				$existingUrls []= $asset->url;
+			}
+			return $existingUrls;
+		}
+
+		// class variables
+		private abstract final int $creatorId;
+		private abstract array $config;
+		private array $httpHeaders = [
+			"User-Agent" => "3dassets.one / Fetching"
+		];
+		
+		// abstract functions for every creator
+		public abstract function findNewAssets():AssetCollection;
+		public abstract function postProcessThumbnail(string $imageBlob):string;
 	}
 	
 	class AssetCollection{

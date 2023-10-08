@@ -85,7 +85,7 @@ class ImageLogic{
 		return $outputImage->getImageBlob();
 	}
 
-	function removeUniformBackground(string $imageBlob,int $targetX,int $targetY,int $fuzz):string{
+	public static function removeUniformBackground(string $imageBlob,int $targetX,int $targetY,int $fuzz):string{
 		$imageBlob = ImageLogic::parseImageIntoPng($imageBlob);
 		$tmpImage = new Imagick();
 		$tmpImage->readImageBlob($imageBlob);

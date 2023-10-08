@@ -4,55 +4,44 @@
 
 	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
-
-	class Creator1 extends CreatorInterface{
+	class Creator1 extends CreatorFetcher{
+		private final int $creatorId = 1;
+		
 		function findNewAssets():AssetCollection{
+			LogLogic::stepIn(__FUNCTION__);
 			LogLogic::write("Start looking for new assets");
-			// Get existing Assets
 
-			$query = new AssetQuery();
-			$query->filter->creatorId = [1];
-			$query->filter->active = NULL;
-			$result = loadAssetsFromDatabase($query);
-			$existingUrls = [""];
-			foreach ($result->assets as $asset) {
-				$existingUrls []= $asset->url;
-			}
+			// Get existing URLs
+			$existingUrls = $this->getExistingUrls();
 
 			// Contact API and get new assets
-			$config = parse_ini_file('config.ini',true);
-
 			$initialParameters = [
 				"limit"=>100,
 				"offset"=>0,
 				"include"=>"displayData,tagData,imageData"
 			];
 
-			$targetUrl = $config['main']['apiUrl']."?".http_build_query($initialParameters);
+			$targetUrl = $this->config['main']['apiUrl']."?".http_build_query($initialParameters);
 
 			// Prepare asset collection
-
 			$tmpCollection = new AssetCollection();
 
 			while($targetUrl != ""){
 
-				$result = getJsonFromUrl($targetUrl);
+				$result = FetchLogic::fetchRemoteJson($targetUrl,$this->httpHeaders);
 
 				// Iterate through result
-
-				
-
-				foreach ($result['foundAssets'] as $asset) {
+				foreach ($result['foundAssets'] as $acgAsset) {
 					$tmpAsset = new Asset();
 
-					$tmpAsset->url = $asset['shortLink'];
-					$tmpAsset->thumbnailUrl = $asset['previewImage']['512-PNG'];
-					$tmpAsset->date = $asset['releaseDate'];
-					$tmpAsset->assetName = $asset['displayName'];
-					$tmpAsset->tags = array_unique($asset['tags']);
+					$tmpAsset->url = $acgAsset['shortLink'];
+					$tmpAsset->thumbnailUrl = $acgAsset['previewImage']['512-PNG'];
+					$tmpAsset->date = $acgAsset['releaseDate'];
+					$tmpAsset->assetName = $acgAsset['displayName'];
+					$tmpAsset->tags = array_unique($acgAsset['tags']);
 
 					$tmpAsset->type = new Type();
-					$tmpAsset->type->typeId = $config['types'][$asset['dataType']];
+					$tmpAsset->type->typeId = $this->config['types'][$acgAsset['dataType']];
 
 					$tmpAsset->license = new License();
 					$tmpAsset->license->licenseId = 1;
@@ -70,16 +59,11 @@
 			}
 				
 			$tmpCollection->totalNumberOfAssets = sizeof($tmpCollection->assets);
+			LogLogic::stepOut(__FUNCTION__);
 			return $tmpCollection;
-		}
-		function refreshAssetById(int $assetId):Asset{
-			return new Asset();
 		}
 		function postProcessThumbnail(string $imageBlob): string{
 			return $imageBlob;
-		}
-		function generateThumbnailFetchingHeaders(): array{
-			return [];
 		}
 	}
 ?>

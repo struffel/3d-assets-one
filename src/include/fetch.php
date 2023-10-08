@@ -20,6 +20,14 @@ class FetchLogic{
 		LogLogic::stepOut(__FUNCTION__);
 		return $content;
 	}
+
+	public static function fetchRemoteJson(string $url,array $headers) : mixed{
+		LogLogic::stepIn(__FUNCTION__);
+		$result = json_decode(FetchLogic::fetchRemoteData($url,$headers),true);
+		LogLogic::write("Received and parsed JSON.");
+		LogLogic::stepOut(__FUNCTION__);
+		return $result;
+	}
 }
 	
 
