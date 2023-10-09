@@ -2,8 +2,6 @@
 
 	// 3dtextures
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
-
 	class Creator4 extends CreatorFetcher{
 		function findNewAssets():AssetCollection{
 
@@ -14,19 +12,18 @@
 
 			$page = 1;
 			$wpOutput=[];
-			$fetchedList = [];
-			$continue = true;
 
 			$processedAssets = 0;
-			$maxAssets = $this->config['main']['maxAssetsPerRound'];
+			$maxAssets = $this->config['maxAssetsPerRound'];
 
-			while($continue){
-				$wpLink=$this->config['main']['apiUrl']."posts?_embed&per_page=100&page=$page&orderby=date";
-				$wpOutput=FetchLogic::fetchRemoteJson($wpLink,$this->httpHeaders);
+			do{
+				$wpLink=$this->config['apiUrl']."posts?_embed&per_page=100&page=$page&orderby=date";
+				$wpOutput=FetchLogic::fetchRemoteJson($wpLink);
+
 				if($wpOutput){
-					$page++;
-
+					
 					foreach($wpOutput as $wpPost){
+
 						if(!in_array($wpPost['link'],$existingUrls)){
 							$tmpAsset = new Asset();
 							$tmpAsset->assetName = $wpPost['title']['rendered'];
@@ -94,11 +91,12 @@
 							break;
 						}
 					}
+					$page++;
 
 				}else{
 					$continue = false;
 				}
-			}
+			}while($continue);
 			
 			$tmpCollection->totalNumberOfAssets = sizeof($tmpCollection->assets);
 			

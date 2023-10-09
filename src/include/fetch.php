@@ -5,6 +5,10 @@ class FetchLogic{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Fetching URL: $url");
 
+		if(!isset($headers['User-Agent'])){
+			$headers['User-Agent'] = "3dassets.one / Fetching";
+		}
+
 		$client = new GuzzleHttp\Client();
 		try{
 			$options = ['headers' => $headers]; 				// GPT: Add headers to the request options
@@ -21,12 +25,24 @@ class FetchLogic{
 		return $content;
 	}
 
-	public static function fetchRemoteJson(string $url,array $headers) : mixed{
+	public static function fetchRemoteJson(string $url,array $headers = []) : mixed{
 		LogLogic::stepIn(__FUNCTION__);
 		$result = json_decode(FetchLogic::fetchRemoteData($url,$headers),true);
 		LogLogic::write("Received and parsed JSON.");
 		LogLogic::stepOut(__FUNCTION__);
 		return $result;
+	}
+
+	public static function fetchRemoteCommaSeparatedList(string $url, array $headers = []) : array{
+		LogLogic::stepIn(__FUNCTION__);
+		$content = FetchLogic::fetchRemoteData($url,$headers);
+		$content = str_replace("\n","",$content);
+
+		$contentArray = explode(",",$content);
+		$urlArray = array_filter($contentArray);
+		$urlArray = array_map('trim', $contentArray);
+		LogLogic::stepOut(__FUNCTION__);
+		return $contentArray;
 	}
 }
 	

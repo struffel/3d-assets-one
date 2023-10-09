@@ -6,46 +6,65 @@
 	}
 
 	class Asset{
-		public ?string $assetId;
-		public ?string $assetName;
-		public ?string $url;
-		public ?string $date;
-		public ?array $tags;
-		public ?Type $type;
-		public ?License $license;
-		public ?CreatorData $creator;
+		public function __construct(
+			public ?string $assetId = NULL,
+			public ?string $assetName = NULL,
+			public ?string $url = NULL,
+			public ?string $date = NULL,
+			public ?array $tags = NULL,
+			public ?Type $type = NULL,
+			public ?License $license = NULL,
+			public ?Creator $creator = NULL,
 
-		public bool $active;
-		public string $thumbnailUrl;
+			public bool $active = false,
+			public string $thumbnailUrl
+		){}
 	}
 
 	class Type{
-		public ?string $typeId;
-		public ?string $typeSlug;
-		public ?string $typeName;
+		public function __construct(
+			public int $typeId,
+			public ?string $typeSlug = NULL,
+			public ?string $typeName = NULL
+		){}
 	}
 
 	class License{
-		public ?string $licenseId;
-		public ?string $licenseSlug;
-		public ?string $licenseName;
+		public function __construct(
+			public int $licenseId,
+			public ?string $licenseSlug = NULL,
+			public ?string $licenseName = NULL
+		){}
 	}
 
-	class CreatorData{
-		public ?string $creatorId;
-		public ?string $creatorSlug;
-		public ?string $creatorName;
+	class Creator{
+		public function __construct(
+			public int $creatorId,
+			public ?string $creatorSlug = NULL,
+			public ?string $creatorName = NULL
+		){}
 	}
 	
 	abstract class CreatorFetcher{
-		// standard class functions
-		function __construct(){
-			$this->config = parse_ini_file('config.ini',true);
+
+		public function __construct(){
+			
+			if(!$this->creatorId){
+				throw new Exception("Creator ID not set.", 1);
+			}
+
+			$this->config = json_decode(file_get_contents($this->creatorId.".json"),true);
 		}
+
 		private function getExistingUrls() : array{
+
+			if(!$this->creatorId){
+				throw new Exception("Creator ID not set.", 1);
+			}
+
 			$query = new AssetQuery();
-			$query->filter->creatorId = [$this->creatorId];
-			$query->filter->active = NULL;
+			$query->filterCreatorId = [$this->creatorId];
+			$query->filterActive = NULL;
 			$result = DatabaseLogic::getAssets($query);
 			$existingUrls = [""];
 			foreach ($result->assets as $asset) {
@@ -55,11 +74,8 @@
 		}
 
 		// class variables
-		private abstract final int $creatorId;
-		private abstract array $config;
-		private array $httpHeaders = [
-			"User-Agent" => "3dassets.one / Fetching"
-		];
+		private abstract int $creatorId;
+		private array $config;
 		
 		// abstract functions for every creator
 		public abstract function findNewAssets():AssetCollection;
@@ -67,41 +83,43 @@
 	}
 	
 	class AssetCollection{
-		public array $assets = array();
-		public string $totalNumberOfAssets;
-		//public SearchQuery $previousPage;
-		public AssetQuery $nextCollection;
+		public function __construct(
+			public array $assets = array(),
+			public int $totalNumberOfAssetsInBackend,
+			public AssetQuery $nextCollection
+		){}
 	}
 
-	class AssetFilter{
-		public ?array $assetId = NULL;
-		public ?array $tag = NULL;
-		public ?array $creatorSlug = NULL;
-		public ?array $creatorId = NULL;
-		public ?array $licenseSlug = NULL;
-		public ?array $typeSlug = NULL;
-		public ?bool $active = true;
-	}
-
-	class AssetInclusion{
-		public bool $asset = true;
-		public bool $tag = false;
-		public bool $creator = false;
-		public bool $license = false;
-		public bool $type = false;
-		public bool $internal = false;
+	enum SortingOrder: string{
+		case LATEST = "latest";
+		case OLDEST = "oldest";
+		case RANDOM = "random";
 	}
 
 	class AssetQuery{
-		public int $offset;
-		public int $limit;
-		public string $sort = "latest";
-		public AssetFilter $filter;
-		public AssetInclusion $include;
+		public function __construct(
+		// Basics
+		public int $offset = 0,
+		public int $limit = 0,
+		public SortingOrder $sort = SortingOrder::LATEST,
+
+		// Inclusions
+		public bool $includeTag = false,
+		public bool $includeCreator = false,
+		public bool $includeLicense = false,
+		public bool $includeType = false,
+		public bool $includeInternal = false,
+
+		// Filters
+		public ?array $filterAssetId = NULL,
+		public ?array $filterTag = NULL,
+		public ?array $filterCreatorSlug = NULL,
+		public ?array $filterCreatorId = NULL,
+		public ?array $filterLicenseSlug = NULL,
+		public ?array $filterTypeSlug = NULL,
+		public ?bool $filterActive = true,
+
+		){}
 		
-		function __construct(){
-			$this->filter = new AssetFilter();
-			$this->include = new AssetInclusion();
-		}
 	}
 ?>
