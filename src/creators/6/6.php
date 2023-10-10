@@ -2,30 +2,14 @@
 
 	// texturecan
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
-
-	class Creator6 extends CreatorInterface{
+	class CreatorFetcher6 extends CreatorInterface{
 		function findNewAssets():AssetCollection{
 
+			$this->creatorId = 6;
+
 			// Get existing Assets
-
-			$query = new AssetQuery();
-			$query->filter->creatorId = [6];
-			$query->filter->active = NULL;
-			$result = loadAssetsFromDatabase($query);
-			$existingUrls = [""];
-			foreach ($result->assets as $asset) {
-				$existingUrls []= $asset->url;
-			}
-
-			$config = parse_ini_file("config.ini",true);
-
-			$urlList = fetchRemoteData($config["main"]["urlList"]);
-			$urlList = str_replace("\n","",$urlList);
-			$urlArray = explode(",",$urlList);
-			$urlArray = array_filter($urlArray);
-			$urlArray = array_map('trim', $urlArray);
-			
+			$existingUrls = $this->getExistingUrls();
+			$urlArray = FetchLogic::fetchRemoteCommaSeparatedList($this->config['urlList']);
 
 			$tmpCollection = new AssetCollection();
 
@@ -55,7 +39,7 @@
 					$tmpCollection->assets []= $tmpAsset;
 
 					$countAssets++;
-					if($countAssets >= $maxAssets){
+					if($countAssets >= $this->config['maxAssets']){
 						break;
 					}
 				}

@@ -2,7 +2,7 @@
 
 	// 3dtextures
 
-	class Creator4 extends CreatorFetcher{
+	class CreatorFetcher4 extends CreatorFetcher{
 
 		$this->creatorId = 4;
 
