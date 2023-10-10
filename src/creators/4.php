@@ -3,6 +3,9 @@
 	// 3dtextures
 
 	class Creator4 extends CreatorFetcher{
+
+		$this->creatorId = 4;
+
 		function findNewAssets():AssetCollection{
 
 			// Get existing Assets
@@ -16,6 +19,7 @@
 			$processedAssets = 0;
 			$maxAssets = $this->config['maxAssetsPerRound'];
 
+			$continue = true;
 			do{
 				$wpLink=$this->config['apiUrl']."posts?_embed&per_page=100&page=$page&orderby=date";
 				$wpOutput=FetchLogic::fetchRemoteJson($wpLink);
@@ -25,41 +29,40 @@
 					foreach($wpOutput as $wpPost){
 
 						if(!in_array($wpPost['link'],$existingUrls)){
-							$tmpAsset = new Asset();
-							$tmpAsset->assetName = $wpPost['title']['rendered'];
-							$tmpAsset->url = $wpPost['link'];
-							$tmpAsset->date = $wpPost['date'];
 
 							// Tags
+							$tmpTags = [];
 							foreach ($wpPost['_embedded']['wp:term'] as $embeddedCategory) {
 								foreach($embeddedCategory as $embeddedObject){
-									$tmpAsset->tags []= $embeddedObject['name'];
+									$tmpTags []= $embeddedObject['name'];
 								}
 							}
+
+							// Thumbnail
 
 							$oldErrorReportingLevel = error_reporting();
 							error_reporting(E_ERROR | E_PARSE);
 
 							// 1st attempt
 							try{
-								$tmpAsset->thumbnailUrl = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['square']['source_url'];
+								$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['square']['source_url'];
 							}catch(Throwable $e){
 								LogLogic::write($e->getMessage()." / 1st attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
 							}
 
 							// 2nd attempt
-							if(!isset($tmpAsset->thumbnailUrl)){
+							if(!isset($tmpThumbnail)){
 								try{
-									$tmpAsset->thumbnailUrl = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'];
+									$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'];
 								}catch(Throwable $e){
 									LogLogic::write($e->getMessage()." / 2nd attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
 								}
 							}
 
 							// 3rd attempt
-							if(!isset($tmpAsset->thumbnailUrl)){
+							if(!isset($tmpThumbnail)){
 								try{
-									$tmpAsset->thumbnailUrl = $wpPost['jetpack_featured_media_url'];
+									$tmpThumbnail = $wpPost['jetpack_featured_media_url'];
 								}catch(Throwable $e){
 									LogLogic::write($e->getMessage()." / 3rd attempt failed... / ".$tmpAsset->url,"IMG-ERROR");
 								}
@@ -72,15 +75,25 @@
 								LogLogic::write("All attempts failed. Thumbnail could not be resolved. Skipping... / ".$tmpAsset->url,"IMG-ERROR");
 								continue;
 							}
-
-							$tmpAsset->type = new Type();
-							$tmpAsset->type->typeId = 1;
 							
-							$tmpAsset->license = new License();
-							$tmpAsset->license->licenseId = 1;
+							// Assemble asset
+							$tmpAsset = new Asset(
+								assetName: $wpPost['title']['rendered'],
+								url: $wpPost['link'],
+								date: $wpPost['date'],
+								tags: $tmpTags,
+								thumbnail: $tmpThumbnail,
+								type: new Type(
+									typeId: 1
+								),
+								license: new License(
+									licenseId: 1
+								),
+								creator: new Creator(
+									creatorId: $this->creatorId;
+								)
 
-							$tmpAsset->creator = new CreatorData();
-							$tmpAsset->creator->creatorId = 4;
+							);
 
 							$tmpCollection->assets []= $tmpAsset;
 
@@ -92,7 +105,6 @@
 						}
 					}
 					$page++;
-
 				}else{
 					$continue = false;
 				}
