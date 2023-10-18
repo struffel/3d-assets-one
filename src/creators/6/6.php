@@ -18,23 +18,24 @@
 			foreach ($urlArray as $url) {
 				if(!in_array($url,$existingUrls)){
 					$siteContent = fetchRemoteData($url);
-
-					$tmpAsset = new Asset();
-
 					$metaTags = readMetatagsFromHtmlString($siteContent);
 
-					$tmpAsset->assetName = $metaTags['tex1:name'];
-					$tmpAsset->url = $url;
-					$tmpAsset->date = $metaTags['tex1:release-date'];
-					$tmpAsset->tags = explode(",",$metaTags['tex1:tags']);
-					$tmpAsset->type = new Type();
-					$tmpAsset->type->typeId = $config['types'][$metaTags['tex1:type']];
-					$tmpAsset->license = new License();
-					$tmpAsset->license->licenseId = $config['licenses'][$metaTags['tex1:license']];
-					$tmpAsset->creator = new CreatorData();
-					$tmpAsset->creator->creatorId = 6;
-
-					$tmpAsset->thumbnailUrl = $metaTags['tex1:preview-image'];
+					$tmpAsset = new Asset(
+						assetName: $metaTags['tex1:name'],
+						url: $url,
+						date: $metaTags['tex1:release-date'],
+						tags: StringLogic::explodeFilterTrim(",",$metaTags['tex1:tags']),
+						type: new Type(
+							typeId: $this->config['types'][$metaTags['tex1:type']]
+						),
+						license: new License(
+							licenseId: $this->config['licenses'][$metaTags['tex1:license']]
+						),
+						creator: new Creator(
+							creatorId: $this->creatorId
+						),
+						thumbnailUrl: $metaTags['tex1:preview-image']
+					);
 
 					$tmpCollection->assets []= $tmpAsset;
 

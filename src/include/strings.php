@@ -13,6 +13,9 @@ class StringLogic{
 	public static function removeNewline($string){
 		return str_replace(array("\n\r", "\n", "\r"), '', $string);
 	}
+	public static function explodeFilterTrim(string $separator, string $string){
+		return array_filter(array_map('trim', explode($separator,$string)));
+	}
 }
 	
 ?>
