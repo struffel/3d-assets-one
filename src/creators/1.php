@@ -3,14 +3,11 @@
 	// ambientCG
 
 	class CreatorFetcher1 extends CreatorFetcher{
-		private final int $creatorId = 1;
+		private CREATOR $creator = CREATOR::AMBIENTCG;
 		
-		public function findNewAssets():AssetCollection{
+		public function findNewAssets(array $existingUrls, array $config):AssetCollection{
 			LogLogic::stepIn(__FUNCTION__);
 			LogLogic::write("Start looking for new assets");
-
-			// Get existing URLs
-			$existingUrls = $this->getExistingUrls();
 
 			// Contact API and get new assets
 			$initialParameters = [
@@ -19,9 +16,8 @@
 				"include"=>"displayData,tagData,imageData"
 			];
 
-			$this->config;
 
-			$targetUrl = $this->config['apiUrl']."?".http_build_query($initialParameters);
+			$targetUrl = $config['apiUrl']."?".http_build_query($initialParameters);
 
 			// Prepare asset collection
 			$tmpCollection = new AssetCollection();
@@ -32,23 +28,17 @@
 				// Iterate through result
 				foreach ($result['foundAssets'] as $acgAsset) {
 
-					if(!in_array($tmpAsset->url,$existingUrls)){
+					if(!in_array($acgAsset['shortLink'],$existingUrls)){
 
 						$tmpAsset = new Asset(
 							url:$acgAsset['shortLink'],
 							thumbnailUrl: $acgAsset['previewImage']['512-PNG'],
 							date: $acgAsset['releaseDate'],
-							assetName: $acgAsset['displayName'],
-							tags: array_unique($acgAsset['tags']),
-							type: new Type(
-								typeId:$this->config['types'][$acgAsset['dataType']]
-							),
-							license: new License(
-								licenseId: 1
-							),
-							creator: new Creator(
-								creatorId: 1
-							)
+							name: $acgAsset['displayName'],
+							tags: $acgAsset['tags'],
+							type: TYPE::from($config['types'][$acgAsset['dataType']]),
+							license: LICENSE::CC0,
+							creator: $this->creator
 						);
 
 						$tmpCollection->assets[] = $tmpAsset;
@@ -61,9 +51,6 @@
 			}
 			LogLogic::stepOut(__FUNCTION__);
 			return $tmpCollection;
-		}
-		function postProcessThumbnail(string $imageBlob): string{
-			return $imageBlob;
 		}
 	}
 ?>

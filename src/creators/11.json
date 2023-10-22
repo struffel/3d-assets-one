@@ -1,0 +1,12 @@
+{
+  "main": {
+    "apiUrl": "https://rawcatalog.com/freeset.xml",
+    "maxAssetsPerRound": 100
+  },
+  "xmlparsing": {
+    "blueprints": 0,
+    "materials": 1,
+    "atlases": 1,
+    "models": 2
+  }
+}

@@ -1,24 +1,23 @@
 <?php
 
-	// cgbookcase
+	// texturecan
 
-	class CreatorFetcher5 extends CreatorFetcher{
+	class CreatorFetcher6 extends CreatorFetcher{
 
-		private CREATOR $creator = CREATOR::CGBOOKCASE;
+		private CREATOR $creator = CREATOR::TEXTURECAN;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
-			
+
 			$urlArray = FetchLogic::fetchRemoteCommaSeparatedList($config['urlList']);
 
 			$tmpCollection = new AssetCollection();
 
+			$maxAssets = 5;
 			$countAssets = 0;
 			foreach ($urlArray as $url) {
 				if(!in_array($url,$existingUrls)){
+					$metaTags = HtmlLogic::readMetatagsFromHtmlString(FetchLogic::fetchRemoteData($url));
 
-					$siteContent = FetchLogic::fetchRemoteData($url);
-					$metaTags = HtmlLogic::readMetatagsFromHtmlString($siteContent);
-					
 					$tmpAsset = new Asset(
 						name: $metaTags['tex1:name'],
 						url: $url,
@@ -38,8 +37,6 @@
 					}
 				}
 			}
-			
-			
 
 			return $tmpCollection;
 		}
