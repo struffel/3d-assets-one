@@ -239,7 +239,7 @@
 		public function __construct(
 		// Basics
 		public int $offset = 0,
-		public int $limit = 0,
+		public int $limit = 100,
 		public SortingOrder $sort = SortingOrder::LATEST,
 
 		// Filters
