@@ -1,11 +1,12 @@
 <?php
 
 class DatabaseLogic{
+
 	public static function writeAssetCollection(AssetCollection $newAssetCollection){
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Writing asset collection to DB");
 		foreach ($newAssetCollection->assets as $a) {
-			writeAssetToDatabase($a);
+			DatabaseLogic::writeAssetToDatabase($a);
 		}
 		LogLogic::write("Finished writing asset collection to DB");
 		LogLogic::stepOut(__FUNCTION__);
@@ -18,17 +19,7 @@ class DatabaseLogic{
 	}
 
 	public static function activateAsset(Asset $asset){
-		DatabaseLogic::runQuery("UPDATE Asset SET AssetActive = '1' WHERE AssetId = ?",[$asset->assetId]);
-	}
-
-	public static function getCreators(){
-		$sql = "SELECT CreatorId,CreatorSlug,CreatorName,CreatorDescription,BaseUrl,( SELECT COUNT(AssetId) FROM Asset WHERE Asset.AssetActive = 1 AND Asset.CreatorId = Creator.CreatorId ) as AssetCount FROM Creator;";
-		$sqlResult = DatabaseLogic::runQuery($sql);
-		$output = [];
-		while($row = $sqlResult->fetch_assoc()){
-			$output []= $row;
-		}
-		return $output;
+		DatabaseLogic::runQuery("UPDATE Asset SET AssetActive = '1' WHERE AssetId = ?",[$asset->id]);
 	}
 
 	public static function getUrlFromAssetId(string $assetId) : string{
@@ -40,7 +31,7 @@ class DatabaseLogic{
 		return $row['AssetUrl'];
 	}
 
-	public static function addAssetClickByAssetId($assetId){
+	public static function addAssetClickByAssetId(int $assetId){
 		$sql = "INSERT INTO Click(AssetId,Day,Count) VALUES (?,NOW(),1) ON DUPLICATE KEY UPDATE Count = Count+1;";
 		$sqlParameters = [intval($assetId)];
 		DatabaseLogic::runQuery($sql,$sqlParameters);
@@ -50,11 +41,10 @@ class DatabaseLogic{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Inserting Asset: ".$newAsset->url);
 
-
 		// Base Asset
 		$sql = "INSERT INTO Asset (AssetId, AssetName, AssetUrl, AssetThumbnailUrl, AssetDate, LicenseId, TypeId, CreatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
-		$parameters = [$newAsset->assetName, $newAsset->url,$newAsset->thumbnailUrl,$newAsset->date,$newAsset->license->licenseId,$newAsset->type->typeId,$newAsset->creator->creatorId];
-		$result = runQuery($sql,$parameters);
+		$parameters = [$newAsset->name, $newAsset->url,$newAsset->thumbnailUrl,$newAsset->date,$newAsset->license->value,$newAsset->type->value,$newAsset->creator->value];
+		$result = DatabaseLogic::runQuery($sql,$parameters);
 
 		// Tags
 		foreach ($newAsset->tags as $tag) {
@@ -70,10 +60,51 @@ class DatabaseLogic{
 		LogLogic::write("Loading assets based on query: ".var_export($query, true));
 
 		// Begin defining SQL string and parameters for prepared statement
-		$sql = "SELECT SQL_CALC_FOUND_ROWS ";
-		$sqlParameters = array();
+		$sqlCommand = " SELECT assetId,assetUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,group_concat(tagName,',') as tags FROM ";
+		$sqlValues = [];
 
-		$requiredColumns = array();
+		// Tag filter
+
+		$sqlCommand .= " ( SELECT assetId FROM Tag ";
+		foreach ($query->filterTag as $tag) {
+			$sqlCommand .= " INTERSECT SELECT assetId FROM Tag WHERE tagName=? ";
+			$sqlValues []= $tag;
+		}
+		$sqlCommand .= " ) LEFT JOIN Asset USING (assetId) LEFT JOIN Tag USING (assetId) WHERE TRUE ";
+
+		if($query->filterAssetId){
+			$sqlCommand .= " AND assetId IN (?) ";
+			$sqlValues []= $query->filterAssetId;
+		}
+
+		if($query->filterCreator){
+			$sqlCommand .= " AND creatorId IN (?) ";
+			$sqlValues []= $query->filterCreator;
+		}
+
+		if($query->filterLicense){
+			$sqlCommand .= " AND licenseId IN (?) ";
+			$sqlValues []= $query->filterLicense;
+		}
+
+		if($query->filterType){
+			$sqlCommand .= " AND licenseId IN (?) ";
+			$sqlValues []= $query->filterType;
+		}
+
+		if($query->filterActive){
+			$sqlCommand .= " AND assetActive=? ";
+			$sqlValues []= $query->filterActive;
+		}
+
+		/*
+
+	
+LEFT JOIN Asset USING (assetId) LEFT JOIN Tag USING (assetId)
+		*/
+
+
+		/*$requiredColumns = array();
 		$requiredTables = array();
 
 		$requiredTablesForFilter = [
@@ -273,7 +304,7 @@ class DatabaseLogic{
 			
 			$output->assets []=$newAsset;
 			
-		}
+		}*/
 
 		
 		LogLogic::stepOut(__FUNCTION__);

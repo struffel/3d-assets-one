@@ -171,8 +171,8 @@
 
 	class Asset{
 		public function __construct(
-			public ?string $assetId = NULL,
-			public ?string $assetName = NULL,
+			public ?string $id = NULL,
+			public ?string $name = NULL,
 			public ?string $url = NULL,
 			public ?string $date = NULL,
 			public ?array $tags = NULL,
@@ -242,20 +242,13 @@
 		public int $limit = 0,
 		public SortingOrder $sort = SortingOrder::LATEST,
 
-		// Inclusions
-		public bool $includeTag = false,
-		public bool $includeCreator = false,
-		public bool $includeLicense = false,
-		public bool $includeType = false,
-		public bool $includeInternal = false,
-
 		// Filters
 		public ?array $filterAssetId = NULL,
 		public ?array $filterTag = NULL,
 		public ?array $filterCreator = NULL,		// CREATOR
 		public ?array $filterLicense = NULL,		// LICENSE
 		public ?array $filterType = NULL,			// TYPE
-		public ?bool $filterActive = true,
+		public ?int $filterActive = 1,			// 0: Inactive, 1: Active, -1: Disabled, NULL: Any
 
 		){}
 		
