@@ -97,6 +97,17 @@ class DatabaseLogic{
 			$sqlValues []= $query->filterActive;
 		}
 
+		// Sort
+		$sqlCommand .= match ($query->sort) {
+			SortingOrder::LATEST => ,
+			 => ,
+		}
+
+		// Offset and Limit
+		$sqlCommand .= " LIMIT ? OFFSET ? ";
+		$sqlValues []= $query->offset;
+		$sqlValues []=$query->limit;
+
 		/*
 
 	
