@@ -1,27 +1,24 @@
 <?php
 	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
-	initializeLog("activateAssets");
+	LogLogic::initialize("activateAssets");
 
-	$query = new AssetQuery();
-	$query->filter->active=false;
-	$query->include->internal=true;
-	$query->include->creator = true;
-	$query->limit = 2;
-	$query->sort="random";
-	$assetsToActivate = loadAssetsFromDatabase($query);
+	$query = new AssetQuery(
+		filterActive: false,
+		#includeInternal?
+		limit: 2,
+		sort: SortingOrder::RANDOM,
+
+	);
+
+	$assetsToActivate = AssetLogic::getAssets($query);
 	foreach ($assetsToActivate->assets as $a) {
 
-		$creatorId = $a->creator->creatorId;
-		$creatorClass = "Creator".$creatorId;
-		require_once $_SERVER['DOCUMENT_ROOT']."/../creators/$creatorId/main.php";
-		$creator = new $creatorClass();
+		$creatorFetcher = CreatorFetcher::fromCreator($a->creator);
+		$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
 
-		$imageData = fetchRemoteData($a->thumbnailUrl,$creator->generateThumbnailFetchingHeaders());
-		$imageData = $creator->postProcessThumbnail($imageData);
-
-		buildAndUploadThumbnailsToBackblazeB2($a->assetId,$imageData);
+		ImageLogic::buildAndUploadThumbnailsToBackblazeB2($a,$imageData);
 	}
-	activateAssetCollection($assetsToActivate);
-	echoCurrentLog();
+	AssetLogic::activateAssetCollection($assetsToActivate);
+	LogLogic::echoCurrentLog();
 ?>

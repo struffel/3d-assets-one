@@ -6,6 +6,14 @@ abstract class CreatorFetcher{
 	private CREATOR $creator;
 
 	// General functions
+
+	public static function fromCreator(CREATOR $creator) : CreatorFetcher {
+		$id = $creator->value;
+		require_once $_SERVER['DOCUMENT_ROOT']."/../creators/$id.php";
+		$creatorFetcherClassName = "CreatorFetcher$id";
+		return new $creatorFetcherClassName();
+	}
+
 	public final function runUpdate() : AssetCollection{
 
 		// Ensure that creator is set

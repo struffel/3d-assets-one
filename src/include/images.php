@@ -12,20 +12,21 @@ class ImageLogic{
 		["PNG",NULL,256]
 	];
 
-	public static function getBackblazeB2ThumbnailPath(?int $size,?string $extension,?string $backgroundColor,?string $assetId){
+	public static function getBackblazeB2ThumbnailPath(int $size,string $extension,?string $backgroundColor,Asset $asset){
 		$variation = strtoupper(implode("-",array_filter([$size,$extension,$backgroundColor])));
 		$extension = strtolower($extension);
-		return "thumbnail/$variation/$assetId.$extension";
+		$id = $asset->id;
+		return "thumbnail/$variation/$id.$extension";
 	}
 
 	public static function testForThumbnailsOnBackblazeB2(Asset $asset) : bool{
 		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Testing thumbnails for ".$asset->assetId);
+		LogLogic::write("Testing thumbnails for ".$asset->id);
 		
 		$isPresent = true;
 
 		foreach (ImageLogic::$thumbnailTemplate as $t) {
-			$isPresent &= BackblazeB2Logic::testForFile(ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset->assetId));
+			$isPresent &= BackblazeB2Logic::testForFile(ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset));
 		}
 		
 		LogLogic::write("Result: ".$isPresent);
@@ -33,11 +34,11 @@ class ImageLogic{
 		return $isPresent;
 	}
 
-	public static function buildAndUploadThumbnailsToBackblazeB2(string $assetId,string $originalImageData){
+	public static function buildAndUploadThumbnailsToBackblazeB2(Asset $asset, string $originalImageData){
 		LogLogic::stepIn(__FUNCTION__);
 		foreach (ImageLogic::$thumbnailTemplate as $t) {
-			$tmpThumbnail = ImageLogic::createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1],$assetId);
-			BackblazeB2Logic::uploadData($tmpThumbnail,ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$assetId));
+			$tmpThumbnail = ImageLogic::createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1],$asset);
+			BackblazeB2Logic::uploadData($tmpThumbnail,ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset));
 		}
 		LogLogic::stepOut(__FUNCTION__);
 	}
@@ -54,9 +55,9 @@ class ImageLogic{
 
 	}
 
-	public static function createThumbnailFromImageData(string $originalImageData,int $size,string $extension,string $backgroundColor,string $assetId) : string{
+	public static function createThumbnailFromImageData(string $originalImageData,int $size,string $extension,string $backgroundColor) : string{
 		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Building variation: $size/$extension/$backgroundColor/$assetId ");
+		LogLogic::write("Building variation: $size/$extension/$backgroundColor ");
 		$originalImageData = ImageLogic::parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing

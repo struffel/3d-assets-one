@@ -8,15 +8,15 @@ enum SortingOrder: string{
 
 class Asset{
 	public function __construct(
-		public ?int $id = NULL,
-		public string $name = NULL,
-		public string $url = NULL,
+		public ?int $id,
+		public string $name,
+		public string $url,
 		public string $thumbnailUrl,
-		public string $date = date("Y-m-d"),
+		public string $date,
 		public array $tags = [],
-		public TYPE $type = NULL,
-		public LICENSE $license = NULL,
-		public CREATOR $creator = NULL,
+		public TYPE $type,
+		public LICENSE $license,
+		public CREATOR $creator,
 		public bool $active = false
 	){}
 }
