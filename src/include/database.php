@@ -26,29 +26,39 @@ class DatabaseLogic{
 		LogLogic::stepOut(__FUNCTION__);
 	}
 
+	public static function generatePlaceholder(array $array){
+		if(sizeof($array) < 1){
+			return "";
+		}else{
+			return "?".str_repeat(",?",sizeof($array)-1);
+		}
+		
+	}
+
 	public static function runQuery(string $sql, array $parameters = []) : mysqli_result{
 		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Received SQL query to run: ".$sql." (".implode(",",$parameters).")");
+		LogLogic::write("Received SQL query to run: ".$sql." (".print_r($parameters,true).")");
 		
 		if(!isset(DatabaseLogic::$connection)){
 			DatabaseLogic::initializeConnection();
 		}
 
 		if(sizeof($parameters) > 0){
-			$dataType = str_repeat('s',sizeof($parameters));
-			$statement = DatabaseLogic::$connection->prepare($sql);
-			if($statement){
-				$statement->bind_param($dataType, ...$parameters);
-				$statement->execute();
-				$result = $statement->get_result();
-				if(DatabaseLogic::$connection->error){
-					LogLogic::write("Prepared statement execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
-				}else{
-					LogLogic::write("Prepared Statement OK");
+
+			// Turn any enums into their native representation
+			for ($i=0; $i < sizeof($parameters); $i++) { 
+				if($parameters[$i] instanceof \BackedEnum){
+					$parameters[$i] = $parameters[$i]->value;
 				}
-			}else{
-				LogLogic::write("Prepared statement preparation ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
 			}
+			echo "<pre>"; var_dump($sql,$parameters); echo "</pre>";
+			$result = DatabaseLogic::$connection->execute_query($sql,$parameters);
+			if(DatabaseLogic::$connection->error){
+				LogLogic::write("SQL execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
+			}else{
+				LogLogic::write("SQL OK");
+			}
+
 		}else{
 			$result = DatabaseLogic::$connection->query($sql);
 			if(DatabaseLogic::$connection->error){

@@ -121,6 +121,15 @@ enum TYPE : int {
 			TYPE::BRUSH => 'Brush',
 		};
 	}
+
+	public static function fromSlug(string $slug) : TYPE {
+		foreach (TYPE::cases() as $c) {
+			if($c->slug() === $slug){
+				return $c;
+			}
+		}
+	}
+
 }
 
 enum LICENSE : int {
@@ -160,5 +169,13 @@ enum LICENSE : int {
 			LICENSE::CC_BY_NC_ND => 'Creative Commons BY-NC-ND',
 			LICENSE::APACHE_2_0 => 'Apache License 2.0',
 		};
+	}
+
+	public static function fromSlug(string $slug) : LICENSE {
+		foreach (LICENSE::cases() as $c) {
+			if($c->slug() === $slug){
+				return $c;
+			}
+		}
 	}
 }

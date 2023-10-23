@@ -1,9 +1,14 @@
 -- Written for MySQL 8.0
 
-CREATE TABLE Asset (
+-- Drop the tables if they exist (optional).
+DROP TABLE IF EXISTS Tag;
+DROP TABLE IF EXISTS Asset;
+
+-- Create the Asset table.
+CREATE TABLE IF NOT EXISTS Asset (
     assetId INT NOT NULL AUTO_INCREMENT,
     assetUrl VARCHAR(255) NOT NULL,
-	assetThumbnailUrl VARCHAR(255),
+    assetThumbnailUrl VARCHAR(255),
     assetName VARCHAR(255) NOT NULL,
     assetActive INT NOT NULL,
     assetDate DATE,
@@ -14,9 +19,10 @@ CREATE TABLE Asset (
     PRIMARY KEY (assetId)
 );
 
-CREATE TABLE Tag (
+-- Create the Tag table.
+CREATE TABLE IF NOT EXISTS Tag (
     assetId INT NOT NULL,
     tagName VARCHAR(255) NOT NULL,
     PRIMARY KEY (assetId, tagName),
-    FOREIGN KEY (assetId) REFERENCES Asset(assetId)
+    FOREIGN KEY (assetId) REFERENCES Asset(assetId) ON DELETE CASCADE
 );

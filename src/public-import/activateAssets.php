@@ -7,7 +7,7 @@
 		filterActive: false,
 		#includeInternal?
 		limit: 2,
-		sort: SortingOrder::RANDOM,
+		sort: SORTING::RANDOM,
 
 	);
 

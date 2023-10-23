@@ -1,9 +1,20 @@
 <?php
 
-enum SortingOrder: string{
+use Illuminate\Cache\DatabaseLock;
+
+enum SORTING: string{
 	case LATEST = "latest";
 	case OLDEST = "oldest";
 	case RANDOM = "random";
+
+	public static function fromString(string $string) : SORTING{
+		return match ($string) {
+			"latest" => SORTING::LATEST,
+			"oldest" => SORTING::OLDEST,
+			"random" => SORTING::RANDOM,
+			default => SORTING::LATEST
+		};
+	}
 }
 
 class Asset{
@@ -34,7 +45,7 @@ class AssetQuery{
 	// Basics
 	public int $offset = 0,
 	public int $limit = 100,
-	public SortingOrder $sort = SortingOrder::LATEST,
+	public SORTING $sort = SORTING::LATEST,
 
 	// Filters
 	public ?array $filterAssetId = NULL,
@@ -45,6 +56,45 @@ class AssetQuery{
 	public ?int $filterActive = 1,				// 0: Inactive, 1: Active, -1: Disabled, NULL: Any
 
 	){}
+
+	public static function fromHttpGet(int $filterActive = 1) : AssetQuery{
+
+		// assetId filter
+		$filterAssetId = [];
+		foreach(StringLogic::explodeFilterTrim(",",$_GET['id'] ?? "") as $assetId) {
+			$filterAssetId []= intval($assetId);
+		}
+
+		// creator filter
+		$filterCreator = [];
+		foreach(StringLogic::explodeFilterTrim(",",$_GET['creator'] ?? "") as $creatorSlug){
+			$filterCreator []= CREATOR::fromSlug($creatorSlug);
+		}
+
+		// type filter
+		$filterType = [];
+		foreach(StringLogic::explodeFilterTrim(",",$_GET['type'] ?? "") as $typeSlug){
+			$filterType []= TYPE::fromSlug($typeSlug);
+		}
+		// license filter
+		$filterLicense = [];
+		foreach(StringLogic::explodeFilterTrim(",",$_GET['license'] ?? "") as $licenseSlug){
+			$filterLicense []= LICENSE::fromSlug($licenseSlug);
+		}
+
+		return new AssetQuery(
+			offset: intval($_GET['offset'] ?? 0),
+			limit: intval($_GET['limit'] ?? 100),
+			sort: SORTING::fromString($_GET['sort'] ?? "latest"),
+			filterAssetId: $filterAssetId,
+			filterTag: array_map('trim',array_filter(preg_split('/\s|,/',$_GET['q'] ?? ""))),
+			filterCreator: $filterCreator,
+			filterLicense: $filterLicense,
+			filterType: $filterType,
+			filterActive: $filterActive
+		);
+
+	}
 	
 }
 
@@ -134,62 +184,67 @@ class AssetLogic{
 		LogLogic::write("Loading assets based on query: ".var_export($query, true));
 
 		// Begin defining SQL string and parameters for prepared statement
-		$sqlCommand = " SELECT assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,group_concat(tagName,',') as assetTags FROM ";
+		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,GROUP_CONCAT(tagName SEPARATOR ',') as assetTags FROM ";
 		$sqlValues = [];
 
 		// Tag filter
 
-		$sqlCommand .= " ( SELECT assetId FROM Tag ";
+		$sqlCommand .= " ( SELECT DISTINCT assetId FROM Tag WHERE TRUE ";
 		foreach ($query->filterTag as $tag) {
-			$sqlCommand .= " INTERSECT SELECT assetId FROM Tag WHERE tagName=? ";
+			$sqlCommand .= " AND assetId IN ( SELECT assetId FROM Tag WHERE tagName=?) ";
 			$sqlValues []= $tag;
 		}
-		$sqlCommand .= " ) LEFT JOIN Asset USING (assetId) LEFT JOIN Tag USING (assetId) WHERE TRUE ";
+		$sqlCommand .= " ) TagResults LEFT JOIN Asset USING (assetId) LEFT JOIN Tag USING (assetId) WHERE TRUE ";
 
-		if($query->filterAssetId){
-			$sqlCommand .= " AND assetId IN (?) ";
-			$sqlValues []= $query->filterAssetId;
+		if(sizeof($query->filterAssetId) > 0){
+			$ph = DatabaseLogic::generatePlaceholder($query->filterAssetId);
+			$sqlCommand .= " AND assetId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues,$query->filterAssetId);
 		}
 
-		if($query->filterCreator){
-			$sqlCommand .= " AND creatorId IN (?) ";
-			$sqlValues []= $query->filterCreator;
+		if(sizeof($query->filterType) > 0){
+			$ph = DatabaseLogic::generatePlaceholder($query->filterType);
+			$sqlCommand .= " AND typeId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues,$query->filterType);
 		}
 
-		if($query->filterLicense){
-			$sqlCommand .= " AND licenseId IN (?) ";
-			$sqlValues []= $query->filterLicense;
+		if(sizeof($query->filterLicense) > 0){
+			$ph = DatabaseLogic::generatePlaceholder($query->filterLicense);
+			$sqlCommand .= " AND licenseId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues,$query->filterLicense);
 		}
 
-		if($query->filterType){
-			$sqlCommand .= " AND licenseId IN (?) ";
-			$sqlValues []= $query->filterType;
+		if(sizeof($query->filterCreator) > 0){
+			$ph = DatabaseLogic::generatePlaceholder($query->filterCreator);
+			$sqlCommand .= " AND creatorId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues,$query->filterCreator);
 		}
 
-		if($query->filterActive){
+		if(isset($query->filterActive)){
 			$sqlCommand .= " AND assetActive=? ";
 			$sqlValues []= $query->filterActive;
 		}
 
+		$sqlCommand .= " GROUP BY assetId ";
+
 		// Sort
 		$sqlCommand .= match ($query->sort) {
-			SortingOrder::LATEST => " ORDER BY assetDate DESC ",
-			SortingOrder::OLDEST => " ORDER BY assetDate ASC ",
-			SortingOrder::RANDOM => " ORDER BY RANDOM() "
+			SORTING::LATEST => " ORDER BY assetDate DESC ",
+			SORTING::OLDEST => " ORDER BY assetDate ASC ",
+			SORTING::RANDOM => " ORDER BY RANDOM() "
 		};
 
 		// Offset and Limit
 		$sqlCommand .= " LIMIT ? OFFSET ? ";
-		$sqlValues []= $query->offset;
 		$sqlValues []=$query->limit;
-
-
+		$sqlValues []=$query->offset;
+		
 		// Fetch data from DB
 		$databaseOutput = DatabaseLogic::runQuery($sqlCommand,$sqlValues);
 		$databaseOutputFoundRows = DatabaseLogic::runQuery("SELECT FOUND_ROWS() as RowCount;");
 
 		// Prepare the final asset collection
-		$nextCollectionQuery = $query;
+		$nextCollectionQuery = clone $query;
 		$nextCollectionQuery->offset += $nextCollectionQuery->limit;
 		$output = new AssetCollection(
 			totalNumberOfAssetsInBackend: $databaseOutputFoundRows->fetch_assoc()['RowCount'],
@@ -198,19 +253,22 @@ class AssetLogic{
 		
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
+
 			$output->assets []= new Asset(
-				active: $row['assetAcive'],
-				thumbnailUrl: $row['thumbnailUrl'],
+				active: $row['assetActive'],
+				thumbnailUrl: $row['assetThumbnailUrl'],
 				id: $row['assetId'],
 				name: $row['assetName'],
 				url: $row['assetUrl'],
 				date: $row['assetDate'],
-				tags: $row['assetTags'],
+				tags: explode(',',$row['assetTags']),
 				type: TYPE::from($row['typeId']),
 				license: LICENSE::from($row['licenseId']),
 				creator: CREATOR::from($row['creatorId'])
 			);
 		}
+
+		//var_dump($output);
 
 		LogLogic::stepOut(__FUNCTION__);
 		return $output;
