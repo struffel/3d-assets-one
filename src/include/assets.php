@@ -57,7 +57,7 @@ class Asset{
 		public LICENSE $license,
 		public CREATOR $creator,
 		public array $quirks = [],	// Array of QUIRK
-		public ASSET_STATUS = ASSET_STATUS::INACTIVE
+		public ASSET_STATUS $status = ASSET_STATUS::INACTIVE
 	){}
 }
 
@@ -77,25 +77,40 @@ class AssetCollection{
 class AssetQuery{
 	public function __construct(
 	// Basics
-	public int $offset = 0,
-	public int $limit = 100,
-	public SORTING $sort = SORTING::LATEST,
+	public int $offset = 0,						// ?offset
+	public int $limit = 100,					// ?limit
+	public SORTING $sort = SORTING::LATEST,		// ?sort
 
 	// Filters
-	public ?array $filterAssetId = NULL,		// Allows filtering for specific asset ids.
-	public ?array $filterTag = NULL,			// Assets must have ALL tags in the array in order to be included.
-	public ?array $filterCreator = NULL,		// CREATOR, limits the search to certain creators.
-	public ?array $filterLicense = NULL,		// LICENSE, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
-	public ?array $filterType = NULL,			// TYPE, defines which types of asset should be included. Empty array causes all types to be included.
-	public ?array $filterAvoidQuirk = NULL,		// QUIRK, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
-	public ?ASSET_STATUS $filterActive = ASSET_STATUS::ACTIVE,				// NULL => Any status
+	public ?array $filterAssetId = NULL,		// ?id, Allows filtering for specific asset ids.
+	public ?array $filterTag = NULL,			// ?tags, Assets must have ALL tags in the array in order to be included.
+	public ?array $filterCreator = NULL,		// ?creator, limits the search to certain creators.
+	public ?array $filterLicense = NULL,		// ?license, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
+	public ?array $filterType = NULL,			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
+	public ?array $filterAvoidQuirk = NULL,		// ?avoid, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
+	public ?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE,				// NULL => Any status
 
 	){}
+
+	public function toHttpGet() : string{
+		$output = [];
+		
+		$output['offset'] = $this->offset;
+		$output['limit'] = $this->limit;
+		$output['sort'] = $this->sort->value;
+		$output['id'] = implode(",",$this->filterAssetId);
+		$output['creator'] = implode(",",$this->filterCreator);
+		$output['license'] = implode(",",$this->filterLicense);
+		$output['type'] = implode(",",$this->filterTag);
+		$output['avoid'] = implode(",",$this->filterAvoidQuirk);
+
+		return http_build_query($output);
+	}
 
 	/**
 	 * Generates a new AssetQuery based on the current HTTP GET parameters in $_GET.
 	 */
-	public static function fromHttpGet(int $filterActive = 1) : AssetQuery{
+	public static function fromHttpGet(ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE) : AssetQuery{
 
 		// assetId filter
 		$filterAssetId = [];
@@ -122,7 +137,7 @@ class AssetQuery{
 
 		// quirk filter
 		$filterAvoidQuirk = [];
-		foreach(StringLogic::explodeFilterTrim(","$_GET['avoid'] ?? "") as $quirkSlug){
+		foreach(StringLogic::explodeFilterTrim(",",$_GET['avoid'] ?? "") as $quirkSlug){
 			$filterAvoidQuirk []= QUIRK::fromSlug($quirkSlug);
 		}
 
@@ -136,7 +151,7 @@ class AssetQuery{
 			filterLicense: $filterLicense,
 			filterType: $filterType,
 			filterAvoidQuirk: $filterAvoidQuirk,
-			filterActive: $filterActive
+			filterStatus: $filterStatus
 		);
 
 	}
@@ -313,9 +328,9 @@ class AssetLogic{
 			$sqlValues = array_merge($sqlValues,$query->filterCreator);
 		}
 
-		if(isset($query->filterActive)){
+		if(isset($query->filterStatus)){
 			$sqlCommand .= " AND assetActive=? ";
-			$sqlValues []= $query->filterActive;
+			$sqlValues []= $query->filterStatus;
 		}
 
 		$sqlCommand .= " GROUP BY assetId ";
@@ -348,7 +363,7 @@ class AssetLogic{
 		while ($row = $databaseOutput->fetch_assoc()) {
 
 			$output->assets []= new Asset(
-				active: $row['assetActive'],
+				status: ASSET_STATUS::from($row['assetActive']),
 				thumbnailUrl: $row['assetThumbnailUrl'],
 				id: $row['assetId'],
 				name: $row['assetName'],

@@ -51,7 +51,7 @@ class DatabaseLogic{
 					$parameters[$i] = $parameters[$i]->value;
 				}
 			}
-			echo "<pre>"; var_dump($sql,$parameters); echo "</pre>";
+			//echo "<pre>"; var_dump($sql,$parameters); echo "</pre>";
 			$result = DatabaseLogic::$connection->execute_query($sql,$parameters);
 			if(DatabaseLogic::$connection->error){
 				LogLogic::write("SQL execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");

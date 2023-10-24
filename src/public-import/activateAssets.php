@@ -4,11 +4,9 @@
 	LogLogic::initialize("activateAssets");
 
 	$query = new AssetQuery(
-		filterActive: false,
-		#includeInternal?
+		filterStatus:  ASSET_STATUS::INACTIVE,
 		limit: 2,
 		sort: SORTING::RANDOM,
-
 	);
 
 	$assetsToActivate = AssetLogic::getAssets($query);

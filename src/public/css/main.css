@@ -1,15 +1,58 @@
-@import url("./bulma.min.css");
+/*@import url('https://unpkg.com/fylgja/fylgja.css');*/
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
 
-.scaleHover{
-	transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
+header{
+
+	.logo{
+		font-family: 'Red Hat Display', sans-serif;
+		font-size: 4em;
+		width:100%;
+		text-align: center;
+	}
+
+	.navbar{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		.header-link{
+			padding: 4px;
+		}
+
+	}
 }
-.scaleHoverStrong:hover{
-	transform: scale(1.05);
-}
-.scaleHoverSubtle:hover{
-	transform: scale(1.0125);
-}
-.logo{
-	font-family: 'Red Hat Display', sans-serif;
+
+main{
+
+	display:flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	margin-left: 50px;
+	margin-right: 50px;
+
+	#asset-count{
+		width: 100%;
+		text-align: center;
+		margin: 5px;
+	}
+
+	.asset-box{
+		transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
+		width:128px;
+		height: 128px;
+
+		.asset-image{
+			
+		}
+
+	}
+
+	.asset-box:hover{
+		transform: scale(1.05);
+	}
+
+	.load-more{
+		width:100%;
+	}
 }

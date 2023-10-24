@@ -9,22 +9,22 @@ $assets = AssetLogic::getAssets($query);
 
 <?php if($query->offset == 0){ ?>
 
-	<div id="asset-count">Found <?=$assets->totalNumberOfAssetsInBackend?> assets.</div>
+	<div id="asset-count" class="asset-count" >Found <?=$assets->totalNumberOfAssetsInBackend?> assets.</div>
 
 <?php } ?>
 
 <?php foreach ($assets->assets as $a) { ?>
 
-	<div>
-		<a href="/go?id=<?=$a->id?>" class="scaleHover scaleHoverStrong box is-clipped is-bordered mx-1 my-1" style="z-index: 99;">
-			<figure class="image is-128x128">
-				<img onload="this.style.opacity = '100%'" alt="<?=$a->name?>" width="256" height="256" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg" style="opacity: 1;">
-			</figure>
+	<div class="asset-box">
+		<a href="/go?id=<?=$a->id?>" style="z-index: 99;">
+			<img title="<?=$a->name?>" class="asset-image" alt="<?=$a->name?>" width="128" height="128" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
 
 <?php } ?>
 
-<?php if($assets->hasMoreAssets){ ?>
-	<button  >load more</button>
+<?php if($assets->hasMoreAssets OR true){ ?>
+	<div class="load-more" id="loadMore">
+		<button hx-get="/render/asset-list.php?<?=$assets->nextCollection->toHttpGet()?>" hx-trigger="click" hx-swap="outerHTML" hx-target="#loadMore">load more</button>
+	</div>
 <?php } ?>

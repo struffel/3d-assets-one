@@ -69,7 +69,7 @@ enum CREATOR : int {
 		return match ($this){
 			CREATOR::AMBIENTCG => 'https://docs.ambientcg.com/license/',
 			default => ""
-		}
+		};
 	}
 
 	public function baseUrl(): string {
@@ -109,18 +109,18 @@ enum QUIRK : int {
 		return match ($this){
 			QUIRK::SIGNUP_REQUIRED => 'sign-up',
 			QUIRK::PAYMENT_REQUIRED => 'payment',
-			QUIRK::ADS => 'ads'
+			QUIRK::ADS => 'ads',
 			QUIRK::ASSET_PACK => 'asset-pack'
-		}
+		};
 	}
 
 	public function name() : string{
 		return match ($this){
 			QUIRK::SIGNUP_REQUIRED => 'Sign-up required',
 			QUIRK::PAYMENT_REQUIRED => 'Payment required',
-			QUIRK::ADS => 'Advertisements'
+			QUIRK::ADS => 'Advertisements',
 			QUIRK::ASSET_PACK => 'Asset Packs'
-		}
+		};
 	}
 
 	public static function fromSlug(string $slug) : QUIRK {
