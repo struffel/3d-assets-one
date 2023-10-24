@@ -92,6 +92,37 @@ enum CREATOR : int {
 
 }
 
+enum QUIRK : int {
+	case SIGNUP_REQUIRED = 1;
+	case PAYMENT_REQUIRED = 2;
+	case ADVERTISEMENTS = 3;
+
+	public function slug() : string{
+		return match ($this){
+			QUIRK::SIGNUP_REQUIRED => 'sign-up',
+			QUIRK::PAYMENT_REQUIRED => 'payment',
+			QUIRK::ADVERTISEMENTS => 'ads'
+		}
+	}
+
+	public function name() : string{
+		return match ($this){
+			QUIRK::SIGNUP_REQUIRED => 'Sign-up required',
+			QUIRK::PAYMENT_REQUIRED => 'Payment required',
+			QUIRK::ADVERTISEMENTS => 'Showing ads'
+		}
+	}
+
+	public static function fromSlug(string $slug) : QUIRK {
+		foreach (QUIRK::cases() as $c) {
+			if($c->slug() === $slug){
+				return $c;
+			}
+		}
+	}
+
+}
+
 enum TYPE : int {
 	case OTHER = 0;
 	case PBR_MATERIAL = 1;
@@ -159,7 +190,7 @@ enum LICENSE : int {
 
 	public function name(): string {
 		return match ($this) {
-			LICENSE::CUSTOM => 'Custom Free License - Check Website',
+			LICENSE::CUSTOM => 'Custom License - Check Website',
 			LICENSE::CC0 => 'Creative Commons CC0',
 			LICENSE::CC_BY => 'Creative Commons BY',
 			LICENSE::CC_BY_SA => 'Creative Commons BY-SA',
