@@ -76,7 +76,7 @@ class AssetQuery{
 	public ?array $filterCreator = NULL,		// CREATOR, limits the search to certain creators.
 	public ?array $filterLicense = NULL,		// LICENSE, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
 	public ?array $filterType = NULL,			// TYPE, defines which types of asset should be included. Empty array causes all types to be included.
-	public ?array $filterQuirk = NULL,			// QUIRK, defines which quirks a site MAY have and still be included. Empty array causes all quirks to be allowed.
+	public ?array $filterAvoidQuirk = NULL,		// QUIRK, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
 	public ?ASSET_STATUS $filterActive = ASSET_STATUS::ACTIVE,				// NULL => Any status
 
 	){}
@@ -109,6 +109,12 @@ class AssetQuery{
 			$filterLicense []= LICENSE::fromSlug($licenseSlug);
 		}
 
+		// quirk filter
+		$filterAvoidQuirk = [];
+		foreach(StringLogic::explodeFilterTrim(","$_GET['avoid'] ?? "") as $quirkSlug){
+			$filterAvoidQuirk []= QUIRK::fromSlug($quirkSlug);
+		}
+
 		return new AssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
 			limit: intval($_GET['limit'] ?? 100),
@@ -118,11 +124,12 @@ class AssetQuery{
 			filterCreator: $filterCreator,
 			filterLicense: $filterLicense,
 			filterType: $filterType,
+			filterAvoidQuirk: $filterAvoidQuirk,
 			filterActive: $filterActive
 		);
 
 	}
-	
+
 }
 
 class AssetLogic{
@@ -219,6 +226,44 @@ class AssetLogic{
 	public static function getAssets(AssetQuery $query): AssetCollection{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Loading assets based on query: ".var_export($query, true));
+
+		/*
+
+		SQL statement reference:
+
+		SELECT SQL_CALC_FOUND_ROWS 
+			assetId,
+			assetUrl,
+			assetThumbnailUrl,
+			assetName,
+			assetActive,
+			assetDate,
+			assetClicks,
+			licenseId,
+			typeId,
+			creatorId,
+			GROUP_CONCAT(tagName SEPARATOR ',') as tags,
+			GROUP_CONCAT(quirkId SEPARATOR ',') as quirkIds,
+			assetClicks/POW(ABS(DATEDIFF(NOW(),assetDate))+1,1.25) as popularityScore
+		FROM
+			(
+				SELECT * FROM Asset
+				WHERE TRUE
+				AND creatorId IN (?)
+				AND typeId IN (?)
+				AND assetId IN (?)
+				AND licenseId IN (?)
+				AND assetActive=?
+			) AssetPrefiltered
+			LEFT JOIN Tag USING (assetId)
+			LEFT JOIN Quirk USING (assetId)
+		GROUP BY assetId
+		ORDER BY ?
+		HAVING TRUE
+		AND FIND_IN_SET(?,tags)
+		AND NOT FIND_IN_SET(?,quirkIds)
+
+		*/
 
 		// Begin defining SQL string and parameters for prepared statement
 		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,GROUP_CONCAT(tagName SEPARATOR ',') as assetTags FROM ";
