@@ -48,4 +48,3 @@
 			return ImageLogic::removeUniformBackground(FetchLogic::fetchRemoteData($url),2,2,0.015);
 		}
 	}
-?>

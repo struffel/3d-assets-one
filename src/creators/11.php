@@ -50,4 +50,3 @@
 			return $tmpCollection;
 		}
 	}
-?>

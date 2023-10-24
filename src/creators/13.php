@@ -98,4 +98,3 @@
 			return FetchLogic::fetchRemoteData($url,["referer" => "https://pbrmaterial.com/"]);
 		}
 	}
-?>
