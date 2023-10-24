@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <?php
+        require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
         include $_SERVER['DOCUMENT_ROOT']."/../components/head.php";
     ?>
     <body>
@@ -49,42 +50,17 @@
 				<ul>
 					<li><strong>?asset=id,id,...</strong> loads information about one or several specific assets.</li>
 					<li><strong>?tags=tag,tag,...</strong> loads information about all assets with <i>all</i> the given tags. Spaces in the input string will also be interpreted as commas.</li>
-					<li><strong>?asset=licenseSlug,licenseSlug,...</strong> loads information about all assets that have one of the licenses listed. License slugs are: <pre>cc-0
-cc-by
-cc-by-sa
-cc-by-nc
-cc-by-nd
-cc-by-nc-sa
-cc-by-nc-nd
-apache-2-0
-</pre></li>
-					<li><strong>?type=typeSlug,typeSlug,...</strong> loads information about all assets that have one of the types listed. Type slugs are: <pre>
-other
-pbr-material
-3d-model
-sbsar
-hdri
-brush
-</pre></li>
-					<li><strong>?creator=creatorSlug,creatorSlug,...</strong> loads information about all assets that were made by the creators listed. Creator slugs are: <pre>
-ambientcg
-polyhaven
-sharetextures
-3dtextures
-cgbookcase
-texturecan
-noemotionhdrs
-benianus3d
-chocofur
-gpuopen-matlib
-hdri-workshop
-pbrmaterials-com
-</pre></li>
-					<li><strong>?sort=order</strong> defines the sorting order. Possible Options are: <pre>
-latest
-oldest
-random
-</pre></li>
+					<li><strong>?asset=licenseSlug,licenseSlug,...</strong> loads information about all assets that have one of the licenses listed. License slugs are: 
+                        <pre></pre></li>
+					<li><strong>?type=typeSlug,typeSlug,...</strong> loads information about all assets that have one of the types listed. Type slugs are: 
+                        <pre><?=implode(PHP_EOL,array_map(fn(TYPE $t): string => $t->slug(),TYPE::cases()))?></pre>
+                    </li>
+					<li><strong>?creator=creatorSlug,creatorSlug,...</strong> loads information about all assets that were made by the creators listed. Creator slugs are: 
+                        <pre><?=implode(PHP_EOL,array_map(fn(CREATOR $t): string => $t->slug(),CREATOR::cases()))?></pre>
+                    </li>
+					<li><strong>?sort=order</strong> defines the sorting order. Possible Options are: 
+                        <pre><?=implode(PHP_EOL,array_map(fn(SORTING $t): string => $t->slug(),SORTING::cases()))?></pre>
+                    </li>
 					<li><strong>?limit=X&offset=Y</strong> allows for pagination. The default limit is 100 items.</li>
 					<li><strong>?include=attribute,attribute,...</strong> defines which attributes are included in the JSON output. Only assetId, assetName, url and date are included by default. Possible other attributes are:<pre>
 tag

@@ -1,12 +1,14 @@
 <?php
 
-use Illuminate\Cache\DatabaseLock;
-
 enum SORTING: string{
 	case LATEST = "latest";
 	case OLDEST = "oldest";
 	case RANDOM = "random";
 
+	/**
+	 * Returns the enum value for the string. 
+	 * Every other/invalid string gets turned into SORTING::LATEST.
+	 */
 	public static function fromString(string $string) : SORTING{
 		return match ($string) {
 			"latest" => SORTING::LATEST,
@@ -39,6 +41,10 @@ enum ASSET_STATUS: int {
 	case ACTIVE = 1;
 }
 
+/**
+ * The main asset class.
+ * It represents one PBR material, 3D model or other asset.
+ */
 class Asset{
 	public function __construct(
 		public ?int $id,
@@ -55,11 +61,16 @@ class Asset{
 	){}
 }
 
+/**
+ * A collection of `Asset`s.
+ * It is used for pagination.
+ */
 class AssetCollection{
 	public function __construct(
 		public array $assets = array(),
 		public ?int $totalNumberOfAssetsInBackend = NULL,
-		public ?AssetQuery $nextCollection = NULL
+		public ?AssetQuery $nextCollection = NULL,
+		public ?bool $hasMoreAssets = NULL
 	){}
 }
 

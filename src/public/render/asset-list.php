@@ -2,9 +2,6 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
-# SPÄTER AUSKOMMENTIEREN
-#LogLogic::initialize("asset-list");
-
 $query = AssetQuery::fromHttpGet();
 $assets = AssetLogic::getAssets($query);
 
@@ -14,7 +11,7 @@ $assets = AssetLogic::getAssets($query);
 
 	<div id="asset-count">Found <?=$assets->totalNumberOfAssetsInBackend?> assets.</div>
 
-<?php }else{echo $query->offset;} ?>
+<?php } ?>
 
 <?php foreach ($assets->assets as $a) { ?>
 
@@ -26,4 +23,8 @@ $assets = AssetLogic::getAssets($query);
 		</a>
 	</div>
 
+<?php } ?>
+
+<?php if($assets->hasMoreAssets){ ?>
+	<button  >load more</button>
 <?php } ?>
