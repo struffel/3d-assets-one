@@ -27,7 +27,8 @@
 						thumbnailUrl: $config['main']['thumbnailUrlBase'].$key.".png?height=512",
 						type: TYPE::from($config['types'][$phAsset['type']]),
 						license: LICENSE::CC0,
-						creator: $this->creator
+						creator: $this->creator,
+						quirks: [QUIRK::ADS]
 					);
 
 					$tmpCollection->assets[] = $tmpAsset;

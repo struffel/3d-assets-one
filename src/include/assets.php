@@ -229,7 +229,7 @@ class AssetLogic{
 
 		/*
 
-		SQL statement reference:
+		This is the general form that the SQL requests take:
 
 		SELECT SQL_CALC_FOUND_ROWS 
 			assetId,

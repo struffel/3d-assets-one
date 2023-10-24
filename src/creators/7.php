@@ -23,7 +23,6 @@
 						type: type::HDRI,
 						creator: CREATOR::NOEMOTIONHDRS,
 						license: LICENSE::CC_BY_ND,
-						
 					);
 
 					$tmpCollection->assets []= $tmpAsset;

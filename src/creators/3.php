@@ -25,7 +25,8 @@
 						type: TYPE::from($config['types'][$metaTags['tex1:type']]),
 						license: LICENSE::from($config['licenses'][strtolower($metaTags['tex1:license'])]),
 						creator: $this->creator,
-						thumbnailUrl: $metaTags['tex1:preview-image']
+						thumbnailUrl: $metaTags['tex1:preview-image'],
+						quirks: [QUIRK::ADS]
 					);
 
 					$tmpCollection->assets []= $tmpAsset;

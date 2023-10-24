@@ -39,7 +39,8 @@
 							},
 							creator: $this->creator,
 							license: LICENSE::CC0,
-							thumbnailUrl: $image
+							thumbnailUrl: $image,
+							quirks: [QUIRK::SIGNUP_REQUIRED]
 						);
 						
 						$tmpCollection->assets []= $tmpAsset;

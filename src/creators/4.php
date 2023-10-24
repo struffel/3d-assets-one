@@ -82,7 +82,8 @@
 								thumbnailUrl: $tmpThumbnail,
 								type: TYPE::PBR_MATERIAL,
 								license: LICENSE::CC0,
-								creator: $this->creator
+								creator: $this->creator,
+								quirks: [QUIRK::ADS]
 
 							);
 
