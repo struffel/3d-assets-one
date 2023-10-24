@@ -116,7 +116,7 @@ enum QUIRK : int {
 		return match ($this){
 			QUIRK::SIGNUP_REQUIRED => 'Sign-up required',
 			QUIRK::PAYMENT_REQUIRED => 'Payment required',
-			QUIRK::ADVERTISEMENTS => 'Showing ads'
+			QUIRK::ADVERTISEMENTS => 'Advertisements'
 		}
 	}
 

@@ -17,6 +17,28 @@ enum SORTING: string{
 	}
 }
 
+enum ASSET_STATUS: int {
+
+	/**
+	 * The asset is not active and should likely never be activated.
+	 * This may be, for example, because the asset fetching function for that creator
+	 * erroneously detects a certain page as an asset and keeping it in the DB is easier
+	 * than adding all relevant edge cases to the fetching function.
+	 */
+	case BLOCKED = -1;
+
+	/**
+	 * The asset is not active and awaits activation.
+	 * This happens with a freshly registered asset that has not yet had its thumbnail processed.
+	 */
+	case INACTIVE = 0;
+
+	/**
+	 * The asset is active and can be found in regular searches.
+	 */
+	case ACTIVE = 1;
+}
+
 class Asset{
 	public function __construct(
 		public ?int $id,
@@ -28,7 +50,8 @@ class Asset{
 		public TYPE $type,
 		public LICENSE $license,
 		public CREATOR $creator,
-		public bool $active = false
+		public array $quirks = [],	// Array of QUIRK
+		public ASSET_STATUS = ASSET_STATUS::INACTIVE
 	){}
 }
 
@@ -48,15 +71,19 @@ class AssetQuery{
 	public SORTING $sort = SORTING::LATEST,
 
 	// Filters
-	public ?array $filterAssetId = NULL,
-	public ?array $filterTag = NULL,
-	public ?array $filterCreator = NULL,		// CREATOR
-	public ?array $filterLicense = NULL,		// LICENSE
-	public ?array $filterType = NULL,			// TYPE
-	public ?int $filterActive = 1,				// 0: Inactive, 1: Active, -1: Disabled, NULL: Any
+	public ?array $filterAssetId = NULL,		// Allows filtering for specific asset ids.
+	public ?array $filterTag = NULL,			// Assets must have ALL tags in the array in order to be included.
+	public ?array $filterCreator = NULL,		// CREATOR, limits the search to certain creators.
+	public ?array $filterLicense = NULL,		// LICENSE, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
+	public ?array $filterType = NULL,			// TYPE, defines which types of asset should be included. Empty array causes all types to be included.
+	public ?array $filterQuirk = NULL,			// QUIRK, defines which quirks a site MAY have and still be included. Empty array causes all quirks to be allowed.
+	public ?ASSET_STATUS $filterActive = ASSET_STATUS::ACTIVE,				// NULL => Any status
 
 	){}
 
+	/**
+	 * Generates a new AssetQuery based on the current HTTP GET parameters in $_GET.
+	 */
 	public static function fromHttpGet(int $filterActive = 1) : AssetQuery{
 
 		// assetId filter
@@ -99,7 +126,10 @@ class AssetQuery{
 }
 
 class AssetLogic{
-	public static function writeAssetCollection(AssetCollection $newAssetCollection){
+	/**
+	 * Writes all Assets in an AssetCollection to the database.
+	 */
+	public static function writeAssetCollectionToDatabase(AssetCollection $newAssetCollection){
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Writing asset collection to DB");
 		foreach ($newAssetCollection->assets as $a) {
@@ -109,6 +139,9 @@ class AssetLogic{
 		LogLogic::stepOut(__FUNCTION__);
 	}
 
+	/**
+	 * Activates all assets in an AssetCollection.
+	 */
 	public static function activateAssetCollection(AssetCollection $assetCollection){
 		foreach ($assetCollection->assets as $a) {
 			AssetLogic::activateAsset($a);
@@ -142,6 +175,10 @@ class AssetLogic{
 		return array_unique($resultArray);
 	}
 
+	/**
+	 * Activates an asset in the database.
+	 * This causes it to show up in regular asset searches.
+	 */
 	public static function activateAsset(Asset $asset){
 		DatabaseLogic::runQuery("UPDATE Asset SET assetActive = '1' WHERE assetId = ?",[$asset->id]);
 	}
