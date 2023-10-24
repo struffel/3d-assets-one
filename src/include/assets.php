@@ -78,7 +78,7 @@ class AssetQuery{
 	public function __construct(
 	// Basics
 	public int $offset = 0,						// ?offset
-	public int $limit = 100,					// ?limit
+	public int $limit,					// ?limit
 	public SORTING $sort = SORTING::LATEST,		// ?sort
 
 	// Filters
@@ -143,7 +143,7 @@ class AssetQuery{
 
 		return new AssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
-			limit: intval($_GET['limit'] ?? 100),
+			limit: intval($_GET['limit'] ?? 250),
 			sort: SORTING::fromString($_GET['sort'] ?? "latest"),
 			filterAssetId: $filterAssetId,
 			filterTag: array_map('trim',array_filter(preg_split('/\s|,/',$_GET['q'] ?? ""))),

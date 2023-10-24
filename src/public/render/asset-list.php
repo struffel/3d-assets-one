@@ -16,7 +16,7 @@ $assets = AssetLogic::getAssets($query);
 <?php foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
-		<a href="/go?id=<?=$a->id?>" style="z-index: 99;">
+		<a href="/go?id=<?=$a->id?>">
 			<img title="<?=$a->name?>" class="asset-image" alt="<?=$a->name?>" width="128" height="128" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
