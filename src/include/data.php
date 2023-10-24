@@ -65,6 +65,13 @@ enum CREATOR : int {
 		};
 	}
 
+	public function licenseUrl(): string {
+		return match ($this){
+			CREATOR::AMBIENTCG => 'https://docs.ambientcg.com/license/',
+			default => ""
+		}
+	}
+
 	public function baseUrl(): string {
 		return match ($this) {
 			CREATOR::THREE_D_TEXTURES => "https://3dtextures.me",
