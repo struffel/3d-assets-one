@@ -18,6 +18,23 @@
 	</head>
 
     <body >
-			<header id="mainHeader" hx-get="/render/header.html" hx-trigger="load" hx-swap="outerHTML"></header>
-
-			<main id="assetList" hx-get="/render/asset-list.php" hx-trigger="load" hx-swap="innerHTML" ></main>
+		<header id="mainHeader" hx-get="/render/header.html" hx-trigger="load" hx-swap="outerHTML"></header>
+		<nav id="assetFilters">
+			<form >
+				<select name="creator" multiple>
+					<option></option>
+				</select>
+				<select name="type" multiple>
+					<option></option>
+				</select>
+				<select name="license" multiple>
+					<option></option>
+				</select>
+				<select name="avoid" multiple>
+					<option></option>
+				</select>
+			</form>
+		</nav>
+		<main id="assetList" hx-get="/render/asset-list.php" hx-trigger="load" hx-swap="innerHTML" ></main>
+	</body>
+</html>
