@@ -16,7 +16,7 @@ $assets = AssetLogic::getAssets($query);
 <?php foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
-		<a href="/go?id=<?=$a->id?>">
+		<a href="/go?id=<?=$a->id?>" onmouseover="">
 			<img title="<?=$a->name?>" class="asset-image" alt="<?=$a->name?>" width="192" height="192" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
@@ -24,9 +24,7 @@ $assets = AssetLogic::getAssets($query);
 <?php } ?>
 
 <?php if($assets->nextCollection != NULL){ ?>
-	<div id="load-more" class="results-end-text">
-		<button hx-get="/render/asset-list.php?<?=$assets->nextCollection->toHttpGet()?>" hx-trigger="click,intersect once" hx-swap="outerHTML" hx-target="#load-more">load more</button>
-	</div>
+	<div style="opacity:0;transform:translateY(-500px);" id="load-more" hx-get="/render/asset-list.php?<?=$assets->nextCollection->toHttpGet()?>" hx-trigger="intersect once" hx-swap="outerHTML" ></div>
 <?php }else{ ?>
 	<div id="end-reached" class="results-end-text">
 		End of results.

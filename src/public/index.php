@@ -23,33 +23,64 @@
 		<header id="mainHeader" hx-get="/render/header.html" hx-trigger="load" hx-swap="outerHTML"></header>
 		<nav id="asset-filters">
 			<form 
-				onchange="window.scrollTo(0,0);"
+				id="asset-filters-form"
+				oninput="window.scrollTo(0,0);"
 				hx-get="/render/asset-list.php" 
 				hx-target="#asset-list" 
-				hx-trigger="change,load" 
+				hx-trigger="change,load,input delay:500ms" 
 				hx-swap="innerHTML"
 			>
-				<select name="creator[]" multiple>
+				<input type="text" name="q" placeholder="Keywords">
+
+				<select size="<?=sizeof(CREATOR::cases())?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
 					<?php foreach(CREATOR::cases() as $c){ ?>
-						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+						<option selected class="multi-select-option" value="<?=$c->slug()?>"><?=$c->name()?></option>
 					<?php } ?>
 				</select>
-				<select name="type[]" multiple>
+
+				<select size="<?=sizeof(TYPE::cases())?>" class="multi-select" name="type[]" multiple>
 				<?php foreach(TYPE::cases() as $c){ ?>
-						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+						<option selected value="<?=$c->slug()?>"><?=$c->name()?></option>
 					<?php } ?>
 				</select>
-				<select name="license[]" multiple>
+
+				<select size="<?=sizeof(LICENSE::cases())?>" class="multi-select" name="license[]" multiple>
 				<?php foreach(LICENSE::cases() as $c){ ?>
-						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+						<option selected value="<?=$c->slug()?>"><?=$c->name()?></option>
 					<?php } ?>
 				</select>
-				<select name="avoid[]" multiple>
+
+				<select size="<?=sizeof(QUIRK::cases())?>" class="multi-select" name="avoid[]" multiple>
 				<?php foreach(QUIRK::cases() as $c){ ?>
 						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
 					<?php } ?>
 				</select>
 			</form>
+			<div>
+
+			</div>
+			<script>
+				const multiSelectWithoutCtrl = ( elemSelector ) => {
+  
+				let options = document.querySelectorAll(`${elemSelector} option`);
+				
+				
+				options.forEach(function (element) {
+					element.addEventListener("mousedown", 
+						function (e) {
+							e.preventDefault();
+							element.parentElement.focus();
+							this.selected = !this.selected;
+							document.getElementById('asset-filters-form').dispatchEvent(new Event('change'));
+							return false;
+						}, false );
+				});
+
+				}
+
+
+				multiSelectWithoutCtrl('select') /* Can use ID or Class */
+			</script>
 		</nav>
 		<main id="asset-list"></main>
 	</body>

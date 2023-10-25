@@ -36,6 +36,7 @@ main{
 		transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
 		width:192px;
 		height: 192px;
+		border: 1px solid black;
 
 		.asset-image{
 			
@@ -63,6 +64,16 @@ main{
 
 #asset-filters{
 	position: fixed;
-	top: 5px;
-	left: 5px;
+	bottom: 5px;
+	right: 5px;
+
+	#asset-filters-form{
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.multi-select{
+		
+	}
+
 }
