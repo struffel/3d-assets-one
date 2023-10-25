@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<?php
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
+?><!DOCTYPE html>
 <html lang="en">
 	
 	<head>
@@ -19,22 +21,36 @@
 
     <body >
 		<header id="mainHeader" hx-get="/render/header.html" hx-trigger="load" hx-swap="outerHTML"></header>
-		<nav id="assetFilters">
-			<form >
-				<select name="creator" multiple>
-					<option></option>
+		<nav id="asset-filters">
+			<form 
+				onchange="window.scrollTo(0,0);"
+				hx-get="/render/asset-list.php" 
+				hx-target="#asset-list" 
+				hx-trigger="change,load" 
+				hx-swap="innerHTML"
+			>
+				<select name="creator[]" multiple>
+					<?php foreach(CREATOR::cases() as $c){ ?>
+						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+					<?php } ?>
 				</select>
-				<select name="type" multiple>
-					<option></option>
+				<select name="type[]" multiple>
+				<?php foreach(TYPE::cases() as $c){ ?>
+						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+					<?php } ?>
 				</select>
-				<select name="license" multiple>
-					<option></option>
+				<select name="license[]" multiple>
+				<?php foreach(LICENSE::cases() as $c){ ?>
+						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+					<?php } ?>
 				</select>
-				<select name="avoid" multiple>
-					<option></option>
+				<select name="avoid[]" multiple>
+				<?php foreach(QUIRK::cases() as $c){ ?>
+						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+					<?php } ?>
 				</select>
 			</form>
 		</nav>
-		<main id="assetList" hx-get="/render/asset-list.php" hx-trigger="load" hx-swap="innerHTML" ></main>
+		<main id="asset-list"></main>
 	</body>
 </html>

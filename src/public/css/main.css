@@ -24,23 +24,18 @@ header{
 
 main{
 
-	display:flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
+	display:grid;
+	grid-template-columns: repeat(auto-fit, minmax(192px, max-content));
+	place-items: center;
+	place-content: center;
 	margin-left: 50px;
 	margin-right: 50px;
 
-	#asset-count{
-		width: 100%;
-		text-align: center;
-		margin: 5px;
-	}
-
 	.asset-box{
+		display: inline-block;
 		transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
-		width:128px;
-		height: 128px;
+		width:192px;
+		height: 192px;
 
 		.asset-image{
 			
@@ -52,7 +47,22 @@ main{
 		transform: scale(1.05);
 	}
 
-	.load-more{
-		width:100%;
+	#asset-count-text{
+		width: 100%;
+		text-align: center;
+		margin: 5px;
+		grid-column: 1/-1;
 	}
+
+	.results-end-text{
+		width: 100%;
+		text-align: center;
+		grid-column: 1/-1;
+	}
+}
+
+#asset-filters{
+	position: fixed;
+	top: 5px;
+	left: 5px;
 }

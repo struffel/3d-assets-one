@@ -69,8 +69,7 @@ class AssetCollection{
 	public function __construct(
 		public array $assets = array(),
 		public ?int $totalNumberOfAssetsInBackend = NULL,
-		public ?AssetQuery $nextCollection = NULL,
-		public ?bool $hasMoreAssets = NULL
+		public ?AssetQuery $nextCollection = NULL
 	){}
 }
 
@@ -78,7 +77,7 @@ class AssetQuery{
 	public function __construct(
 	// Basics
 	public int $offset = 0,						// ?offset
-	public int $limit,					// ?limit
+	public int $limit,							// ?limit
 	public SORTING $sort = SORTING::LATEST,		// ?sort
 
 	// Filters
@@ -93,16 +92,19 @@ class AssetQuery{
 	){}
 
 	public function toHttpGet() : string{
+
+		$enumToSlugConverter = function($e){return $e->slug();};
+
 		$output = [];
 		
 		$output['offset'] = $this->offset;
 		$output['limit'] = $this->limit;
 		$output['sort'] = $this->sort->value;
-		$output['id'] = implode(",",$this->filterAssetId);
-		$output['creator'] = implode(",",$this->filterCreator);
-		$output['license'] = implode(",",$this->filterLicense);
-		$output['type'] = implode(",",$this->filterTag);
-		$output['avoid'] = implode(",",$this->filterAvoidQuirk);
+		$output['id'] = $this->filterAssetId;
+		$output['creator'] = array_map($enumToSlugConverter,$this->filterCreator);
+		$output['license'] = array_map($enumToSlugConverter,$this->filterLicense);
+		$output['type'] = array_map($enumToSlugConverter,$this->filterTag);
+		$output['avoid'] = array_map($enumToSlugConverter,$this->filterAvoidQuirk);
 
 		return http_build_query($output);
 	}
@@ -114,30 +116,30 @@ class AssetQuery{
 
 		// assetId filter
 		$filterAssetId = [];
-		foreach(StringLogic::explodeFilterTrim(",",$_GET['id'] ?? "") as $assetId) {
+		foreach($_GET['id'] ?? [] as $assetId) {
 			$filterAssetId []= intval($assetId);
 		}
 
 		// creator filter
 		$filterCreator = [];
-		foreach(StringLogic::explodeFilterTrim(",",$_GET['creator'] ?? "") as $creatorSlug){
+		foreach($_GET['creator'] ?? [] as $creatorSlug){
 			$filterCreator []= CREATOR::fromSlug($creatorSlug);
 		}
 
 		// type filter
 		$filterType = [];
-		foreach(StringLogic::explodeFilterTrim(",",$_GET['type'] ?? "") as $typeSlug){
+		foreach($_GET['type'] ?? [] as $typeSlug){
 			$filterType []= TYPE::fromSlug($typeSlug);
 		}
 		// license filter
 		$filterLicense = [];
-		foreach(StringLogic::explodeFilterTrim(",",$_GET['license'] ?? "") as $licenseSlug){
+		foreach($_GET['license'] ?? [] as $licenseSlug){
 			$filterLicense []= LICENSE::fromSlug($licenseSlug);
 		}
 
 		// quirk filter
 		$filterAvoidQuirk = [];
-		foreach(StringLogic::explodeFilterTrim(",",$_GET['avoid'] ?? "") as $quirkSlug){
+		foreach($_GET['avoid'] ?? [] as $quirkSlug){
 			$filterAvoidQuirk []= QUIRK::fromSlug($quirkSlug);
 		}
 
@@ -352,12 +354,17 @@ class AssetLogic{
 		$databaseOutputFoundRows = DatabaseLogic::runQuery("SELECT FOUND_ROWS() as RowCount;");
 
 		// Prepare the final asset collection
-		$nextCollectionQuery = clone $query;
-		$nextCollectionQuery->offset += $nextCollectionQuery->limit;
 		$output = new AssetCollection(
-			totalNumberOfAssetsInBackend: $databaseOutputFoundRows->fetch_assoc()['RowCount'],
-			nextCollection: $nextCollectionQuery
+			totalNumberOfAssetsInBackend: $databaseOutputFoundRows->fetch_assoc()['RowCount']
 		);
+
+		// Add a query for more assets, if there are any 
+		if($output->totalNumberOfAssetsInBackend > $query->offset + $query->limit){
+			$nextCollectionQuery = clone $query;
+			$nextCollectionQuery->offset += $nextCollectionQuery->limit;
+			$output->nextCollection = $nextCollectionQuery;
+		}
+		
 		
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
