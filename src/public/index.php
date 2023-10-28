@@ -19,49 +19,57 @@
 		<link rel="stylesheet" href="/css/main.css">
 	</head>
 
-    <body >
+    <body>
 		<header id="mainHeader" hx-get="/render/header.html" hx-trigger="load" hx-swap="outerHTML"></header>
 		<nav id="asset-filters">
 			<form 
 				id="asset-filters-form"
 				oninput="window.scrollTo(0,0);"
+				onchange="window.scrollTo(0,0);"
 				hx-get="/render/asset-list.php" 
 				hx-target="#asset-list" 
 				hx-trigger="change,load,input delay:500ms" 
 				hx-swap="innerHTML"
 			>
-				<input type="text" name="q" placeholder="Keywords">
-
+				<label for="creator[]">Creator</label>
 				<select size="<?=sizeof(CREATOR::cases())?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
 					<?php foreach(CREATOR::cases() as $c){ ?>
-						<option selected class="multi-select-option" value="<?=$c->slug()?>"><?=$c->name()?></option>
+						<option class="multi-select-option" value="<?=$c->slug()?>"><?=$c->name()?></option>
 					<?php } ?>
 				</select>
 
+				<label for="type[]">Type</label>
 				<select size="<?=sizeof(TYPE::cases())?>" class="multi-select" name="type[]" multiple>
-				<?php foreach(TYPE::cases() as $c){ ?>
-						<option selected value="<?=$c->slug()?>"><?=$c->name()?></option>
-					<?php } ?>
-				</select>
-
-				<select size="<?=sizeof(LICENSE::cases())?>" class="multi-select" name="license[]" multiple>
-				<?php foreach(LICENSE::cases() as $c){ ?>
-						<option selected value="<?=$c->slug()?>"><?=$c->name()?></option>
-					<?php } ?>
-				</select>
-
-				<select size="<?=sizeof(QUIRK::cases())?>" class="multi-select" name="avoid[]" multiple>
-				<?php foreach(QUIRK::cases() as $c){ ?>
+					<?php foreach(TYPE::cases() as $c){ ?>
 						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
 					<?php } ?>
 				</select>
-			</form>
-			<div>
 
-			</div>
+				<label for="license[]">License</label>
+				<select size="<?=sizeof(LICENSE::cases())?>" class="multi-select" name="license[]" multiple>
+					<?php foreach(LICENSE::cases() as $c){ ?>
+						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+					<?php } ?>
+				</select>
+
+				<label for="avoid[]">Exclude</label>
+				<select size="<?=sizeof(QUIRK::cases())?>" class="multi-select" name="avoid[]" multiple>
+					<?php foreach(QUIRK::cases() as $c){ ?>
+						<option value="<?=$c->slug()?>"><?=$c->name()?></option>
+					<?php } ?>
+				</select>
+
+				<select name="sort">
+				<?php foreach(SORTING::cases() as $c){ ?>
+						<option value="<?=$c->value?>"><?=ucfirst($c->value)?></option>
+					<?php } ?>
+				</select>
+
+				<input type="text" name="q" placeholder="Tags...">
+			</form>
 			<script>
 				const multiSelectWithoutCtrl = ( elemSelector ) => {
-  
+
 				let options = document.querySelectorAll(`${elemSelector} option`);
 				
 				

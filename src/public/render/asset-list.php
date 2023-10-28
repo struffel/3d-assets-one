@@ -16,8 +16,15 @@ $assets = AssetLogic::getAssets($query);
 <?php foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
-		<a href="/go?id=<?=$a->id?>" onmouseover="">
-			<img title="<?=$a->name?>" class="asset-image" alt="<?=$a->name?>" width="192" height="192" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
+		<a href="/go?id=<?=$a->id?>" >
+			<img class="asset-creator-image" width="24" height="24" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/<?=$a->creator->value?>.png">
+			<span class="asset-name"><?=$a->name?></span>
+			<span class="asset-quirks">
+				<?php foreach($a->quirks as $q){ ?>
+					<span><?=$q->value?></span>
+				<?php } ?>
+			</span>
+			<img class="asset-image" alt="<?=$a->name?>" width="192" height="192" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
 
