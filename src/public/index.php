@@ -28,7 +28,7 @@
 				onchange="window.scrollTo(0,0);"
 				hx-get="/render/asset-list.php" 
 				hx-target="#asset-list" 
-				hx-trigger="change,load,input delay:500ms" 
+				hx-trigger="change,load,input delay:200ms" 
 				hx-swap="innerHTML"
 			>
 				<label for="creator[]">Creator</label>

@@ -1,6 +1,10 @@
 /*@import url('https://unpkg.com/fylgja/fylgja.css');*/
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
 
+:root{
+	--asset-box-size: 150px;
+}
+
 *{
 	box-sizing: border-box;
 }
@@ -42,7 +46,7 @@ main{
 	grid-area: main;
 
 	display:grid;
-	grid-template-columns: repeat(auto-fit, minmax(192px, max-content));
+	grid-template-columns: repeat(auto-fit, minmax(var(--asset-box-size), max-content));
 	place-items: center;
 	place-content: center;
 	margin-left: 50px;
@@ -52,8 +56,8 @@ main{
 	.asset-box{
 		display: inline-block;
 		transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
-		width:192px;
-		height: 192px;
+		width:var(--asset-box-size);
+		height: var(--asset-box-size);
 		border: 1px solid black;
 		background-color: white;
 
@@ -61,6 +65,8 @@ main{
 
 		.asset-image{
 			padding:5px;
+			width: 100%;
+			height: 100%;
 		}
 
 		.asset-creator-image{

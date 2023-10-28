@@ -24,7 +24,7 @@ $assets = AssetLogic::getAssets($query);
 					<span><?=$q->value?></span>
 				<?php } ?>
 			</span>
-			<img class="asset-image" alt="<?=$a->name?>" width="192" height="192" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
+			<img class="asset-image" alt="<?=$a->name?>" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
 

@@ -255,56 +255,22 @@ class AssetLogic{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Loading assets based on query: ".var_export($query, true));
 
-		/*
-
-		This is the general form that the SQL requests take:
-
-		SELECT SQL_CALC_FOUND_ROWS 
-			assetId,
-			assetUrl,
-			assetThumbnailUrl,
-			assetName,
-			assetActive,
-			assetDate,
-			assetClicks,
-			licenseId,
-			typeId,
-			creatorId,
-			GROUP_CONCAT(tagName SEPARATOR ',') as tags,
-			GROUP_CONCAT(quirkId SEPARATOR ',') as quirkIds,
-			assetClicks/POW(ABS(DATEDIFF(NOW(),assetDate))+1,1.25) as popularityScore
-		FROM
-			(
-				SELECT * FROM Asset
-				WHERE TRUE
-				AND creatorId IN (?)
-				AND typeId IN (?)
-				AND assetId IN (?)
-				AND licenseId IN (?)
-				AND assetActive=?
-			) AssetPrefiltered
-			LEFT JOIN Tag USING (assetId)
-			LEFT JOIN Quirk USING (assetId)
-		GROUP BY assetId
-		ORDER BY ?
-		HAVING TRUE
-		AND FIND_IN_SET(?,tags)
-		AND NOT FIND_IN_SET(?,quirkIds)
-
-		*/
-
 		// Begin defining SQL string and parameters for prepared statement
-		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,GROUP_CONCAT(tagName SEPARATOR ',') as assetTags FROM ";
+		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
 		$sqlValues = [];
 
 		// Tag filter
 
-		$sqlCommand .= " ( SELECT DISTINCT assetId FROM Tag WHERE TRUE ";
-		foreach ($query->filterTag as $tag) {
-			$sqlCommand .= " AND assetId IN ( SELECT assetId FROM Tag WHERE tagName=?) ";
-			$sqlValues []= $tag;
+		if(sizeof($query->filterTag) > 0){
+			$sqlCommand .= " RIGHT JOIN ( SELECT DISTINCT assetId FROM Tag WHERE TRUE ";
+			foreach ($query->filterTag as $tag) {
+				$sqlCommand .= " AND assetId IN ( SELECT assetId FROM Tag WHERE tagName=?) ";
+				$sqlValues []= $tag;
+			}
+			$sqlCommand .= " ) TagResults USING (assetId)";
 		}
-		$sqlCommand .= " ) TagResults LEFT JOIN Asset USING (assetId) LEFT JOIN Tag USING (assetId) WHERE TRUE ";
+
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) WHERE TRUE ";
 
 		if(sizeof($query->filterAssetId) > 0){
 			$ph = DatabaseLogic::generatePlaceholder($query->filterAssetId);
@@ -335,12 +301,17 @@ class AssetLogic{
 			$sqlValues []= $query->filterStatus;
 		}
 
-		$sqlCommand .= " GROUP BY assetId ";
+		if(sizeof($query->filterAvoidQuirk) > 0){
+			foreach ($query->filterAvoidQuirk as $q) {
+				$sqlCommand .= " AND ( quirkIds IS NULL OR NOT FIND_IN_SET(?, quirkIds) ) ";
+				$sqlValues []= $q;
+			}
+		}
 
 		// Sort
 		$sqlCommand .= match ($query->sort) {
-			SORTING::LATEST => " ORDER BY assetDate DESC ",
-			SORTING::OLDEST => " ORDER BY assetDate ASC ",
+			SORTING::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
+			SORTING::OLDEST => " ORDER BY assetDate ASC, assetId DESC ",
 			SORTING::RANDOM => " ORDER BY RAND() "
 		};
 
@@ -369,6 +340,11 @@ class AssetLogic{
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
 
+			$quirks = [];
+			foreach (array_filter(explode(",",$row['quirkIds'])) as $q) {
+				$quirks []= QUIRK::from(intval($q));
+			}
+
 			$output->assets []= new Asset(
 				status: ASSET_STATUS::from($row['assetActive']),
 				thumbnailUrl: $row['assetThumbnailUrl'],
@@ -379,11 +355,10 @@ class AssetLogic{
 				tags: explode(',',$row['assetTags']),
 				type: TYPE::from($row['typeId']),
 				license: LICENSE::from($row['licenseId']),
-				creator: CREATOR::from($row['creatorId'])
+				creator: CREATOR::from($row['creatorId']),
+				quirks: $quirks
 			);
 		}
-
-		//var_dump($output);
 
 		LogLogic::stepOut(__FUNCTION__);
 		return $output;
