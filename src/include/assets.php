@@ -341,7 +341,7 @@ class AssetLogic{
 		$sqlCommand .= match ($query->sort) {
 			SORTING::LATEST => " ORDER BY assetDate DESC ",
 			SORTING::OLDEST => " ORDER BY assetDate ASC ",
-			SORTING::RANDOM => " ORDER BY RANDOM() "
+			SORTING::RANDOM => " ORDER BY RAND() "
 		};
 
 		// Offset and Limit
