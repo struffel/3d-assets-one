@@ -26,8 +26,9 @@
 			<span style="color:#CB6CE6;">3D</span><span>assets</span><span style="color:#7ED957;">.</span><span>one</span>
 		</div>
 		<nav class="navbar">
-			<a hx-get="/render/about-creators.php" hx-target="main" hx-trigger="click">Meet the creators</a>
-			<a hx-get="/render/about-site.php" hx-target="main" hx-trigger="click" >About this site</a>
+			<button hx-get="/render/about-creators.php" hx-target="main" hx-trigger="click">Assets</button>
+			<button hx-get="/render/about-creators.php" hx-target="main" hx-trigger="click">Creators</button>
+			<button hx-get="/render/about-site.php" hx-target="main" hx-trigger="click" >About</button>
 		</nav>
 	</header>
 			<form 
@@ -74,7 +75,7 @@
 					<?php } ?>
 				</select>
 
-				<input type="text" name="q" placeholder="Tags...">
+				<input type="text" name="q" value="<?=preg_replace('/[^a-zA-Z0-9, ]/','',$_GET['q']??'')?>" placeholder="Tags...">
 			</form>
 			<script>
 				const multiSelectWithoutCtrl = ( elemSelector ) => {
