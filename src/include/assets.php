@@ -224,7 +224,7 @@ class AssetLogic{
 		$sqlResult = DatabaseLogic::runQuery($sql,$sqlParameters);
 		
 		$row = $sqlResult->fetch_assoc();
-		return $row['AssetUrl'];
+		return $row['assetUrl'];
 	}
 
 	public static function addAssetClickByAssetId(int $assetId){
