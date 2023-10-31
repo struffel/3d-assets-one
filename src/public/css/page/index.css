@@ -23,7 +23,8 @@ main{
 		transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
 		width:var(--asset-box-size);
 		height: var(--asset-box-size);
-		border: 1px solid black;
+		border: 1px solid #00000022;
+		border-radius: 8px;
 		background-color: white;
 
 		position: relative;
@@ -48,16 +49,21 @@ main{
 			opacity: 0;
 			padding:2px;
 			text-align: right;
-			background-color: palegreen;
+			background-color: #00000099;
+			color: white;
 			max-width: 80%;
+			border-radius: 4px;
+			font-size: 0.9em;
 		}
 
-		.asset-quirks{
-			position: absolute;
-			bottom:0;
-			left:0;
-			padding: 2px;
-			background-color: palegoldenrod;
+		.asset-icons{
+			position:absolute;
+			top:0;
+			right: 0;
+			padding:2px;
+			font-size:0.75em;
+			opacity: 0;
+			color:black;
 		}
 
 	}
@@ -66,11 +72,9 @@ main{
 		transform: scale(1.05);
 		z-index: 2;
 
-		.asset-name{
-			opacity: 1;
-		}
-
-		.asset-creator-image{
+		.asset-name,
+		.asset-creator-image,
+		.asset-icons{
 			opacity: 1;
 		}
 	}
