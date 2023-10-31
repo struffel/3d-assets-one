@@ -76,17 +76,17 @@ class AssetCollection{
 class AssetQuery{
 	public function __construct(
 	// Basics
-	public int $offset = 0,						// ?offset
-	public int $limit,							// ?limit
-	public SORTING $sort = SORTING::LATEST,		// ?sort
+	public ?int $offset = NULL,						// ?offset
+	public ?int $limit = NULL,								// ?limit
+	public ?SORTING $sort = SORTING::LATEST,		// ?sort
 
 	// Filters
-	public ?array $filterAssetId = NULL,		// ?id, Allows filtering for specific asset ids.
-	public ?array $filterTag = NULL,			// ?tags, Assets must have ALL tags in the array in order to be included.
-	public ?array $filterCreator = NULL,		// ?creator, limits the search to certain creators.
-	public ?array $filterLicense = NULL,		// ?license, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
-	public ?array $filterType = NULL,			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
-	public ?array $filterAvoidQuirk = NULL,		// ?avoid, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
+	public ?array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
+	public ?array $filterTag = [],			// ?tags, Assets must have ALL tags in the array in order to be included.
+	public ?array $filterCreator = [],		// ?creator, limits the search to certain creators.
+	public ?array $filterLicense = [],		// ?license, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
+	public ?array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
+	public ?array $filterAvoidQuirk = [],		// ?avoid, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
 	public ?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE,				// NULL => Any status
 
 	){}
@@ -238,7 +238,7 @@ class AssetLogic{
 		LogLogic::write("Inserting Asset: ".$newAsset->url);
 
 		// Base Asset
-		$sql = "INSERT INTO Asset (assetId, assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO Asset (assetId, assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);";
 		$parameters = [$newAsset->name, $newAsset->url,$newAsset->thumbnailUrl,$newAsset->date, 0 ,$newAsset->license->value,$newAsset->type->value,$newAsset->creator->value];
 		$result = DatabaseLogic::runQuery($sql,$parameters);
 
@@ -316,9 +316,12 @@ class AssetLogic{
 		};
 
 		// Offset and Limit
-		$sqlCommand .= " LIMIT ? OFFSET ? ";
-		$sqlValues []=$query->limit;
-		$sqlValues []=$query->offset;
+		if($query->limit){
+			$sqlCommand .= " LIMIT ? OFFSET ? ";
+			$sqlValues []=$query->limit;
+			$sqlValues []=$query->offset;
+		}
+		
 		
 		// Fetch data from DB
 		$databaseOutput = DatabaseLogic::runQuery($sqlCommand,$sqlValues);

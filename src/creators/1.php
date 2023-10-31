@@ -3,7 +3,7 @@
 	// ambientCG
 
 	class CreatorFetcher1 extends CreatorFetcher{
-		private CREATOR $creator = CREATOR::AMBIENTCG;
+		public CREATOR $creator = CREATOR::AMBIENTCG;
 		
 		public function findNewAssets(array $existingUrls, array $config):AssetCollection{
 			LogLogic::stepIn(__FUNCTION__);
@@ -38,7 +38,8 @@
 							tags: $acgAsset['tags'],
 							type: TYPE::from($config['types'][$acgAsset['dataType']]),
 							license: LICENSE::CC0,
-							creator: $this->creator
+							creator: $this->creator,
+							id: NULL
 						);
 
 						$tmpCollection->assets[] = $tmpAsset;

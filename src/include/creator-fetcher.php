@@ -3,7 +3,7 @@
 abstract class CreatorFetcher{
 
 	// Class variables
-	private CREATOR $creator;
+	public CREATOR $creator;
 
 	// General functions
 
@@ -11,29 +11,24 @@ abstract class CreatorFetcher{
 		$id = $creator->value;
 		require_once $_SERVER['DOCUMENT_ROOT']."/../creators/$id.php";
 		$creatorFetcherClassName = "CreatorFetcher$id";
-		return new $creatorFetcherClassName();
+		return (new $creatorFetcherClassName());
 	}
 
 	public final function runUpdate() : AssetCollection{
 
-		// Ensure that creator is set
-		if(!$this->creator){
-			throw new Exception("Creator not set.", 1);
-		}
-
 		// Get existing URLs
 		$query = new AssetQuery();
 		$query->filterCreator = [$this->creator];
-		$query->filterActive = NULL;
+		$query->filterStatus = NULL;
 		$result = AssetLogic::getAssets($query);
-		$existingUrls = [""];
+		$existingUrls = [];
 		foreach ($result->assets as $asset) {
 			$existingUrls []= $asset->url;
 		}
 
 		// Get new assets using creator-specific method
 		// Passing in the list of existing URLs and
-		$newAssetCollection = $this->findNewAssets($existingUrls,json_decode(file_get_contents($this->creator->value.".json"),true));
+		$newAssetCollection = $this->findNewAssets($existingUrls,json_decode(file_get_contents("../creators/".$this->creator->value.".json"),true));
 
 		// Perform post-processing on the results
 		for ($i=0; $i < sizeof($newAssetCollection->assets); $i++) { 

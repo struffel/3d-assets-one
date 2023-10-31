@@ -45,7 +45,13 @@ class LogLogic{
 
 	public static function echoCurrentLog(){
 		if(isset(LogLogic::$logName)){
-			echo file_get_contents($_SERVER['DOCUMENT_ROOT']."/../log/".$GLOBALS['LOGNAME'].".log");
+			try{
+				header("content-type: text/plain");
+			}catch(Throwable $e){
+				echo "<pre>";
+			}
+			
+			echo file_get_contents($_SERVER['DOCUMENT_ROOT']."/../log/".LogLogic::$logName.".log");
 		}
 	}
 }

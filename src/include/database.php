@@ -35,7 +35,7 @@ class DatabaseLogic{
 		
 	}
 
-	public static function runQuery(string $sql, array $parameters = []) : mysqli_result{
+	public static function runQuery(string $sql, array $parameters = []) : mysqli_result|bool{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Received SQL query to run: ".$sql." (".print_r($parameters,true).")");
 		
