@@ -4,7 +4,7 @@
 
 	class CreatorFetcher6 extends CreatorFetcher{
 
-		private CREATOR $creator = CREATOR::TEXTURECAN;
+		public CREATOR $creator = CREATOR::TEXTURECAN;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
@@ -19,6 +19,7 @@
 					$metaTags = HtmlLogic::readMetatagsFromHtmlString(FetchLogic::fetchRemoteData($url));
 
 					$tmpAsset = new Asset(
+						id: NULL,
 						name: $metaTags['tex1:name'],
 						url: $url,
 						date: $metaTags['tex1:release-date'],
