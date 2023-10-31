@@ -4,7 +4,7 @@
 
 	class CreatorFetcher9 extends CreatorFetcher{
 
-		private CREATOR $creator = CREATOR::CHOCOFUR;
+		public CREATOR $creator = CREATOR::CHOCOFUR;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
@@ -29,6 +29,7 @@
 					if(!$isSkipped && !in_array($link,$existingUrls)){
 						
 						$tmpAsset = new Asset(
+							id: NULL,
 							name: $name,
 							url: $link,
 							date: date("Y-m-d"),
