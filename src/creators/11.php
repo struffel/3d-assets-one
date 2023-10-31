@@ -4,7 +4,7 @@
 
 	class CreatorFetcher11 extends CreatorFetcher{
 
-		private CREATOR $creator = CREATOR::RAWCATALOG;
+		public CREATOR $creator = CREATOR::RAWCATALOG;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
@@ -30,6 +30,7 @@
 						}
 
 						$tmpAsset = new Asset(
+							id: NULL,
 							url: $rawCatalogAsset->url,
 							name: $rawCatalogAsset->name,
 							date: $rawCatalogAsset->updated,
