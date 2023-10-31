@@ -4,7 +4,7 @@
 
 	class CreatorFetcher4 extends CreatorFetcher{
 
-		private CREATOR $creator = CREATOR::THREE_D_TEXTURES;
+		public CREATOR $creator = CREATOR::THREE_D_TEXTURES;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 			
@@ -75,6 +75,7 @@
 							
 							// Assemble asset
 							$tmpAsset = new Asset(
+								id: NULL,
 								name: $wpPost['title']['rendered'],
 								url: $wpPost['link'],
 								date: $wpPost['date'],
@@ -84,7 +85,6 @@
 								license: LICENSE::CC0,
 								creator: $this->creator,
 								quirks: [QUIRK::ADS]
-
 							);
 
 							$tmpCollection->assets []= $tmpAsset;
