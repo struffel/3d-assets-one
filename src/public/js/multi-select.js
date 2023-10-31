@@ -1,5 +1,5 @@
 // Make select elements toggleable.
-document.querySelectorAll('select option').forEach(function (element) {
+document.querySelectorAll('select[multiple] option').forEach(function (element) {
 	element.addEventListener("mousedown", 
 		function (e) {
 			e.preventDefault();
