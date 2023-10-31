@@ -21,10 +21,11 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 		<a href="/go?id=<?=$a->id?>" >
 			<img class="asset-creator-image" title="<?=$a->creator->name()?>" width="24" height="24" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/<?=$a->creator->value?>.png">
 			<span class="asset-name"><?=$a->name?></span>
-			<span class="asset-quirks">
-				<?php foreach($a->quirks as $q){ ?>
+			<span class="asset-icons">
+				<!--<?php foreach($a->quirks as $q){ ?>
 					<span><?=$q->value?></span>
-				<?php } ?>
+				<?php } ?>-->
+				<span><?=strtoupper($a->license->slug())?></span>
 			</span>
 			<img class="asset-image" alt="<?=$a->name?>" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
