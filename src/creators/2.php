@@ -3,7 +3,7 @@
 	// polyhaven
 
 	class CreatorFetcher2 extends CreatorFetcher{
-		private CREATOR $creator = CREATOR::POLYHAVEN;
+		public CREATOR $creator = CREATOR::POLYHAVEN;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
@@ -17,14 +17,17 @@
 			// Iterate through result
 			foreach ($result as $key => $phAsset) {
 
-				if(!in_array($phAsset->url,$existingUrls)){
+				$url = $config['viewUrlBase'].$key;
+
+				if(!in_array($url,$existingUrls)){
 
 					$tmpAsset = new Asset(
-						url: $config['main']['viewUrlBase'].$key,
+						id: NULL,
+						url: $url,
 						date: date('Y-m-d',$phAsset['date_published']),
 						name: $phAsset['name'],
 						tags: $phAsset['tags'],
-						thumbnailUrl: $config['main']['thumbnailUrlBase'].$key.".png?height=512",
+						thumbnailUrl: $config['thumbnailUrlBase'].$key.".png?height=512",
 						type: TYPE::from($config['types'][$phAsset['type']]),
 						license: LICENSE::CC0,
 						creator: $this->creator,
