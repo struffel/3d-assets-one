@@ -3,7 +3,7 @@
 	// sharetextures
 
 	class CreatorFetcher3 extends CreatorFetcher{
-		private CREATOR $creator = CREATOR::SHARETEXTURES;
+		public CREATOR $creator = CREATOR::SHARETEXTURES;
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
 			// Get list of URLs
@@ -18,6 +18,7 @@
 					$metaTags = HtmlLogic::readMetatagsFromHtmlString($siteContent);
 
 					$tmpAsset = new Asset(
+						id: NULL,
 						name: $metaTags['og:title'],
 						url: $url,
 						date: $metaTags['tex1:release-date'],
