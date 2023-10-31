@@ -4,7 +4,7 @@
 
 	class CreatorFetcher10 extends CreatorFetcher{
 
-		private CREATOR $creator = CREATOR::GPUOPENMATLIB;
+		public CREATOR $creator = CREATOR::GPUOPENMATLIB;
 
 		public function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
@@ -28,6 +28,7 @@
 							}
 
 							$tmpAsset = new Asset(
+								id: NULL,
 								url: $url,
 								name: $amdAsset['title'],
 								date: $amdAsset['published_date'],
