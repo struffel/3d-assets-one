@@ -3,20 +3,24 @@
 
 	LogLogic::initialize("activateAssets");
 
-	$query = new AssetQuery(
-		filterStatus:  ASSET_STATUS::INACTIVE,
-		limit: 2,
-		sort: SORTING::RANDOM,
-	);
+	try{
+		$query = new AssetQuery(
+			filterStatus:  ASSET_STATUS::INACTIVE,
+			limit: 2,
+			sort: SORTING::RANDOM,
+		);
 
-	$assetsToActivate = AssetLogic::getAssets($query);
-	foreach ($assetsToActivate->assets as $a) {
+		$assetsToActivate = AssetLogic::getAssets($query);
+		foreach ($assetsToActivate->assets as $a) {
 
-		$creatorFetcher = CreatorFetcher::fromCreator($a->creator);
-		$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
+			$creatorFetcher = CreatorFetcher::fromCreator($a->creator);
+			$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
 
-		ImageLogic::buildAndUploadThumbnailsToBackblazeB2($a,$imageData);
+			ImageLogic::buildAndUploadThumbnailsToBackblazeB2($a,$imageData);
+		}
+		AssetLogic::activateAssetCollection($assetsToActivate);
+	}finally{
+		LogLogic::echoCurrentLog();
 	}
-	AssetLogic::activateAssetCollection($assetsToActivate);
-	LogLogic::echoCurrentLog();
+	
 ?>

@@ -37,7 +37,7 @@ class ImageLogic{
 	public static function buildAndUploadThumbnailsToBackblazeB2(Asset $asset, string $originalImageData){
 		LogLogic::stepIn(__FUNCTION__);
 		foreach (ImageLogic::$thumbnailTemplate as $t) {
-			$tmpThumbnail = ImageLogic::createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1],$asset);
+			$tmpThumbnail = ImageLogic::createThumbnailFromImageData($originalImageData,$t[2],$t[0],$t[1]??"");
 			BackblazeB2Logic::uploadData($tmpThumbnail,ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset));
 		}
 		LogLogic::stepOut(__FUNCTION__);

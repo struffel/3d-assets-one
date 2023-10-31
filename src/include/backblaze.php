@@ -32,13 +32,14 @@ class BackblazeB2Logic {
 	public static function uploadData(string $fileData,string $remotePath) : void {
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Uploading data to '$remotePath'");
+		BackblazeB2Logic::initialize();
 		// Upload a file to a bucket. Returns a File object.
 		
 		$successfulUpload = false;
 		while(!$successfulUpload){
 			try {
 				BackblazeB2Logic::$client->upload([
-					'BucketName' => $GLOBALS['B2BUCKET'],
+					'BucketName' => BackblazeB2Logic::$bucketName,
 					'FileName' => $remotePath,
 					'Body' => $fileData
 			
@@ -66,9 +67,10 @@ class BackblazeB2Logic {
 	public static function testForFile(string $remotePath) : bool{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Testing for file '$remotePath'");
+		BackblazeB2Logic::initialize();
 		// Retrieve an array of file objects from a bucket.
 		$fileList = BackblazeB2Logic::$client->listFiles([
-			'BucketName' => $GLOBALS['B2BUCKET'],
+			'BucketName' => BackblazeB2Logic::$bucketName,
 			'FileName'=>$remotePath
 		]);
 		LogLogic::write("Result: ".isset($fileList[0]));
