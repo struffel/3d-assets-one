@@ -1,0 +1,22 @@
+@import url('/css/base.css');
+
+
+main{
+	max-width: var(--reduced-width);
+	margin: 0 auto;
+
+	display: grid;
+	grid-template-columns: 33.33% 33.33% 33.33%;
+
+	.creator-box{
+		margin: 25px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.creator-box-image{
+		margin-right: 25px;
+	}
+}
+

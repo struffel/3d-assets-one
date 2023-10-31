@@ -11,5 +11,4 @@
     <meta name="msapplication-TileColor" content="#2d89ef">
     <meta name="msapplication-config" content="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
-    <link rel="stylesheet" href="/css/index.css">
 </head>

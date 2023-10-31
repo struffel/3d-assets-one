@@ -1,0 +1,139 @@
+@import url('/css/base.css');
+
+body{
+	display: grid;
+	grid-template-columns: 300px auto;
+	grid-template-areas: 	"nav main";
+	margin: 0 0;
+	padding: 0 0;
+	overflow-x: hidden;
+}
+
+main{
+	grid-area: main;
+	display:grid;
+	grid-template-columns: repeat(auto-fit, minmax(var(--asset-box-size), max-content));
+	place-items: center;
+	place-content: center;
+	margin:40px;
+	z-index: 1;
+
+	.asset-box{
+		display: inline-block;
+		transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
+		width:var(--asset-box-size);
+		height: var(--asset-box-size);
+		border: 1px solid black;
+		background-color: white;
+
+		position: relative;
+
+		.asset-image{
+			padding:5px;
+			width: 100%;
+			height: 100%;
+		}
+
+		.asset-creator-image{
+			position:absolute;
+			top: 0;
+			left: 0;
+			opacity: 0;
+		}
+
+		.asset-name{
+			position:absolute;
+			bottom: 0;
+			right: 0;
+			opacity: 0;
+			padding:2px;
+			text-align: right;
+			background-color: palegreen;
+			max-width: 80%;
+		}
+
+		.asset-quirks{
+			position: absolute;
+			bottom:0;
+			left:0;
+			padding: 2px;
+			background-color: palegoldenrod;
+		}
+
+	}
+
+	.asset-box:hover{
+		transform: scale(1.05);
+		z-index: 2;
+
+		.asset-name{
+			opacity: 1;
+		}
+
+		.asset-creator-image{
+			opacity: 1;
+		}
+	}
+
+	
+
+	#asset-count-text{
+		width: 100%;
+		text-align: center;
+		margin: 5px;
+		grid-column: 1/-1;
+	}
+
+	.results-end-text{
+		width: 100%;
+		text-align: center;
+		grid-column: 1/-1;
+	}
+}
+
+#asset-filters{
+	grid-area: nav;
+	z-index: 10;
+
+	position:fixed;
+
+	width: 100%;
+	max-width: 300px;
+	height: 100%;
+
+	background-color: white;
+
+	filter: drop-shadow(0px 0px 10px #00000044);
+
+	#asset-filters-form{
+		filter: grayscale() contrast(1.1);
+		display: flex;
+		flex-direction: column;
+		margin: 10px;
+
+		.multi-select{
+			overflow-y: auto;
+			border: 1px solid slategray;
+		}
+
+		.text-input{
+			font-size: 1.05em;
+		}
+
+		.form-label{
+			margin-top: 8px;
+			margin-bottom: 2px;
+		}
+
+
+
+	}
+	
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+a:focus {
+	outline: none;
+}
