@@ -2,35 +2,10 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 ?><!DOCTYPE html>
 <html lang="en">
-	
-	<head>
-		<script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
-		<title>3Dassets.one - The asset search engine</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="apple-touch-icon" sizes="180x180" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/favicon-16x16.png">
-		<link rel="manifest" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/site.webmanifest">
-		<link rel="mask-icon" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/safari-pinned-tab.svg" color="#5bbad5">
-		<link rel="shortcut icon" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/favicon.ico">
-		<meta name="msapplication-TileColor" content="#2d89ef">
-		<meta name="msapplication-config" content="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/browserconfig.xml">
-		<meta name="theme-color" content="#ffffff">
-		<link rel="stylesheet" href="/css/index.css">
-	</head>
-
+	<?php include $_SERVER['DOCUMENT_ROOT'].'/../components/head.php'; ?>
 	<body>
 		<nav id="asset-filters">
-		<header>
-		<div class="logo">
-			<span style="color:#CB6CE6;">3D</span><span>assets</span><span style="color:#7ED957;">.</span><span>one</span>
-		</div>
-		<nav class="navbar">
-			<button hx-get="/render/about-creators.php" hx-target="main" hx-trigger="click">Assets</button>
-			<button hx-get="/render/about-creators.php" hx-target="main" hx-trigger="click">Creators</button>
-			<button hx-get="/render/about-site.php" hx-target="main" hx-trigger="click" >About</button>
-		</nav>
-	</header>
+			<?php include $_SERVER['DOCUMENT_ROOT'].'/../components/header.php'; ?>
 			<form 
 				id="asset-filters-form"
 				oninput="window.scrollTo(0,0);"
@@ -90,6 +65,7 @@
 						}, false );
 				});
 			</script>
+			<?php include $_SERVER['DOCUMENT_ROOT'].'/../components/header.php'; ?>
 		</nav>
 		<main></main>
 	</body>
