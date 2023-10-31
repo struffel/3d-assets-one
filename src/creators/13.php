@@ -4,7 +4,7 @@
 
 	class CreatorFetcher13 extends CreatorFetcher{
 
-		private CREATOR $creator = CREATOR::PBRMATERIALS;
+		public CREATOR $creator = CREATOR::PBRMATERIALS;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
@@ -66,6 +66,7 @@
 							}
 
 							$tmpAsset = new Asset(
+								id: NULL,
 								name: $wpPost['title']['rendered'],
 								url: $wpPost['link'],
 								date: $wpPost['date'],
