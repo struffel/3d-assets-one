@@ -21,8 +21,9 @@ class LogLogic{
 	}
 
 	public static function stepOut($message = ""){
-		LogLogic::write("---> $message");
 		LogLogic::$logIndent = max(0,LogLogic::$logIndent - 1);
+		LogLogic::write("<--- $message");
+		
 	}
 
 	public static function initialize(string $logName){

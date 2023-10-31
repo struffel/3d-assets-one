@@ -39,8 +39,8 @@ class FetchLogic{
 		$content = str_replace("\n","",$content);
 
 		$contentArray = explode(",",$content);
-		$urlArray = array_filter($contentArray);
-		$urlArray = array_map('trim', $contentArray);
+		$contentArray = array_filter($contentArray);
+		$contentArray = array_map('trim', $contentArray);
 		LogLogic::stepOut(__FUNCTION__);
 		return $contentArray;
 	}

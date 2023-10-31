@@ -14,15 +14,18 @@
 	LogLogic::initialize("refreshCreator-".$creatorId);
 	LogLogic::write("Refreshing Creator: $creatorId");
 	
-	$creator = CreatorFetcher::fromCreator(CREATOR::from($creatorId));
-	LogLogic::write("Created creator object.");
-	$result = $creator->runUpdate();
+	try{
+		$creator = CreatorFetcher::fromCreator(CREATOR::from($creatorId));
+		LogLogic::write("Created creator object.");
+		$result = $creator->runUpdate();
 
-	LogLogic::write("Found ".sizeof($result->assets)." new assets");
-	if(sizeof($result->assets) > 0){
-		LogLogic::write("Writing new assets to DB:");
-		AssetLogic::writeAssetCollectionToDatabase($result);
-		LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
+		LogLogic::write("Found ".sizeof($result->assets)." new assets");
+		if(sizeof($result->assets) > 0){
+			LogLogic::write("Writing new assets to DB:");
+			AssetLogic::writeAssetCollectionToDatabase($result);
+			LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
+		}
+	}finally{
+		LogLogic::echoCurrentLog();
 	}
-	LogLogic::echoCurrentLog();
 ?>
