@@ -1,7 +1,7 @@
 <?php
 	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
-	$refreshConfig = json_decode("importConfig.json",true);
+	$refreshConfig = json_decode(file_get_contents("./importConfig.json"),true);
 	if(isset($_GET['creatorId'])){
 		$creatorId = StringLogic::onlyNumbers($_GET['creatorId']);
 	}else{
