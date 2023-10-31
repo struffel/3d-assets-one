@@ -3,6 +3,9 @@
 	// noemotionshdr
 
 	class CreatorFetcher7 extends CreatorFetcher{
+
+		public CREATOR $creator = CREATOR::NOEMOTIONHDRS;
+
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
 			$tmpCollection = new AssetCollection();
@@ -15,13 +18,14 @@
 					$name = explode("=",$url)[1];
 
 					$tmpAsset = new Asset(
+						id: NULL,
 						name: $name,
 						date: "2010-".preg_split('/=|_/',$url)[1],
 						thumbnailUrl: "http://noemotionhdrs.net/Previews/772x386/$category/$name.jpg",
 						url: $url,
 						tags: ['Sky',$category],
 						type: type::HDRI,
-						creator: CREATOR::NOEMOTIONHDRS,
+						creator: $this->creator,
 						license: LICENSE::CC_BY_ND,
 					);
 
