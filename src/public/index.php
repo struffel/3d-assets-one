@@ -78,12 +78,8 @@
 				<input type="text" name="q" value="<?=preg_replace('/[^a-zA-Z0-9, ]/','',$_GET['q']??'')?>" placeholder="Tags...">
 			</form>
 			<script>
-				const multiSelectWithoutCtrl = ( elemSelector ) => {
-
-				let options = document.querySelectorAll(`${elemSelector} option`);
-				
-				
-				options.forEach(function (element) {
+				// Make select elements toggleable.
+				document.querySelectorAll('select option').forEach(function (element) {
 					element.addEventListener("mousedown", 
 						function (e) {
 							e.preventDefault();
@@ -93,11 +89,6 @@
 							return false;
 						}, false );
 				});
-
-				}
-
-
-				multiSelectWithoutCtrl('select') /* Can use ID or Class */
 			</script>
 		</nav>
 		<main></main>
