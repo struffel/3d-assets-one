@@ -262,7 +262,7 @@ class AssetLogic{
 		// Tag filter
 
 		if(sizeof($query->filterTag) > 0){
-			$sqlCommand .= " RIGHT JOIN ( SELECT DISTINCT assetId FROM Tag WHERE TRUE ";
+			$sqlCommand .= " INNER JOIN ( SELECT DISTINCT assetId FROM Tag WHERE TRUE ";
 			foreach ($query->filterTag as $tag) {
 				$sqlCommand .= " AND assetId IN ( SELECT assetId FROM Tag WHERE tagName=?) ";
 				$sqlValues []= $tag;
