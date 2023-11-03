@@ -1,31 +1,7 @@
 <head>
-<!-- development version, includes helpful console warnings -->
-    <?php
-        //echo '<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>';
-        echo '<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>';
-    ?>
-    <style>
-        @import url("./css/bulma.min.css");
-        @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
-
-        .scaleHover{
-            transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
-        }
-        .scaleHoverStrong:hover{
-            transform: scale(1.05);
-        }
-        .scaleHoverSubtle:hover{
-            transform: scale(1.0125);
-        }
-        .logo{
-            font-family: 'Red Hat Display', sans-serif;
-        }
-    </style>
-
+    <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
     <title>3Dassets.one - The asset search engine</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="apple-touch-icon" sizes="180x180" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/favicon-16x16.png">

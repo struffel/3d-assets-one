@@ -1,0 +1,6 @@
+@import url('/css/base.css');
+
+main{
+	max-width: var(--reduced-width);
+	margin: 0 auto;
+}

@@ -4,6 +4,7 @@
     },
     "require": {
         "obregonco/backblaze-b2": "^1.1",
-        "guzzlehttp/guzzle": "^7.4"
+        "guzzlehttp/guzzle": "^7.4",
+        "rct567/dom-query": "^1.0"
     }
 }

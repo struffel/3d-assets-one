@@ -1,0 +1,8 @@
+{
+	"apiUrl": "https://api.matlib.gpuopen.com/api/materials/?limit=50&ordering=-published_date&status=Published&updateKey=1&offset=0",
+	"tagApiUrl": "https://api.matlib.gpuopen.com/api/tags/",
+	"previewImageTemplate": "https://image.matlib.gpuopen.com/#ID#.jpeg",
+	"urlTemplate": "https://matlib.gpuopen.com/main/materials/all?material=#ID#",
+	"excludeTitleRegex": "/^TH: /",
+	"maxAssetsPerRound": 1
+}

@@ -1,0 +1,26 @@
+header{
+	grid-area: header;
+	font-size:large;
+	
+	.logo{
+		font-family: 'Red Hat Display', sans-serif;
+		font-size: 2.25em;
+		width:100%;
+		text-align: center;
+	}
+
+	.logo-slogan{
+		text-align: center;
+		font-size: small;
+	}
+
+	.navbar{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		.header-link{
+			padding: 4px;
+		}
+	}
+}

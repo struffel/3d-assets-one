@@ -1,0 +1,55 @@
+/*@import url('https://unpkg.com/fylgja/fylgja.css');*/
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text&display=swap');
+
+:root{
+	--asset-box-size: 150px;
+	--reduced-width: max(calc(100% - 300px),1300px);
+}
+
+*{
+	box-sizing: border-box;
+}
+
+body{
+	font-family: 'Red Hat Text', sans-serif;
+}
+
+
+.prominent-link{
+	text-decoration: none;
+	padding: 12px;
+	color:black;
+	border-radius: 4px;
+}
+
+.prominent-link:hover{
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.prominent-link:visited{
+	color:black;
+}
+
+.prominent-link:active{
+	color:slategray;
+}
+
+.subtle-link{
+	text-decoration: underline;
+	text-underline-offset: 0.2rem;
+	color:slategray;
+	border-radius: 4px;
+}
+
+.subtle-link:hover{
+	color:lightslategray;
+}
+
+.subtle-link:visited{
+	color:slategray;
+}
+
+.subtle-link:active{
+	color:lightslategray;
+}

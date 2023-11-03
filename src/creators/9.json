@@ -1,0 +1,5 @@
+{
+	"apiUrl":"https://store.chocofur.com/ajax_search/free?sorting%5BcreatedAt%5D=desc&page=",
+	"isMaterialRegex":"/material(s)?|shader(s)?/",
+	"isSkippedRegex":"/bundle|pack|Humano/"
+}

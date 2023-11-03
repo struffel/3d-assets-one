@@ -1,31 +1,31 @@
 <?php
-	require_once $_SERVER['DOCUMENT_ROOT'].'/../functions/init.php';
+	require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
-
-	$refreshConfig = parse_ini_file("importConfig.ini",true);
+	$refreshConfig = json_decode(file_get_contents("./importConfig.json"),true);
 	if(isset($_GET['creatorId'])){
-		$creatorId = onlyNumbers($_GET['creatorId']);
+		$creatorId = StringLogic::onlyNumbers($_GET['creatorId']);
 	}else{
-		$randomTargets = explode(",",$refreshConfig['refreshCreator']['randomTargets']);
+		$randomTargets = $refreshConfig['refreshCreator']['randomTargets'];
 		$randomIndex = array_rand($randomTargets);
 		$creatorId = $randomTargets[$randomIndex];
 	}
-		
 	
 	$maxNumberOfAssets = intval($_GET['max']??1);
-	initializeLog("refreshCreator-".$creatorId);
-	createLog("Refreshing Creator: $creatorId");
-	require_once $_SERVER['DOCUMENT_ROOT']."/../creators/$creatorId/main.php";
+	LogLogic::initialize("refreshCreator-".$creatorId);
+	LogLogic::write("Refreshing Creator: $creatorId");
+	
+	try{
+		$creator = CreatorFetcher::fromCreator(CREATOR::from($creatorId));
+		LogLogic::write("Created creator object.");
+		$result = $creator->runUpdate();
 
-	$creatorClass = "Creator".$creatorId;
-	$creator = new $creatorClass();
-	createLog("Created creator object.");
-	$result = $creator->findNewAssets();
-	createLog("Found ".sizeof($result->assets)." new assets");
-	if(sizeof($result->assets) > 0){
-		createLog("Writing new assets to DB:");
-		writeAssetCollectionToDatabase($result);
-		createLog("Wrote ".sizeof($result->assets)." new assets.");
+		LogLogic::write("Found ".sizeof($result->assets)." new assets");
+		if(sizeof($result->assets) > 0){
+			LogLogic::write("Writing new assets to DB:");
+			AssetLogic::writeAssetCollectionToDatabase($result);
+			LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
+		}
+	}finally{
+		LogLogic::echoCurrentLog();
 	}
-	echoCurrentLog();
 ?>
