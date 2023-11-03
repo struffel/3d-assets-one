@@ -2,6 +2,11 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
+function imageLoading($i) : string{
+	if($i < 50) return "eager";
+	return "lazy";
+}
+
 $query = AssetQuery::fromHttpGet();
 $assets = AssetLogic::getAssets($query);
 
@@ -15,7 +20,7 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 
 <?php } ?>
 
-<?php foreach ($assets->assets as $a) { ?>
+<?php $i = 0; foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
 		<a href="/go?id=<?=$a->id?>" >
@@ -27,7 +32,7 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 				<?php } ?>-->
 				<span><?=strtoupper($a->license->slug())?></span>
 			</span>
-			<img class="asset-image" alt="<?=$a->name?>" loading="lazy" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
+			<img class="asset-image" alt="<?=$a->name?>" loading="<?=imageLoading($i++);?>" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
 
