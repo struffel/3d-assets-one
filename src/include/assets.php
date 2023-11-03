@@ -89,6 +89,10 @@ class AssetQuery{
 	public ?array $filterAvoidQuirk = [],		// ?avoid, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
 	public ?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE,				// NULL => Any status
 
+	// Includes
+	public bool $includeTags = false,
+	public bool $includeQuirks = false,
+
 	){}
 
 	public function toHttpGet() : string{
@@ -270,7 +274,27 @@ class AssetLogic{
 			$sqlCommand .= " ) TagResults USING (assetId)";
 		}
 
-		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) WHERE TRUE ";
+		// Quirk filter
+
+		if(sizeof($query->filterAvoidQuirk) > 0){
+			$ph = DatabaseLogic::generatePlaceholder($query->filterAvoidQuirk);
+			$sqlCommand .= " INNER JOIN ( SELECT assetId FROM Asset WHERE assetId NOT IN ( SELECT assetId FROM Quirk WHERE quirkId IN ($ph) ) ) QuirkResults USING (assetId) ";
+			$sqlValues = array_merge($sqlValues,$query->filterAvoidQuirk);
+		}
+
+		// Inclusion filters
+
+		$sqlCommand .= match ($query->includeTags) {
+			true => " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ",
+			default => " LEFT JOIN (SELECT NULL as assetId, NULL as assetTags) AllTags USING (assetId) "
+		};
+		
+		$sqlCommand .= match($query->includeQuirks) {
+			true => " LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) ",
+			default => " LEFT JOIN (SELECT NULL as assetId, NULL as quirkIds) AllQuirks USING (assetId) "
+		};
+
+		$sqlCommand .= " WHERE TRUE ";
 
 		if(sizeof($query->filterAssetId) > 0){
 			$ph = DatabaseLogic::generatePlaceholder($query->filterAssetId);
@@ -299,13 +323,6 @@ class AssetLogic{
 		if(isset($query->filterStatus)){
 			$sqlCommand .= " AND assetActive=? ";
 			$sqlValues []= $query->filterStatus;
-		}
-
-		if(sizeof($query->filterAvoidQuirk) > 0){
-			foreach ($query->filterAvoidQuirk as $q) {
-				$sqlCommand .= " AND ( quirkIds IS NULL OR NOT FIND_IN_SET(?, quirkIds) ) ";
-				$sqlValues []= $q;
-			}
 		}
 
 		// Sort
