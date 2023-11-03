@@ -12,8 +12,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 			<p>
 				3Dassets.one is a search engine that combines the libraries of many independent CG asset websites like Poly Haven, ambientCG and others and allows you to look for the right texture, HDRI or model without having to open half a dozen browser tabs.
 			</p>
-
-			<h2>How does this site work?</h2>
 			<p>
 				The site automatically polls the websites of all creators for new assets and automatically lists them. You can filter the results by creator or using keywords, categories and licenses. When clicking on an asset you will be redirected to the creators website.
 				3Dassets.one does not copy, archive or re-upload the assets.
