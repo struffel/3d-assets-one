@@ -224,8 +224,7 @@ class AssetLogic{
 
 	public static function getUrlFromAssetId(string $assetId) : string{
 		$sql = "SELECT assetUrl FROM Asset WHERE assetId = ? LIMIT 1;";
-		$sqlParameters = [intval($assetId)];
-		$sqlResult = DatabaseLogic::runQuery($sql,$sqlParameters);
+		$sqlResult = DatabaseLogic::runQuery($sql,[intval($assetId)]);
 		
 		$row = $sqlResult->fetch_assoc();
 		return $row['assetUrl'];
@@ -233,8 +232,7 @@ class AssetLogic{
 
 	public static function addAssetClickByAssetId(int $assetId){
 		$sql = "INSERT INTO Asset(AssetId,assetClicks) VALUES (?,1) ON DUPLICATE KEY UPDATE assetClicks = assetClicks+1;";
-		$sqlParameters = [intval($assetId)];
-		DatabaseLogic::runQuery($sql,$sqlParameters);
+		DatabaseLogic::runQuery($sql,[intval($assetId)]);
 	}
 
 	public static function writeAssetToDatabase(Asset $newAsset){
@@ -263,7 +261,7 @@ class AssetLogic{
 		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
 		$sqlValues = [];
 
-		// Tag filter
+		/*// Tag filter
 
 		if(sizeof($query->filterTag) > 0){
 			$sqlCommand .= " INNER JOIN ( SELECT DISTINCT assetId FROM Tag WHERE TRUE ";
@@ -280,7 +278,7 @@ class AssetLogic{
 			$ph = DatabaseLogic::generatePlaceholder($query->filterAvoidQuirk);
 			$sqlCommand .= " INNER JOIN ( SELECT assetId FROM Asset WHERE assetId NOT IN ( SELECT assetId FROM Quirk WHERE quirkId IN ($ph) ) ) QuirkResults USING (assetId) ";
 			$sqlValues = array_merge($sqlValues,$query->filterAvoidQuirk);
-		}
+		}*/
 
 		// Inclusion filters
 
@@ -295,6 +293,18 @@ class AssetLogic{
 		};
 
 		$sqlCommand .= " WHERE TRUE ";
+
+
+		foreach($query->filterTag as $tag){
+			$sqlCommand .= " AND assetId IN (SELECT assetId FROM Tag WHERE tagName = ? ) ";
+			$sqlValues []= $tag;
+		}
+		
+		foreach($query->filterAvoidQuirk as $quirk){
+			$sqlCommand .= " AND assetId NOT IN (SELECT assetId FROM Quirk WHERE quirkId = ? ) ";
+			$sqlValues []= $quirk->value;
+		}
+		
 
 		if(sizeof($query->filterAssetId) > 0){
 			$ph = DatabaseLogic::generatePlaceholder($query->filterAssetId);
