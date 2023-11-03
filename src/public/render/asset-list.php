@@ -3,7 +3,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 function imageLoading($i) : string{
-	if($i < 50) return "eager";
+	if($i < 75) return "eager";
 	return "lazy";
 }
 
@@ -16,7 +16,7 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 
 <?php if($query->offset == 0){ ?>
 
-	<!--<div id="asset-count-text" >Found <?=$assets->totalNumberOfAssetsInBackend?> assets.</div>-->
+	<div id="asset-count-text" >Showing <?=$assets->totalNumberOfAssetsInBackend?> results</div>
 
 <?php } ?>
 

@@ -15,7 +15,8 @@ main{
 	grid-template-columns: repeat(auto-fit, minmax(var(--asset-box-size), max-content));
 	place-items: center;
 	place-content: center;
-	margin:40px;
+	margin-left:40px;
+	margin-right:40px;
 	z-index: 1;
 
 	.asset-box{
@@ -84,7 +85,8 @@ main{
 	#asset-count-text{
 		width: 100%;
 		text-align: center;
-		margin: 5px;
+		font-size: 1.1em;
+		margin: 20px;
 		grid-column: 1/-1;
 	}
 
