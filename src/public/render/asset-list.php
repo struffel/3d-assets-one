@@ -23,7 +23,7 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 <?php $i = 0; foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
-		<a href="/go?id=<?=$a->id?>" >
+		<a target="_blank" href="/go?id=<?=$a->id?>" >
 			<img class="asset-creator-image" title="<?=$a->creator->name()?>" width="24" height="24" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/<?=$a->creator->value?>.png">
 			<span class="asset-name"><?=$a->name?></span>
 			<span class="asset-icons">
