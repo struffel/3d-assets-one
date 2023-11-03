@@ -24,7 +24,7 @@ main{
 		transition: transform ease-in-out 0.1s,opacity ease-in-out .2s;
 		width:var(--asset-box-size);
 		height: var(--asset-box-size);
-		border: 1px solid #00000022;
+		border: 1px dashed #00000022;
 		border-radius: 8px;
 		background-color: white;
 
@@ -70,8 +70,10 @@ main{
 	}
 
 	.asset-box:hover{
-		transform: scale(1.05);
+		transform: scale(1.025);
 		z-index: 2;
+
+		filter: drop-shadow(0px 0px 8px #00000080);
 
 		.asset-name,
 		.asset-creator-image,
@@ -94,6 +96,7 @@ main{
 		width: 100%;
 		text-align: center;
 		grid-column: 1/-1;
+		margin:20px;
 	}
 }
 
