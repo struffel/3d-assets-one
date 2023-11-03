@@ -137,7 +137,6 @@ enum TYPE : int {
 	case MODEL_3D = 2;
 	case SUBSTANCE_MATERIAL = 3;
 	case HDRI = 4;
-	case BRUSH = 5;
 
 	public function slug(): string {
 		return match ($this) {
@@ -146,7 +145,6 @@ enum TYPE : int {
 			TYPE::MODEL_3D => '3d-model',
 			TYPE::SUBSTANCE_MATERIAL => 'sbsar',
 			TYPE::HDRI => 'hdri',
-			TYPE::BRUSH => 'brush',
 		};
 	}
 
@@ -157,7 +155,6 @@ enum TYPE : int {
 			TYPE::MODEL_3D => '3D model',
 			TYPE::SUBSTANCE_MATERIAL => 'Substance material',
 			TYPE::HDRI => 'HDRI',
-			TYPE::BRUSH => 'Brush',
 		};
 	}
 
