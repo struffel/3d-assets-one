@@ -351,7 +351,7 @@ class AssetLogic{
 			SORTING::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
 			SORTING::OLDEST => " ORDER BY assetDate ASC, assetId DESC ",
 			SORTING::RANDOM => " ORDER BY RAND() ",
-			SORTING::POPULAR => " ORDER BY ( (assetClicks+1) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.2 ) ) DESC, assetId DESC "
+			SORTING::POPULAR => " ORDER BY ( (assetClicks+1) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.275 ) ) DESC, assetId DESC "
 		};
 
 		// Offset and Limit
