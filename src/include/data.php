@@ -103,13 +103,13 @@ enum QUIRK : int {
 	case SIGNUP_REQUIRED = 1;
 	#case PAYMENT_REQUIRED = 2;
 	case ADS = 3;
-	#case ASSET_PACK = 4;
+	case ASSET_PACK = 4;
 
 	public function slug() : string{
 		return match ($this){
 			QUIRK::SIGNUP_REQUIRED => 'sign-up',
 			QUIRK::ADS => 'ads',
-			#QUIRK::ASSET_PACK => 'asset-pack'
+			QUIRK::ASSET_PACK => 'asset-pack'
 		};
 	}
 
@@ -117,7 +117,7 @@ enum QUIRK : int {
 		return match ($this){
 			QUIRK::SIGNUP_REQUIRED => 'Sign-up required',
 			QUIRK::ADS => 'On-site ads',
-			#QUIRK::ASSET_PACK => 'Asset Packs'
+			QUIRK::ASSET_PACK => 'Asset Packs'
 		};
 	}
 
