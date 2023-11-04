@@ -52,7 +52,7 @@ class DatabaseLogic{
 		if(!isset(DatabaseLogic::$connection)){
 			DatabaseLogic::initializeConnection();
 		}
-		LogLogic::write("Start transaction...");
+		LogLogic::write("Commit transaction...");
 		DatabaseLogic::$connection->query("COMMIT;");
 		if(DatabaseLogic::$connection->error){
 			LogLogic::write("SQL execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
