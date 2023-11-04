@@ -4,7 +4,7 @@
 		<span style="color:#CB6CE6;">3D</span><span>assets</span><span style="color:#7ED957;">.</span><span>one</span>
 	</div>
 	<div class="logo-slogan">
-		The 3D Asset Aggregator
+		The 3D Asset Search Engine
 	</div>
 	<nav class="navbar">
 		<a class="prominent-link" href="/">Assets</a>
