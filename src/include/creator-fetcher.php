@@ -14,8 +14,8 @@ abstract class CreatorFetcher{
 		return (new $creatorFetcherClassName());
 	}
 
-	protected final function getFetchingState(string $key) : string{
-		return DatabaseLogic::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?",[$this->creator->value,$key])->fetch_assoc()['stateValue'];
+	protected final function getFetchingState(string $key) : ?string{
+		return DatabaseLogic::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?",[$this->creator->value,$key])->fetch_assoc()['stateValue'] ?? NULL;
 	}
 
 	protected final function saveFetchingState(string $key, string $value) : void{
