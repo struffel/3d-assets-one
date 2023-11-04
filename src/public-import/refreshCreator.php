@@ -15,6 +15,8 @@
 	LogLogic::write("Refreshing Creator: $creatorId");
 	
 	try{
+		DatabaseLogic::startTransaction();
+
 		$creator = CreatorFetcher::fromCreator(CREATOR::from($creatorId));
 		LogLogic::write("Created creator object.");
 		$result = $creator->runUpdate();
@@ -25,6 +27,8 @@
 			AssetLogic::writeAssetCollectionToDatabase($result);
 			LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
 		}
+
+		DatabaseLogic::commitTransaction();
 	}finally{
 		LogLogic::echoCurrentLog();
 	}

@@ -4,6 +4,7 @@
 	LogLogic::initialize("activateAssets");
 
 	try{
+		DatabaseLogic::startTransaction();
 		$query = new AssetQuery(
 			filterStatus:  ASSET_STATUS::INACTIVE,
 			limit: 2,
@@ -19,6 +20,7 @@
 			ImageLogic::buildAndUploadThumbnailsToBackblazeB2($a,$imageData);
 		}
 		AssetLogic::activateAssetCollection($assetsToActivate);
+		DatabaseLogic::commitTransaction();
 	}finally{
 		LogLogic::echoCurrentLog();
 	}

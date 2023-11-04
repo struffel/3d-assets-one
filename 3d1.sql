@@ -4,6 +4,7 @@
 DROP TABLE IF EXISTS Tag;
 DROP TABLE IF EXISTS Quirk;
 DROP TABLE IF EXISTS Asset;
+DROP TABLE IF EXISTS FetchingState;
 
 
 -- Create the Asset table.
@@ -36,3 +37,11 @@ CREATE TABLE IF NOT EXISTS Quirk (
     PRIMARY KEY (assetId, quirkId),
     FOREIGN KEY (assetId) REFERENCES Asset(assetId) ON DELETE CASCADE
 );
+
+-- Create the FetchingState table.
+CREATE TABLE IF NOT EXISTS FetchingState (
+	creatorId INT,
+    stateKey VARCHAR(64),
+    stateValue TEXT
+	PRIMARY KEY (creatorId,stateKey)
+)

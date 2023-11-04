@@ -19,20 +19,6 @@ class ImageLogic{
 		return "thumbnail/$variation/$id.$extension";
 	}
 
-	public static function testForThumbnailsOnBackblazeB2(Asset $asset) : bool{
-		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Testing thumbnails for ".$asset->id);
-		
-		$isPresent = true;
-
-		foreach (ImageLogic::$thumbnailTemplate as $t) {
-			$isPresent &= BackblazeB2Logic::testForFile(ImageLogic::getBackblazeB2ThumbnailPath($t[2],$t[0],$t[1],$asset));
-		}
-		
-		LogLogic::write("Result: ".$isPresent);
-		LogLogic::stepOut(__FUNCTION__);
-		return $isPresent;
-	}
 
 	public static function buildAndUploadThumbnailsToBackblazeB2(Asset $asset, string $originalImageData){
 		LogLogic::stepIn(__FUNCTION__);
