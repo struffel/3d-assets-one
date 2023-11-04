@@ -23,7 +23,7 @@
 				<label class="form-label" for="sort">Tags</label>
 				<input class="text-input" type="text" name="q" value="<?=preg_replace('/[^a-zA-Z0-9, ]/','',$_GET['q']??'')?>" placeholder="tags...">
 
-				<label class="form-label" for="creator[]">Creator</label>
+				<label class="form-label" for="creator[]">Site</label>
 				<select size="<?=sizeof(CREATOR::cases())?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
 					<?php foreach(CREATOR::cases() as $c){ ?>
 						<option class="form-option" <?=in_array($c->slug(),$_GET['creator']??[]) ? 'selected' : '' ?> class="multi-select-option" value="<?=$c->slug()?>"><?=$c->name()?></option>
