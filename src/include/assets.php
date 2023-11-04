@@ -1,6 +1,7 @@
 <?php
 
 enum SORTING: string{
+	case POPULAR = "popular";
 	case LATEST = "latest";
 	case OLDEST = "oldest";
 	case RANDOM = "random";
@@ -14,6 +15,7 @@ enum SORTING: string{
 			"latest" => SORTING::LATEST,
 			"oldest" => SORTING::OLDEST,
 			"random" => SORTING::RANDOM,
+			"popular" => SORTING::POPULAR,
 			default => SORTING::LATEST
 		};
 	}
@@ -348,7 +350,8 @@ class AssetLogic{
 		$sqlCommand .= match ($query->sort) {
 			SORTING::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
 			SORTING::OLDEST => " ORDER BY assetDate ASC, assetId DESC ",
-			SORTING::RANDOM => " ORDER BY RAND() "
+			SORTING::RANDOM => " ORDER BY RAND() ",
+			SORTING::POPULAR => " ORDER BY ( (assetClicks+1) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.2 ) ) DESC, assetId DESC "
 		};
 
 		// Offset and Limit
