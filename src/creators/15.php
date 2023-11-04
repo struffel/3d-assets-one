@@ -18,7 +18,7 @@
 				$assetsFoundThisIteration = sizeof($apiData['data']);
 				foreach ($apiData['data'] as $texComAsset) {
 
-					$url = "https://textures.com/download/".$texComAsset['filenameWithoutSet']."/".$texComAsset['id'];
+					$url = "https://textures.com/download/".$texComAsset['filenameWithoutSet']."/".$texComAsset['defaultPhotoSet']['id'];
 
 					if(!in_array($url,$existingUrls)){
 
