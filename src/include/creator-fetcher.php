@@ -14,6 +14,14 @@ abstract class CreatorFetcher{
 		return (new $creatorFetcherClassName());
 	}
 
+	protected final function getFetchingState(string $key) : string{
+		return DatabaseLogic::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?",[$this->creator->value,$key])->fetch_assoc()['stateValue'];
+	}
+
+	protected final function saveFetchingState(string $key, string $value) : void{
+		DatabaseLogic::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);",[$this->creator->value,$key,$value]);
+	}
+
 	public final function runUpdate() : AssetCollection{
 
 		// Get existing URLs
