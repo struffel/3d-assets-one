@@ -371,24 +371,29 @@ class AssetLogic{
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
 
-			$quirks = [];
-			foreach (array_filter(explode(",",$row['quirkIds'])) as $q) {
-				$quirks []= QUIRK::from(intval($q));
-			}
+			try{
+				$quirks = [];
+				foreach (array_filter(explode(",",$row['quirkIds'])) as $q) {
+					$quirks []= QUIRK::from(intval($q));
+				}
 
-			$output->assets []= new Asset(
-				status: ASSET_STATUS::from($row['assetActive']),
-				thumbnailUrl: $row['assetThumbnailUrl'],
-				id: $row['assetId'],
-				name: $row['assetName'],
-				url: $row['assetUrl'],
-				date: $row['assetDate'],
-				tags: explode(',',$row['assetTags']),
-				type: TYPE::from($row['typeId']),
-				license: LICENSE::from($row['licenseId']),
-				creator: CREATOR::from($row['creatorId']),
-				quirks: $quirks
-			);
+				$output->assets []= new Asset(
+					status: ASSET_STATUS::from($row['assetActive']),
+					thumbnailUrl: $row['assetThumbnailUrl'],
+					id: $row['assetId'],
+					name: $row['assetName'],
+					url: $row['assetUrl'],
+					date: $row['assetDate'],
+					tags: explode(',',$row['assetTags']),
+					type: TYPE::from($row['typeId']),
+					license: LICENSE::from($row['licenseId']),
+					creator: CREATOR::from($row['creatorId']),
+					quirks: $quirks
+				);
+			}catch(Throwable $e){
+				// do nothing
+			}
+			
 		}
 
 		LogLogic::stepOut(__FUNCTION__);
