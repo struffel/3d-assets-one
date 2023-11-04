@@ -14,6 +14,7 @@ enum CREATOR : int {
 	case HDRIWORKSHOP = 12;
 	case PBRMATERIALS = 13;
 	case POLIIGON = 14;
+	case TEXTURES_COM = 15;
 
 	public function slug(): string {
 		return match ($this) {
@@ -29,7 +30,8 @@ enum CREATOR : int {
 			CREATOR::RAWCATALOG => 'rawcatalog',
 			CREATOR::HDRIWORKSHOP => 'hdri-workshop',
 			CREATOR::PBRMATERIALS => 'pbrmaterials-com',
-			CREATOR::POLIIGON => 'poliigon'
+			CREATOR::POLIIGON => 'poliigon',
+			CREATOR::TEXTURES_COM => 'Textures.com'
 		};
 	}
 
@@ -47,14 +49,15 @@ enum CREATOR : int {
 			CREATOR::RAWCATALOG => 'Raw Catalog',
 			CREATOR::HDRIWORKSHOP => 'HDRI Workshop',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com',
-			CREATOR::POLIIGON => 'Poliigon (Free Section)'
+			CREATOR::POLIIGON => 'Poliigon (Free Section)',
+			CREATOR::TEXTURES_COM => 'Textures.com (Free Section)'
 		};
 	}
 
 	public function description(): string {
 		return match ($this) {
 			CREATOR::THREE_D_TEXTURES => 'Free seamless PBR textures and unique creations in Substance Designer.',
-			CREATOR::AMBIENTCG => 'Public Domain materials, HDRIs and models for Physically Based Rendering.',
+			CREATOR::AMBIENTCG => '2000+ Public Domain materials, HDRIs and models for Physically Based Rendering.',
 			CREATOR::POLYHAVEN => 'The Public 3D Asset Library - A combination of the websites "HDRI Haven", "Texture Haven" and "3D Model Haven."',
 			CREATOR::SHARETEXTURES => 'ShareTextures.com is creating and sharing PBR textures since 2018.',
 			CREATOR::TEXTURECAN => 'Offers free CG textures, free graphics and free patterns for 3D artists.',
@@ -65,7 +68,8 @@ enum CREATOR : int {
 			CREATOR::RAWCATALOG => 'A unique library that includes many ready-to-use resources for creating amazing projects in the field of video games, films, animation and visualization.',
 			CREATOR::HDRIWORKSHOP => 'Royalty free, high quality HDRIs with unclipped sun, up to 29 EV range and camera background photos from the location!',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com, founded in 2022, is dedicated to providing high-end scanned and Substance Designer assets for 3D artists.',
-			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.'
+			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
+			CREATOR::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.'
 		};
 	}
 
@@ -90,7 +94,8 @@ enum CREATOR : int {
 			CREATOR::RAWCATALOG => 'https://rawcatalog.com',
 			CREATOR::HDRIWORKSHOP => 'https://hdri-workshop.com/',
 			CREATOR::PBRMATERIALS => 'https://pbrmaterials.com',
-			CREATOR::POLIIGON => 'https://www.poliigon.com/search/free'
+			CREATOR::POLIIGON => 'https://www.poliigon.com/search/free',
+			CREATOR::TEXTURES_COM => 'https://www.textures.com/free'
 		};
 	}
 
