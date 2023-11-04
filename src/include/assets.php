@@ -152,7 +152,7 @@ class AssetQuery{
 
 		return new AssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
-			limit: intval($_GET['limit'] ?? 250),
+			limit: intval($_GET['limit'] ?? 150),
 			sort: SORTING::fromString($_GET['sort'] ?? "latest"),
 			filterAssetId: $filterAssetId,
 			filterTag: array_map('trim',array_filter(preg_split('/\s|,/',$_GET['q'] ?? ""))),
