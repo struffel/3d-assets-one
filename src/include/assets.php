@@ -251,6 +251,14 @@ class AssetLogic{
 			$parameters = [$newAsset->url,$tag];
 			DatabaseLogic::runQuery($sql,$parameters);
 		}
+
+		// Quirks
+		foreach ($newAsset->quirks as $quirk) {
+			$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
+			$parameters = [$newAsset->url,$quirk->value];
+			DatabaseLogic::runQuery($sql,$parameters);
+		}
+
 		LogLogic::stepOut(__FUNCTION__);
 	}
 
