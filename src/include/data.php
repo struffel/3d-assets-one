@@ -42,7 +42,7 @@ enum CREATOR : int {
 			CREATOR::TEXTURECAN => 'Texture Can',
 			CREATOR::CGBOOKCASE => 'CG Bookcase',
 			CREATOR::NOEMOTIONHDRS => 'NoEmotion HDRs',
-			CREATOR::CHOCOFUR => 'Chocofur Freebies',
+			CREATOR::CHOCOFUR => 'Chocofur (Free Section)',
 			CREATOR::GPUOPENMATLIB => 'AMD GPUOpen MaterialX Library',
 			CREATOR::RAWCATALOG => 'Raw Catalog',
 			CREATOR::HDRIWORKSHOP => 'hdri workshop',
@@ -60,12 +60,12 @@ enum CREATOR : int {
 			CREATOR::TEXTURECAN => 'Offers free CG textures, free graphics and free patterns for 3D artists.',
 			CREATOR::CGBOOKCASE => 'Free PBR textures that come with all the map types needed to create photorealistic materials.',
 			CREATOR::NOEMOTIONHDRS => 'An older website with an impressive collection of free HDRIs.',
-			CREATOR::CHOCOFUR => 'Improve your Blender 3D projects using thousands of premium quality 3D Blender models and materials! (3dassets.one only lists the free portion of the chocofur store.)',
+			CREATOR::CHOCOFUR => 'Improve your Blender 3D projects using thousands of premium quality 3D Blender models and materials! Currently, only the "Free" section is indexed.',
 			CREATOR::GPUOPENMATLIB => 'A collection of high-quality materials and related textures that is available completely for free, hosted by AMD GPUOpen. (Duplicates of materials from Polyhaven are excluded.)',
 			CREATOR::RAWCATALOG => 'A unique library that includes many ready-to-use resources for creating amazing projects in the field of video games, films, animation and visualization.',
 			CREATOR::HDRIWORKSHOP => 'Royalty free, high quality HDRIs with unclipped sun, up to 29 EV range and camera background photos from the location!',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com, founded in 2022, is dedicated to providing high-end scanned and Substance Designer assets for 3D artists.',
-			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently only the "Free" section is indexed.'
+			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.'
 		};
 	}
 
