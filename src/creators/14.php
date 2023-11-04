@@ -23,40 +23,45 @@
 				$assetBoxesFoundThisIteration = sizeof($assetBoxDomElements);
 				foreach ($assetBoxDomElements as $assetBox) {
 
-					$name = $assetBox->find('img')->attr('alt');
 					$urlPath = $assetBox->attr('href');
+					$url = $config['baseUrl'].$urlPath;
 
-					$type = NULL;
+					if(!in_array($url,$existingUrls)){
 
-					foreach ($config['urlTypeRegex'] as $regex => $typeId) {
-						if(preg_match($regex,$urlPath)){
-							$type = TYPE::from($typeId);
+						$name = $assetBox->find('img')->attr('alt');
+
+						$type = NULL;
+
+						foreach ($config['urlTypeRegex'] as $regex => $typeId) {
+							if(preg_match($regex,$urlPath)){
+								$type = TYPE::from($typeId);
+							}
 						}
-					}
-					if(!$type){
-						throw new Exception("Could not find type from urlPath '$urlPath'");
-					}
+						if(!$type){
+							throw new Exception("Could not find type from urlPath '$urlPath'");
+						}
 
-					$tmpCollection->assets []= new Asset(
-						id: NULL,
-						name:$name,
-						url: $config['baseUrl'].$urlPath,
-						thumbnailUrl: $assetBox->find('img')->attr('src'),
-						date: date("Y-m-d"),
-						tags: preg_split('/\s/',$name),
-						type: $type,
-						license: LICENSE::CUSTOM,
-						creator: $this->creator,
-						quirks: [QUIRK::SIGNUP_REQUIRED],
-						status: ASSET_STATUS::INACTIVE
-					);
+						$tmpCollection->assets []= new Asset(
+							id: NULL,
+							name:$name,
+							url: $url,
+							thumbnailUrl: $assetBox->find('img')->attr('src'),
+							date: date("Y-m-d"),
+							tags: preg_split('/\s/',$name),
+							type: $type,
+							license: LICENSE::CUSTOM,
+							creator: $this->creator,
+							quirks: [QUIRK::SIGNUP_REQUIRED],
+							status: ASSET_STATUS::INACTIVE
+						);
+					}
 				}
 
 				$page += 1;
 
 			}while($assetBoxesFoundThisIteration > 0 && $page < 20 /* Failsafe */);
 
-			LogLogic::write(json_encode($tmpCollection->assets,JSON_PRETTY_PRINT));
+			//LogLogic::write(json_encode($tmpCollection->assets,JSON_PRETTY_PRINT));
 
 			return $tmpCollection;
 		}
