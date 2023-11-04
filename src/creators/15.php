@@ -46,6 +46,6 @@
 		}
 
 		public function fetchThumbnailImage(string $url):string {
-			return ImageLogic::removeUniformBackground(FetchLogic::fetchRemoteData($url),25,25,0.05);
+			return ImageLogic::removeUniformBackground(FetchLogic::fetchRemoteData($url),25,25,0.06);
 		}
 	}
