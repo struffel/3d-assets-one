@@ -47,7 +47,7 @@ enum CREATOR : int {
 			CREATOR::RAWCATALOG => 'Raw Catalog',
 			CREATOR::HDRIWORKSHOP => 'hdri workshop',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com',
-			CREATOR::POLIIGON => 'Poliigon (Free)'
+			CREATOR::POLIIGON => 'Poliigon (Free Section)'
 		};
 	}
 
@@ -65,7 +65,7 @@ enum CREATOR : int {
 			CREATOR::RAWCATALOG => 'A unique library that includes many ready-to-use resources for creating amazing projects in the field of video games, films, animation and visualization.',
 			CREATOR::HDRIWORKSHOP => 'Royalty free, high quality HDRIs with unclipped sun, up to 29 EV range and camera background photos from the location!',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com, founded in 2022, is dedicated to providing high-end scanned and Substance Designer assets for 3D artists.',
-			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. (Currently only listing the "free" section.)'
+			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently only the "Free" section is indexed.'
 		};
 	}
 
