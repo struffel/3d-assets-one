@@ -35,6 +35,32 @@ class DatabaseLogic{
 		
 	}
 
+	public static function startTransaction(){
+		if(!isset(DatabaseLogic::$connection)){
+			DatabaseLogic::initializeConnection();
+		}
+		LogLogic::write("Start transaction...");
+		DatabaseLogic::$connection->query("START TRANSACTION;");
+		if(DatabaseLogic::$connection->error){
+			LogLogic::write("SQL execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
+		}else{
+			LogLogic::write("SQL OK");
+		}
+	}
+
+	public static function commitTransaction(){
+		if(!isset(DatabaseLogic::$connection)){
+			DatabaseLogic::initializeConnection();
+		}
+		LogLogic::write("Start transaction...");
+		DatabaseLogic::$connection->query("COMMIT;");
+		if(DatabaseLogic::$connection->error){
+			LogLogic::write("SQL execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");
+		}else{
+			LogLogic::write("SQL OK");
+		}
+	}
+
 	public static function runQuery(string $sql, array $parameters = []) : mysqli_result|bool{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Received SQL query to run: ".$sql." (".print_r($parameters,true).")");
