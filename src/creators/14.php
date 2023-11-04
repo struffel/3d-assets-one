@@ -61,8 +61,6 @@
 
 			}while($assetBoxesFoundThisIteration > 0 && $page < 20 /* Failsafe */);
 
-			//LogLogic::write(json_encode($tmpCollection->assets,JSON_PRETTY_PRINT));
-
 			return $tmpCollection;
 		}
 	}
