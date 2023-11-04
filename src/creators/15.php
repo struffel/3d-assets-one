@@ -18,7 +18,7 @@
 				$assetsFoundThisIteration = sizeof($apiData['data']);
 				foreach ($apiData['data'] as $texComAsset) {
 
-					$url = $config['finalUrlBase'].$texComAsset['filenameWithoutSet']."/".$texComAsset['id'];
+					$url = "https://textures.com/download/".$texComAsset['filenameWithoutSet']."/".$texComAsset['id'];
 
 					if(!in_array($url,$existingUrls)){
 
@@ -26,7 +26,7 @@
 							id: NULL,
 							name:$texComAsset['defaultPhotoSet']['titleThumbnail'],
 							url: $url,
-							thumbnailUrl: $config['finalUrlBase'].$texComAsset['picture'],
+							thumbnailUrl: "https://textures.com/".$texComAsset['picture'],
 							date: $texComAsset['defaultPhotoSet']['createdAtUtc'],
 							tags: array_filter(preg_split('/[^A-Za-z0-9]/',$texComAsset['defaultPhotoSet']['titleThumbnail'])),
 							type: TYPE::from($config['categoryMapping'][$texComAsset['defaultCategoryId']]),
@@ -46,6 +46,6 @@
 		}
 
 		public function fetchThumbnailImage(string $url):string {
-			return ImageLogic::removeUniformBackground(FetchLogic::fetchRemoteData($url),25,25,0.03);
+			return ImageLogic::removeUniformBackground(FetchLogic::fetchRemoteData($url),25,25,0.033);
 		}
 	}

@@ -1,5 +1,4 @@
 {
-	"finalUrlBase":"https://textures.com/",
 	"apiUrlBase":"https://www.textures.com/api/v1/texture/search?filter=free&page=",
 	"categoryMapping":{
 		"114553":2,

@@ -31,7 +31,7 @@ enum CREATOR : int {
 			CREATOR::HDRIWORKSHOP => 'hdri-workshop',
 			CREATOR::PBRMATERIALS => 'pbrmaterials-com',
 			CREATOR::POLIIGON => 'poliigon',
-			CREATOR::TEXTURES_COM => 'Textures.com'
+			CREATOR::TEXTURES_COM => 'textures-com'
 		};
 	}
 
