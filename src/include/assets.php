@@ -101,13 +101,14 @@ class AssetQuery{
 
 		$output = [];
 		
+		$output['q'] = implode(",",$this->filterTag);
 		$output['offset'] = $this->offset;
 		$output['limit'] = $this->limit;
 		$output['sort'] = $this->sort->value;
 		$output['id'] = $this->filterAssetId;
 		$output['creator'] = array_map($enumToSlugConverter,$this->filterCreator);
 		$output['license'] = array_map($enumToSlugConverter,$this->filterLicense);
-		$output['type'] = array_map($enumToSlugConverter,$this->filterTag);
+		$output['type'] = array_map($enumToSlugConverter,$this->filterType);
 		$output['avoid'] = array_map($enumToSlugConverter,$this->filterAvoidQuirk);
 
 		return http_build_query($output);
