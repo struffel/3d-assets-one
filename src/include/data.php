@@ -45,7 +45,7 @@ enum CREATOR : int {
 			CREATOR::CHOCOFUR => 'Chocofur (Free Section)',
 			CREATOR::GPUOPENMATLIB => 'AMD GPUOpen MaterialX Library',
 			CREATOR::RAWCATALOG => 'Raw Catalog',
-			CREATOR::HDRIWORKSHOP => 'hdri workshop',
+			CREATOR::HDRIWORKSHOP => 'HDRI Workshop',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com',
 			CREATOR::POLIIGON => 'Poliigon (Free Section)'
 		};
