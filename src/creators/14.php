@@ -47,7 +47,7 @@
 							url: $url,
 							thumbnailUrl: $assetBox->find('img')->attr('src'),
 							date: date("Y-m-d"),
-							tags: preg_split('/\s/',$name),
+							tags: preg_split('/\s|,/',$name),
 							type: $type,
 							license: LICENSE::CUSTOM,
 							creator: $this->creator,
