@@ -1,0 +1,9 @@
+{
+	"baseUrl": "https://poliigon.com",
+	"searchBaseUrl":"https://www.poliigon.com/search/free?page=",
+	"urlTypeRegex":{
+		"#/hdr/#": 4,
+		"#/model/#": 2,
+		"#/texture/#": 1
+	}
+}
