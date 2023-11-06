@@ -152,7 +152,7 @@ class AssetQuery{
 
 		return new AssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
-			limit: intval($_GET['limit'] ?? 150),
+			limit: min(intval($_GET['limit'] ?? 150),500),
 			sort: SORTING::fromString($_GET['sort'] ?? "latest"),
 			filterAssetId: $filterAssetId,
 			filterTag: array_map('trim',array_filter(preg_split('/\s|,/',$_GET['q'] ?? ""))),
@@ -268,28 +268,14 @@ class AssetLogic{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Loading assets based on query: ".var_export($query, true));
 
+		// Clean up query
+
+		$query->limit = max(1,$query->limit);
+		$query->offset = max(0,$query->offset);
+
 		// Begin defining SQL string and parameters for prepared statement
 		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
 		$sqlValues = [];
-
-		/*// Tag filter
-
-		if(sizeof($query->filterTag) > 0){
-			$sqlCommand .= " INNER JOIN ( SELECT DISTINCT assetId FROM Tag WHERE TRUE ";
-			foreach ($query->filterTag as $tag) {
-				$sqlCommand .= " AND assetId IN ( SELECT assetId FROM Tag WHERE tagName=?) ";
-				$sqlValues []= $tag;
-			}
-			$sqlCommand .= " ) TagResults USING (assetId)";
-		}
-
-		// Quirk filter
-
-		if(sizeof($query->filterAvoidQuirk) > 0){
-			$ph = DatabaseLogic::generatePlaceholder($query->filterAvoidQuirk);
-			$sqlCommand .= " INNER JOIN ( SELECT assetId FROM Asset WHERE assetId NOT IN ( SELECT assetId FROM Quirk WHERE quirkId IN ($ph) ) ) QuirkResults USING (assetId) ";
-			$sqlValues = array_merge($sqlValues,$query->filterAvoidQuirk);
-		}*/
 
 		// Inclusion filters
 
