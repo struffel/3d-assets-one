@@ -36,7 +36,13 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 				If your asset collection fulfills these criterias you can write to <strong>info [at] 3dassets.one</strong> to discuss an integration. 
 			</p>
 			<h2>API</h2>
-			<p>Below is a description for <code>v2</code> of the API for 3dassets.one. Please keep in mind that the API does not come with any uptime/availability guarantees.</p>
+			<p>
+				Below is a description for <code>v2</code> of the API for 3dassets.one. Please keep in mind that the API does not come with any uptime/availability guarantees.
+				If you are using data from the API in another product I would appreciate a link back to the site, along the lines of:
+				<blockquote>
+					"Search results powered by <a href="https://3dassets.one">3Dassets.one</a>."
+				</blockquote>
+			</p>
 			<h3><code>/api/v2/assets</code></h3>
 			<p>This endpoint allows searching the link database. Its HTTP parameters are identical to those of the main search page.</p>
 			<p>Below is a table with all possible parameters. Values with the <code>[]</code>-suffix can be included multiple times in the query string to filter for multiple values.</p>
