@@ -35,7 +35,48 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 				</ul>
 				If your asset collection fulfills these criterias you can write to <strong>info [at] 3dassets.one</strong> to discuss an integration. 
 			</p>
+			<h2>API</h2>
+			<p>Below is a description for <code>v2</code> of the API for 3dassets.one. Please keep in mind that the API does not come with any uptime/availability guarantees.</p>
+			<h3><code>/api/v2/assets</code></h3>
+			<p>This endpoint allows searching the link database. Its HTTP parameters are identical to those of the main search page.</p>
+			<p>Below is a table with all possible parameters. Values with the <code>[]</code>-suffix can be included multiple times in the query string to filter for multiple values.</p>
+			<table>
+				<tr>
+					<td><code>q</code></td><td>The search string, a list of tags.</td>
+				</tr>
+				<tr>
+					<td><code>id[]</code></td><td>Allows searching for specific asset ids.</td>
+				</tr>
+				<tr>
+					<td><code>creator[]</code></td><td>Allows searching for specific creators using their slug. Check the <code>/creators</code>-endpoint to see a list of possible values.</td>
+				</tr>
+				<tr>
+					<td><code>type[]</code></td><td>Allows searching for specific types using their slug. Check the <code>/types</code>-endpoint to see a list of possible values.</td>
+				</tr>
+				<tr>
+					<td><code>license[]</code></td><td>Allows searching for specific licenses using their slug. Check the <code>/licenses</code>-endpoint to see a list of possible values.</td>
+				</tr>
+				<tr>
+					<td><code>avoid[]</code></td><td>Allows excluding assets with certain quirks (like requiring a sign-up) using their slug. Check the <code>/quirks</code>-endpoint to see a list of possible values.</td>
+				</tr>
+				<tr>
+					<td><code>limit</code></td><td>Determines how many assets are returned. Default is 150, maximum is 500 per request.</td>
+				</tr>
+				<tr>
+					<td><code>offset</code></td><td>Allows shifting the results to allow pagination.</td>
+				</tr>
+				<tr>
+					<td><code>sort</code></td><td>Determines the sorting order of the result. Possible values are: <code><?php foreach(SORTING::cases() as $s){echo $s->value." ";} ?></code></td>
+				</tr>
 
+			</table>
+			<h3><code>/api/v2/licenses</code></h3>
+			<p>This endpoint returns all licenses currently featured on 3dassets.one. It does not accept any parameters.</p>
+			<h3><code>/api/v2/types</code></h3>
+			<p>This endpoint returns all asset types currently featured on 3dassets.one. It does not accept any parameters.</p>
+			<h3><code>/api/v2/creators</code></h3>
+			<p>This endpoint returns all creators currently featured on 3dassets.one. It does not accept any parameters.</p>
+			
 		</main>
 		<?php include $_SERVER['DOCUMENT_ROOT'].'/../components/footer.php'; ?>
 	</body>
