@@ -68,6 +68,9 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 				<tr>
 					<td><code>sort</code></td><td>Determines the sorting order of the result. Possible values are: <code><?php foreach(SORTING::cases() as $s){echo $s->value." ";} ?></code></td>
 				</tr>
+				<tr>
+					<td><code>thumbnail-format</code></td><td>Determines the format used in the <code>thumbnailUrl</code> field. Possible values are: <code>128-PNG 256-PNG 128-JPG-FFFFFF 256-JPG-FFFFFF</code></td>
+				</tr>
 
 			</table>
 			<h3><code>/api/v2/licenses</code></h3>

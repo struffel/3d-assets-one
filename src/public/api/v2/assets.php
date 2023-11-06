@@ -8,7 +8,7 @@ $query->includeTags = true;
 $query->includeQuirks = true;
 $assets = AssetLogic::getAssets($query);
 
-$thumbnailFormat = match ($_GET['thumbnailFormat'] ?? "") {
+$thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {
 	"256-JPG-FFFFFF" => "256-JPG-FFFFFF",
 	"128-JPG-FFFFFF" => "128-JPG-FFFFFF",
 	"256-PNG" => "256-PNG",
