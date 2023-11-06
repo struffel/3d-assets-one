@@ -33,14 +33,14 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 					This rule means that asset packs (which bundle multiple materials/models/HDRIs in one download) cannot be supported.<br>
 					</li>
 				</ul>
-				If your asset collection fulfills these criterias you can write to <strong>info [at] 3dassets.one</strong> to discuss an integration. 
+				If your asset collection fulfills these criterias you can write to <strong>info [at] 3Dassets.one</strong> to discuss an integration. 
 			</p>
 			<h2>API</h2>
 			<p>
-				Below is a description for <code>v2</code> of the API for 3dassets.one. Please keep in mind that the API does not come with any uptime/availability guarantees.
+				Below is a description for <code>v2</code> of the API for 3Dassets.one. Please keep in mind that the API does not come with any uptime/availability guarantees.
 				If you are using data from the API in another product I would appreciate a link back to the site, along the lines of:
 				<blockquote>
-					"Search results powered by <a href="https://3dassets.one">3Dassets.one</a>."
+					"Search results powered by <a href="https://3Dassets.one">3Dassets.one</a>."
 				</blockquote>
 			</p>
 			<h3><code>/api/v2/assets</code></h3>
@@ -80,11 +80,11 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 			</table>
 			<h3><code>/api/v2/licenses</code></h3>
-			<p>This endpoint returns all licenses currently featured on 3dassets.one. It does not accept any parameters.</p>
+			<p>This endpoint returns all licenses currently featured on 3Dassets.one. It does not accept any parameters.</p>
 			<h3><code>/api/v2/types</code></h3>
-			<p>This endpoint returns all asset types currently featured on 3dassets.one. It does not accept any parameters.</p>
+			<p>This endpoint returns all asset types currently featured on 3Dassets.one. It does not accept any parameters.</p>
 			<h3><code>/api/v2/creators</code></h3>
-			<p>This endpoint returns all creators currently featured on 3dassets.one. It does not accept any parameters.</p>
+			<p>This endpoint returns all creators currently featured on 3Dassets.one. It does not accept any parameters.</p>
 			
 		</main>
 		<?php include $_SERVER['DOCUMENT_ROOT'].'/../components/footer.php'; ?>
