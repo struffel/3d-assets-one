@@ -268,10 +268,7 @@ class AssetLogic{
 		LogLogic::stepIn(__FUNCTION__);
 		LogLogic::write("Loading assets based on query: ".var_export($query, true));
 
-		// Clean up query
-
-		$query->limit = max(1,$query->limit);
-		$query->offset = max(0,$query->offset);
+		
 
 		// Begin defining SQL string and parameters for prepared statement
 		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
@@ -341,7 +338,11 @@ class AssetLogic{
 		};
 
 		// Offset and Limit
-		if($query->limit){
+		if($query->limit != NULL){
+			// Clean up query
+			$query->limit = max(1,$query->limit);
+			$query->offset = max(0,$query->offset);
+
 			$sqlCommand .= " LIMIT ? OFFSET ? ";
 			$sqlValues []=$query->limit;
 			$sqlValues []=$query->offset;

@@ -28,11 +28,13 @@ abstract class CreatorFetcher{
 		$query = new AssetQuery();
 		$query->filterCreator = [$this->creator];
 		$query->filterStatus = NULL;
+		$query->limit = NULL;
 		$result = AssetLogic::getAssets($query);
 		$existingUrls = [];
 		foreach ($result->assets as $asset) {
 			$existingUrls []= $asset->url;
 		}
+		LogLogic::write("Found ".sizeof($existingUrls)." existing URLs for creator.");
 
 		// Get new assets using creator-specific method
 		// Passing in the list of existing URLs and
