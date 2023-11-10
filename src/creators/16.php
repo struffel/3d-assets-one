@@ -1,0 +1,74 @@
+<?php
+
+	// CGMood
+
+	use Rct567\DomQuery\DomQuery;
+
+	class CreatorFetcher16 extends CreatorFetcher{
+
+		public CREATOR $creator = CREATOR::CGMOOD;
+
+		function findNewAssets(array $existingUrls, array $config):AssetCollection{
+
+			$tmpCollection = new AssetCollection();
+
+			$page = $this->getFetchingState("page") ?? 1;
+			$pagesProcessed = 0;
+
+			do{
+				$rawHtml = FetchLogic::fetchRemoteData($config['indexingBaseUrl'].$page);
+				$dom = HtmlLogic::domObjectFromHtmlString($rawHtml);
+				$domQuery = new DomQuery($dom);
+
+				$assetImageElements = $domQuery->find('.product img');
+				$assetsFoundThisIteration = sizeof($assetImageElements);
+
+				foreach ($assetImageElements as $assetImageElement) {
+
+					$type = NULL;
+
+					foreach ($config['urlTypeRegex'] as $regex => $typeId) {
+						if(preg_match($regex,$assetImageElement->attr('data-product-url'))){
+							$type = TYPE::from($typeId);
+						}
+					}
+					if(!$type){
+						LogLogic::write("Skipping ".$assetImageElement->attr('data-product-url')." because it does not match the URL schema.");
+					} 
+					elseif (!in_array($assetImageElement->attr('data-product-url'),$existingUrls)){
+
+						$tmpCollection->assets []= new Asset(
+							id: NULL,
+							name: $assetImageElement->attr('data-product-title'),
+							url: $assetImageElement->attr('data-product-url'),
+							thumbnailUrl: "https://cgmood.com".$assetImageElement->attr('src'),
+							date: date("Y-m-d"),
+							tags: array_filter(preg_split('/[^A-Za-z0-9]/',$assetImageElement->attr('data-product-title'))),
+							type: $type,
+							license: LICENSE::CUSTOM,
+							creator: $this->creator,
+							quirks: [QUIRK::SIGNUP_REQUIRED,QUIRK::LIMITED_FREE_DOWNLOADS],
+							status: ASSET_STATUS::INACTIVE
+						);
+
+					}
+				}
+
+				$page += 1;
+				$pagesProcessed += 1;
+
+				if($assetsFoundThisIteration < 1){
+					$page = 1;
+				}
+
+			}while($pagesProcessed < $config['maxPagesPerIteration']);
+
+			$this->saveFetchingState("page",$page);
+
+			return $tmpCollection;
+		}
+
+		public function fetchThumbnailImage(string $url):string {
+			return ImageLogic::removeUniformBackground(FetchLogic::fetchRemoteData($url),15,15,0.075);
+		}
+	}
