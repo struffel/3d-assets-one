@@ -83,6 +83,8 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 			<p>This endpoint returns all licenses currently featured on 3Dassets.one. It does not accept any parameters.</p>
 			<h3><code>/api/v2/types</code></h3>
 			<p>This endpoint returns all asset types currently featured on 3Dassets.one. It does not accept any parameters.</p>
+			<h3><code>/api/v2/quirks</code></h3>
+			<p>This endpoint returns all quirks assets on 3Dassets.one can have. It does not accept any parameters.</p>
 			<h3><code>/api/v2/creators</code></h3>
 			<p>This endpoint returns all creators currently featured on 3Dassets.one. It does not accept any parameters.</p>
 			
