@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text&display=swap');
 
 :root{
-	--asset-box-size: 150px;
+	--asset-box-size: 175px;
 	--reduced-width: max(calc(100% - 300px),1300px);
 }
 
