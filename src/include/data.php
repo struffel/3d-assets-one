@@ -15,6 +15,7 @@ enum CREATOR : int {
 	case PBRMATERIALS = 13;
 	case POLIIGON = 14;
 	case TEXTURES_COM = 15;
+	case CGMOOD = 16;
 
 	public function slug(): string {
 		return match ($this) {
@@ -31,7 +32,8 @@ enum CREATOR : int {
 			CREATOR::HDRIWORKSHOP => 'hdri-workshop',
 			CREATOR::PBRMATERIALS => 'pbrmaterials-com',
 			CREATOR::POLIIGON => 'poliigon',
-			CREATOR::TEXTURES_COM => 'textures-com'
+			CREATOR::TEXTURES_COM => 'textures-com',
+			CREATOR::CGMOOD => 'cgmood'
 		};
 	}
 
@@ -50,7 +52,8 @@ enum CREATOR : int {
 			CREATOR::HDRIWORKSHOP => 'HDRI Workshop',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com',
 			CREATOR::POLIIGON => 'Poliigon (Free Section)',
-			CREATOR::TEXTURES_COM => 'Textures.com (Free Section)'
+			CREATOR::TEXTURES_COM => 'Textures.com (Free Section)',
+			CREATOR::CGMOOD => 'CGMood (Free Section)'
 		};
 	}
 
@@ -69,7 +72,8 @@ enum CREATOR : int {
 			CREATOR::HDRIWORKSHOP => 'Royalty free, high quality HDRIs with unclipped sun, up to 29 EV range and camera background photos from the location!',
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com, founded in 2022, is dedicated to providing high-end scanned and Substance Designer assets for 3D artists.',
 			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
-			CREATOR::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.'
+			CREATOR::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
+			CREATOR::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.'
 		};
 	}
 
@@ -95,7 +99,8 @@ enum CREATOR : int {
 			CREATOR::HDRIWORKSHOP => 'https://hdri-workshop.com/',
 			CREATOR::PBRMATERIALS => 'https://pbrmaterials.com',
 			CREATOR::POLIIGON => 'https://www.poliigon.com/search/free',
-			CREATOR::TEXTURES_COM => 'https://www.textures.com/free'
+			CREATOR::TEXTURES_COM => 'https://www.textures.com/free',
+			CREATOR::CGMOOD => 'https://cgmood.com/free'
 		};
 	}
 
@@ -114,20 +119,24 @@ enum QUIRK : int {
 	#case PAYMENT_REQUIRED = 2;
 	case ADS = 3;
 	case ASSET_PACK = 4;
+	case LIMITED_FREE_DOWNLOADS = 5;
+	#case LIMITED_FREE_QUALITY = 6;
 
 	public function slug() : string{
 		return match ($this){
 			QUIRK::SIGNUP_REQUIRED => 'sign-up',
 			QUIRK::ADS => 'ads',
-			QUIRK::ASSET_PACK => 'asset-pack'
+			QUIRK::ASSET_PACK => 'asset-pack',
+			QUIRK::LIMITED_FREE_DOWNLOADS => 'limited-free-downloads'
 		};
 	}
 
 	public function name() : string{
 		return match ($this){
-			QUIRK::SIGNUP_REQUIRED => 'Sign-up required',
-			QUIRK::ADS => 'On-site ads',
-			QUIRK::ASSET_PACK => 'Asset Packs'
+			QUIRK::SIGNUP_REQUIRED => 'Sign-up Required',
+			QUIRK::ADS => 'On-site Ads',
+			QUIRK::ASSET_PACK => 'Asset Packs',
+			QUIRK::LIMITED_FREE_DOWNLOADS => 'Limited Number of Free Downloads'
 		};
 	}
 
