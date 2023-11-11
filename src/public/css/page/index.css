@@ -41,6 +41,8 @@ main{
 			position:absolute;
 			top: 0;
 			left: 0;
+			background: rgb(255,255,255);
+			border-radius: 10px;
 		}
 
 		.asset-name{
@@ -48,10 +50,11 @@ main{
 			bottom: 0;
 			right: 0;
 			padding:2px;
-			text-align: right;
-			background-color: #00000099;
+			text-align: center;
+			background: rgb(0,0,0);
+			background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
 			color: white;
-			max-width: 100%;
+			width: 100%;
 			border-radius: 4px;
 			font-size: 0.9em;
 		}
@@ -63,6 +66,7 @@ main{
 			padding:2px;
 			font-size:0.75em;
 			color:lightgray;
+			filter: contrast(0.66) brightness(1.33);
 		}
 
 	}
