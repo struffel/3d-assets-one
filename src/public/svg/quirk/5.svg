@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g id="base">
+        <circle cx="256" cy="256" r="256" style="fill:white;"/>
+        <path d="M256,0C397.29,0 512,114.71 512,256C512,397.29 397.29,512 256,512C114.71,512 0,397.29 0,256C0,114.71 114.71,0 256,0ZM256,40C375.214,40 472,136.786 472,256C472,375.214 375.214,472 256,472C136.786,472 40,375.214 40,256C40,136.786 136.786,40 256,40Z"/>
+    </g>
+    <g transform="matrix(1.00055,0,0,1.00055,0.704471,1.95192)">
+        <g transform="matrix(4.81041e-17,-0.863076,1.23275,6.81435e-17,51.9796,498.687)">
+            <path d="M296.41,176.862L296.41,240L190,165.5L296.41,91L296.41,154.138L477,154.138L477,176.862L296.41,176.862Z" style="stroke:black;stroke-width:18.79px;"/>
+        </g>
+        <g transform="matrix(1.07359,0,0,0.544147,1.02354,148.091)">
+            <rect x="107" y="386" width="261" height="31" style="stroke:black;stroke-width:23.49px;"/>
+        </g>
+    </g>
+    <g transform="matrix(0.854337,0,0,0.854337,59.5025,37.2897)">
+        <g transform="matrix(1,0,0,1,-40,61.1486)">
+            <circle cx="369.574" cy="294.426" r="99.574" style="stroke:white;stroke-width:23.41px;"/>
+        </g>
+        <g transform="matrix(1.11486,0,0,1.11486,-8.38807,-31.2936)">
+            <text x="283px" y="395px" style="font-family:'FranklinGothic-Medium', 'Franklin Gothic Medium', sans-serif;font-size:144px;fill:white;">!</text>
+        </g>
+    </g>
+</svg>

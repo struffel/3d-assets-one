@@ -3,6 +3,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 $query = AssetQuery::fromHttpGet();
+$query->includeQuirks = true;
 $assets = AssetLogic::getAssets($query);
 
 header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
@@ -19,13 +20,13 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 
 	<div class="asset-box">
 		<a target="_blank" href="/go?id=<?=$a->id?>" >
-			<img class="asset-creator-image" title="<?=$a->creator->name()?>" width="24" height="24" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/<?=$a->creator->value?>.png">
-			<span class="asset-name"><?=$a->name?></span>
-			<span class="asset-icons">
-				<!--<?php foreach($a->quirks as $q){ ?>
-					<span><?=$q->value?></span>
-				<?php } ?>-->
-				<span><?=strtoupper($a->license->slug())?></span>
+			<img class="asset-creator-image only-hover" title="<?=$a->creator->name()?>" width="32" height="32" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/<?=$a->creator->value?>.png">
+			<span class="asset-name only-hover"><?=$a->name?></span>
+			<span class="asset-icons only-hover">
+				<?php foreach($a->quirks as $q){ ?>
+					<span title="<?=$q->name()?>"><img src="/svg/quirk/<?=$q->value?>.svg" width="32" height="32"></span>
+				<?php } ?>
+				<span title="<?=$a->license->name()?>"><img src="/svg/license/<?=$a->license->value?>.svg" width="32" height="32"></span>
 			</span>
 			<img class="asset-image" alt="<?=$a->name?>" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
