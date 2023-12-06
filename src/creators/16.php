@@ -16,7 +16,22 @@
 			$pagesProcessed = 0;
 
 			do{
-				$rawHtml = FetchLogic::fetchRemoteData($config['indexingBaseUrl'].$page);
+				$attempts = 1;
+				$rawHtml = "";
+				while(!$rawHtml){
+					try {
+						$rawHtml = FetchLogic::fetchRemoteData($config['indexingBaseUrl'].$page);
+					} catch (\Throwable $th) {
+						LogLogic::write("Failed to load site. Attempt: $attempts","WARN");
+						sleep($attempts*2);
+						$attempts = $attempts + 1;
+
+						if($attempts > 4){
+							throw new Exception("Failed to load site, even after multiple attempts.");
+						}
+					}
+				}
+				
 				$dom = HtmlLogic::domObjectFromHtmlString($rawHtml);
 				$domQuery = new DomQuery($dom);
 
