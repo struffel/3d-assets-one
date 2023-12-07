@@ -26,7 +26,6 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>'.PHP_EOL;
 			<media:thumbnail url="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg" height="256" width="256"/>
 			<description><?=$a->name?> by <?=$a->creator->name()?> / Type: <?=$a->type->name()?> / License: <?=$a->license->name()?> / Tags: <?=implode(",",$a->tags)?></description>
 			<link>https://3dassets.one/go?id=<?=$a->id?></link>
-			<author><?=$a->creator->name()?></author>
 			<guid><?=$a->id?></guid>
 			<pubDate><?=$a->date?></pubDate>
 		</item>
