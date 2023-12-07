@@ -79,6 +79,8 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 				</tr>
 
 			</table>
+			<h3><code>/api/v2/assets_rss</code></h3>
+			<p>This endpoint generates a customizable RSS feed of newly indexed assets. Filters from the regular <code>/assets</code> endpoint can be used here as well.</p>
 			<h3><code>/api/v2/licenses</code></h3>
 			<p>This endpoint returns all licenses currently featured on 3Dassets.one. It does not accept any parameters.</p>
 			<h3><code>/api/v2/types</code></h3>
