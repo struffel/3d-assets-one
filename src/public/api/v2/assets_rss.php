@@ -27,7 +27,7 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>'.PHP_EOL;
 			<description><?=$a->name?> by <?=$a->creator->name()?> / Type: <?=$a->type->name()?> / License: <?=$a->license->name()?> / Tags: <?=implode(",",$a->tags)?></description>
 			<link>https://3dassets.one/go?id=<?=$a->id?></link>
 			<guid isPermaLink="false" ><?=$a->id?></guid>
-			<pubDate><?=$a->date?></pubDate>
+			<pubDate><?=(new DateTime($a->date))->format(DateTime::RFC822)?></pubDate>
 		</item>
 <?php } ?>
 
