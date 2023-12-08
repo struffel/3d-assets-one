@@ -53,7 +53,7 @@
 
 				<label class="form-label" for="sort">Sort by</label>
 				<select name="sort">
-					<?php foreach(SORTING::cases() as $c){ ?>
+					<?php foreach([SORTING::POPULAR,SORTING::LATEST,SORTING::OLDEST,SORTING::RANDOM] as $c){ ?>
 						<option class="form-option" <?=( ($_GET['sort']??'') === $c->value) ? 'selected' : '' ?> value="<?=$c->value?>"><?=ucfirst($c->value)?></option>
 					<?php } ?>
 				</select>
