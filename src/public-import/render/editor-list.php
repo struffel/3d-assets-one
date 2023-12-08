@@ -15,7 +15,9 @@ $assets = AssetLogic::getAssets($query);
 <tr id="<?=$a->id?>">
 	<form>
 		<td>
-			<img class="asset-image" alt="<?=$a->name?>" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/128-JPG-FFFFFF/<?=$a->id?>.jpg">
+			<a href="https://<?=implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));?>/go?id=<?=$a->id?>">
+				<img class="asset-image" alt="<?=$a->name?>" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/128-JPG-FFFFFF/<?=$a->id?>.jpg">
+			</a>
 		</td>
 		<td>
 			<input disabled type="text" name="id" value="<?=$a->id?>">
@@ -55,8 +57,8 @@ $assets = AssetLogic::getAssets($query);
 			</select>
 		</td>
 		<td>
-			<button>Update</button><br>
-			<a href="https://<?=implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));?>/go?id=<?=$a->id?>">Test</a>
+			<button>Update</button>
+			<pre><div>&nbsp;</div></pre>
 		</td>
 	</form>
 </tr>
