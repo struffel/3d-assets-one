@@ -63,6 +63,6 @@ $assets = AssetLogic::getAssets($query);
 	</div>
 	<div class="update-output" hx-ext="remove-me" id="update-output-<?=$a->id?>"></div>
 </form>
-
+<hr>
 <?php } ?>
 
