@@ -3,11 +3,11 @@
 
     $assetId = intval($_GET['id']??"0");
 
-    $url = AssetLogic::getUrlFromAssetId($assetId);
+    $url = AssetIoLogic::getUrlFromAssetId($assetId);
     if($url){
         header("Location: $url");
     }else{
         die("3Dassets.one\nURL could not be resolved.");
     }
-    AssetLogic::addAssetClickByAssetId($assetId);
+    AssetIoLogic::addAssetClickByAssetId($assetId);
 ?>

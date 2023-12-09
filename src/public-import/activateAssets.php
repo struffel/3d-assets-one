@@ -11,7 +11,7 @@
 			sort: SORTING::RANDOM,
 		);
 
-		$assetsToActivate = AssetLogic::getAssets($query);
+		$assetsToActivate = AssetIoLogic::getAssets($query);
 		foreach ($assetsToActivate->assets as $a) {
 
 			$creatorFetcher = CreatorFetcher::fromCreator($a->creator);
@@ -19,7 +19,7 @@
 
 			ImageLogic::buildAndUploadThumbnailsToBackblazeB2($a,$imageData);
 		}
-		AssetLogic::activateAssetCollection($assetsToActivate);
+		AssetIoLogic::activateAssetCollection($assetsToActivate);
 		DatabaseLogic::commitTransaction();
 	}finally{
 		LogLogic::echoCurrentLog();
