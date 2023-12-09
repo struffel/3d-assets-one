@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS Asset (
 	assetName VARCHAR(255) NOT NULL,
 	assetActive INT NOT NULL,
 	assetDate DATE,
-	assetClicks INT,
+	assetClicks INT DEFAULT 0,
 	licenseId INT NOT NULL,
 	typeId INT NOT NULL,
 	creatorId INT NOT NULL,
