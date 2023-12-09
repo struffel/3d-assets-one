@@ -3,7 +3,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 $query = AssetQuery::fromHttpGet();
-$query->includeQuirks = true;
 $assets = AssetLogic::getAssets($query);
 
 header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);

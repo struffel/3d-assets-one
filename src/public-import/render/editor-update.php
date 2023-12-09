@@ -5,8 +5,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 if($_POST['id'] ?? false){
 	DatabaseLogic::startTransaction();
 	$query = new AssetQuery(filterAssetId:[$_POST['id']]);
-	$query->includeQuirks = true;
-	$query->includeTags = true;
 	$assets = AssetLogic::getAssets($query);
 	$a = $assets->assets[0];
 

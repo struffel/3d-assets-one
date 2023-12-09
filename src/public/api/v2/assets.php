@@ -4,8 +4,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 header("content-type: application/json");
 
 $query = AssetQuery::fromHttpGet();
-$query->includeTags = true;
-$query->includeQuirks = true;
 $assets = AssetLogic::getAssets($query);
 
 $thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {

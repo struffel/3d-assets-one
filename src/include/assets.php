@@ -93,10 +93,6 @@ class AssetQuery{
 	public ?array $filterAvoidQuirk = [],		// ?avoid, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
 	public ?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE,				// NULL => Any status
 
-	// Includes
-	public bool $includeTags = false,
-	public bool $includeQuirks = false,
-
 	){}
 
 	public function toHttpGet(bool $includeStatus = false) : string{
@@ -127,7 +123,7 @@ class AssetQuery{
 	 * The asset status can be forced to a specific value using the method paramter 'filterStatus'.
 	 * Setting filterStatus to NULL allows the status to be controlled using a HTTP parameter.
 	 */
-	public static function fromHttpGet(?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE,bool $includeQuirks = true,bool $includeTags = true) : AssetQuery{
+	public static function fromHttpGet(?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE) : AssetQuery{
 
 		// status filter (only if it's not defined in the method head)
 		if($filterStatus === NULL && isset($_GET['status']) && $_GET['status'] != "" ){
@@ -179,9 +175,7 @@ class AssetQuery{
 			filterLicense: $filterLicense,
 			filterType: $filterType,
 			filterAvoidQuirk: $filterAvoidQuirk,
-			filterStatus: $filterStatus,
-			includeTags: $includeTags,
-			includeQuirks: $includeQuirks
+			filterStatus: $filterStatus
 		);
 
 	}
@@ -242,31 +236,22 @@ class AssetLogic{
 			$parameters = [$asset->name,$asset->status->value,$asset->url,$asset->thumbnailUrl,$asset->date,$asset->license->value,$asset->type->value,$asset->creator->value,$asset->id];
 			DatabaseLogic::runQuery($sql,$parameters);
 
-			if($asset->tags !== NULL){
-				// Tags
-				DatabaseLogic::runQuery("DELETE FROM Tag WHERE assetId = ?",[$asset->id]);
-				foreach ($asset->tags as $tag) {
-					$sql = "INSERT INTO Tag (assetId,tagName) VALUES (?,?);";
-					$parameters = [$asset->id,$tag];
-					DatabaseLogic::runQuery($sql,$parameters);
-				}
-			}else{
-				LogLogic::write("Not updating tags.");
+			// Tags
+			DatabaseLogic::runQuery("DELETE FROM Tag WHERE assetId = ?",[$asset->id]);
+			foreach ($asset->tags as $tag) {
+				$sql = "INSERT INTO Tag (assetId,tagName) VALUES (?,?);";
+				$parameters = [$asset->id,$tag];
+				DatabaseLogic::runQuery($sql,$parameters);
 			}
-			
 
 			// Quirks
-			if($asset->tags !== NULL){
-				DatabaseLogic::runQuery("DELETE FROM Quirk WHERE assetId = ?",[$asset->id]);
-				foreach ($asset->quirks as $quirk) {
-					$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES (?,?);";
-					$parameters = [$asset->id,$quirk->value];
-					DatabaseLogic::runQuery($sql,$parameters);
-				}
-			}else{
-				LogLogic::write("Not updating quirks.");
+
+			DatabaseLogic::runQuery("DELETE FROM Quirk WHERE assetId = ?",[$asset->id]);
+			foreach ($asset->quirks as $quirk) {
+				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES (?,?);";
+				$parameters = [$asset->id,$quirk->value];
+				DatabaseLogic::runQuery($sql,$parameters);
 			}
-			
 
 		}else{
 			LogLogic::write("Inserting new asset with url:".$asset->url);
@@ -306,17 +291,10 @@ class AssetLogic{
 		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
 		$sqlValues = [];
 
-		// Inclusion filters
+		// Joins
 
-		$sqlCommand .= match ($query->includeTags) {
-			true => " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ",
-			default => " LEFT JOIN (SELECT NULL as assetId, NULL as assetTags) AllTags USING (assetId) "
-		};
-		
-		$sqlCommand .= match($query->includeQuirks) {
-			true => " LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) ",
-			default => " LEFT JOIN (SELECT NULL as assetId, NULL as quirkIds) AllQuirks USING (assetId) "
-		};
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ";
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) ";
 
 		$sqlCommand .= " WHERE TRUE ";
 
@@ -408,19 +386,13 @@ class AssetLogic{
 		
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
-	
-			$quirks = NULL;
-			if($query->includeQuirks){
-				$quirks = [];
-				foreach (array_filter(explode(",",$row['quirkIds'] ?? "")) as $q) {
-					$quirks []= QUIRK::from(intval($q));
-				}
+
+			$quirks = [];
+			foreach (array_filter(explode(",",$row['quirkIds'] ?? "")) as $q) {
+				$quirks []= QUIRK::from(intval($q));
 			}
-			
-			$tags = NULL;
-			if($query->includeTags){
-				$tags = array_filter(explode(',',$row['assetTags'] ?? ""));
-			}
+
+			$tags = array_filter(explode(',',$row['assetTags'] ?? ""));
 			
 			$output->assets []= new Asset(
 				status: ASSET_STATUS::from($row['assetActive']),

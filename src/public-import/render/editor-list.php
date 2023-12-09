@@ -3,8 +3,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 $query = AssetQuery::fromHttpGet(filterStatus:NULL);
-$query->includeQuirks = true;
-$query->includeTags = true;
 $assets = AssetLogic::getAssets($query);
 ?>
 
@@ -16,7 +14,6 @@ $assets = AssetLogic::getAssets($query);
 		style="display: grid;grid-template-columns: 128px 256px 256px 256px 256px 128px 256px"
 >
 	<!--Hidden inputs-->
-	<input readonly type="hidden" name="creator" value="<?=$a->creator->value?>">
 	<input readonly type="hidden" name="id" value="<?=$a->id?>">
 
 	<!--Visible Inputs-->
