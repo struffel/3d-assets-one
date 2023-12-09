@@ -6,14 +6,6 @@
 <html lang="en">
 <?php include $_SERVER['DOCUMENT_ROOT'].'/../components/head.php'; ?>
 <body>
-	<style>
-		div{
-			transition: all 1.0s;
-		}
-		.update-output.htmx-settling{
-			background-color: lightblue;
-		}
-	</style>
 	<link rel="stylesheet" href=https://unpkg.com/chota />
 	<form	hx-get="/render/editor-list.php" 
 			hx-target="main" 
