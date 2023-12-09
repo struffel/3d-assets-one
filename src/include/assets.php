@@ -257,8 +257,8 @@ class AssetLogic{
 			LogLogic::write("Inserting new asset with url:".$asset->url);
 
 			// Base Asset
-			$sql = "INSERT INTO Asset (assetId, assetActive,assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);";
-			$parameters = [$asset->name, $asset->status->value, $asset->url,$asset->thumbnailUrl,$asset->date, 0 ,$asset->license->value,$asset->type->value,$asset->creator->value];
+			$sql = "INSERT INTO Asset (assetId, assetActive,assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$parameters = [	$asset->status->value, $asset->name, $asset->url,$asset->thumbnailUrl,$asset->date, 0 ,$asset->license->value,$asset->type->value,$asset->creator->value];
 			DatabaseLogic::runQuery($sql,$parameters);
 
 			// Tags

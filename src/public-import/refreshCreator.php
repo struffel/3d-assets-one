@@ -15,7 +15,7 @@
 	LogLogic::write("Refreshing Creator: $creatorId");
 	
 	try{
-		DatabaseLogic::startTransaction();
+		
 
 		$creator = CreatorFetcher::fromCreator(CREATOR::from($creatorId));
 		LogLogic::write("Created creator object.");
@@ -25,12 +25,14 @@
 		if(sizeof($result->assets) > 0){
 			LogLogic::write("Writing new assets to DB:");
 			foreach ($result->assets as $a) {
-				$a->saveToDatabase();
+				DatabaseLogic::startTransaction();
+				$a->status = ASSET_STATUS::INACTIVE;	// Failsave in case the creator fetching function does not set it properly.
+				AssetLogic::saveAssetToDatabase($a);
+				DatabaseLogic::commitTransaction();
 			}
 			LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
 		}
 
-		DatabaseLogic::commitTransaction();
 	}finally{
 		LogLogic::echoCurrentLog();
 	}
