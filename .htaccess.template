@@ -9,6 +9,8 @@ SetEnv	3D1_B2_KEYNAME
 SetEnv	3D1_B2_APPKEY		
 SetEnv	3D1_B2_BUCKETID		
 SetEnv	3D1_B2_BUCKETNAME	
+SetEnv	3D1_CDN		
+SetEnv	3D1_UNCACHED		
 
 # Require login
 <If true >
