@@ -16,7 +16,7 @@ $thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {
 
 for ($i=0; $i < sizeof($assets->assets); $i++) { 
 	$id = $assets->assets[$i]->id;
-	$assets->assets[$i]->thumbnailUrl = "https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/$thumbnailFormat/$id.jpg";
+	$assets->assets[$i]->thumbnailUrl = getenv("3D1_CDN")."/thumbnail/$thumbnailFormat/$id.jpg";
 	unset($assets->assets[$i]->status);
 }
 

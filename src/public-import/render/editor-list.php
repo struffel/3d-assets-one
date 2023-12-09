@@ -15,7 +15,7 @@ $assets = AssetLogic::getAssets($query);
 >
 	<div>
 		<a href="https://<?=implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));?>/go?id=<?=$a->id?>">
-			<img class="asset-image" alt="<?=$a->name?>" src="https://f003.backblazeb2.com/file/3D-Assets-One/thumbnail/128-JPG-FFFFFF/<?=$a->id?>.jpg">
+			<img class="asset-image" alt="<?=$a->name?>" src="<?=getenv("3D1_UNCACHED")?>/thumbnail/128-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
 	<div>

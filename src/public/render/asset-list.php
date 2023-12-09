@@ -19,7 +19,7 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 
 	<div class="asset-box">
 		<a target="_blank" href="/go?id=<?=$a->id?>" >
-			<img class="asset-creator-image only-hover" title="<?=$a->creator->name()?>" width="32" height="32" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/creator-icon/64-PNG/<?=$a->creator->value?>.png">
+			<img class="asset-creator-image only-hover" title="<?=$a->creator->name()?>" width="32" height="32" src="/img/creator/<?=$a->creator->value?>.png">
 			<span class="asset-name only-hover"><?=$a->name?></span>
 			<span class="asset-icons only-hover">
 				<?php foreach($a->quirks as $q){ ?>
@@ -27,7 +27,7 @@ header("HX-Replace-Url: ?".$_SERVER['QUERY_STRING']);
 				<?php } ?>
 				<span title="<?=$a->license->name()?>"><img src="/svg/license/<?=$a->license->value?>.svg" width="32" height="32"></span>
 			</span>
-			<img class="asset-image" alt="<?=$a->name?>" src="https://3d1-media.struffelproductions.com/file/3D-Assets-One/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
+			<img class="asset-image" alt="<?=$a->name?>" src="<?=getenv("3D1_CDN")?>/thumbnail/256-JPG-FFFFFF/<?=$a->id?>.jpg">
 		</a>
 	</div>
 
