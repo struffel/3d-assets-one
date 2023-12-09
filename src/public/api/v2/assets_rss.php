@@ -4,8 +4,6 @@ header("content-Type: application/rss+xml");
 
 $query = AssetQuery::fromHttpGet();
 $query->sort = SORTING::LATEST;
-$query->includeTags = true;
-$query->includeQuirks = true;
 $assetCollection = AssetLogic::getAssets($query);
 
 echo '<?xml version="1.0" encoding="UTF-8" ?>'.PHP_EOL;

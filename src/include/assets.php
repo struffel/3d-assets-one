@@ -5,19 +5,21 @@ enum SORTING: string{
 	case LATEST = "latest";
 	case OLDEST = "oldest";
 	case RANDOM = "random";
+	case MOST_CLICKED = "most-clicked";
+	case LEAST_CLICKED = "least-clicked";
+	case MOST_TAGGED = "most-tagged";
+	case LEAST_TAGGED = "least-tagged";
 
 	/**
 	 * Returns the enum value for the string. 
 	 * Every other/invalid string gets turned into SORTING::LATEST.
 	 */
-	public static function fromString(string $string) : SORTING{
-		return match ($string) {
-			"latest" => SORTING::LATEST,
-			"oldest" => SORTING::OLDEST,
-			"random" => SORTING::RANDOM,
-			"popular" => SORTING::POPULAR,
-			default => SORTING::LATEST
-		};
+	public static function fromAnyString(string $string) : SORTING{
+		if(in_array($string,array_column(SORTING::cases(), 'value'))){
+			return SORTING::from($string);
+		}else{
+			return SORTING::LATEST;
+		}
 	}
 }
 
@@ -91,13 +93,9 @@ class AssetQuery{
 	public ?array $filterAvoidQuirk = [],		// ?avoid, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
 	public ?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE,				// NULL => Any status
 
-	// Includes
-	public bool $includeTags = false,
-	public bool $includeQuirks = false,
-
 	){}
 
-	public function toHttpGet() : string{
+	public function toHttpGet(bool $includeStatus = false) : string{
 
 		$enumToSlugConverter = function($e){return $e->slug();};
 
@@ -113,47 +111,64 @@ class AssetQuery{
 		$output['type'] = array_map($enumToSlugConverter,$this->filterType);
 		$output['avoid'] = array_map($enumToSlugConverter,$this->filterAvoidQuirk);
 
+		if($includeStatus){
+			$output['status'] = $this->filterStatus->value ?? NULL;
+		}
+
 		return http_build_query($output);
 	}
 
 	/**
 	 * Generates a new AssetQuery based on the current HTTP GET parameters in $_GET.
+	 * The asset status can be forced to a specific value using the method paramter 'filterStatus'.
+	 * Setting filterStatus to NULL allows the status to be controlled using a HTTP parameter.
 	 */
-	public static function fromHttpGet(ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE) : AssetQuery{
+	public static function fromHttpGet(?ASSET_STATUS $filterStatus = ASSET_STATUS::ACTIVE) : AssetQuery{
+
+		// status filter (only if it's not defined in the method head)
+		if($filterStatus === NULL && isset($_GET['status']) && $_GET['status'] != "" ){
+			$filterStatus = ASSET_STATUS::tryFrom(intval($_GET['status']));
+		}
 
 		// assetId filter
 		$filterAssetId = [];
 		foreach($_GET['id'] ?? [] as $assetId) {
 			$filterAssetId []= intval($assetId);
 		}
+		$filterAssetId = array_filter($filterAssetId);
 
 		// creator filter
 		$filterCreator = [];
 		foreach($_GET['creator'] ?? [] as $creatorSlug){
 			$filterCreator []= CREATOR::fromSlug($creatorSlug);
 		}
+		$filterCreator = array_filter($filterCreator);
 
 		// type filter
 		$filterType = [];
 		foreach($_GET['type'] ?? [] as $typeSlug){
 			$filterType []= TYPE::fromSlug($typeSlug);
 		}
+		$filterType = array_filter($filterType);
+
 		// license filter
 		$filterLicense = [];
 		foreach($_GET['license'] ?? [] as $licenseSlug){
 			$filterLicense []= LICENSE::fromSlug($licenseSlug);
 		}
+		$filterLicense = array_filter($filterLicense);
 
 		// quirk filter
 		$filterAvoidQuirk = [];
 		foreach($_GET['avoid'] ?? [] as $quirkSlug){
 			$filterAvoidQuirk []= QUIRK::fromSlug($quirkSlug);
 		}
+		$filterAvoidQuirk = array_filter($filterAvoidQuirk);
 
 		return new AssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
 			limit: min(intval($_GET['limit'] ?? 150),500),
-			sort: SORTING::fromString($_GET['sort'] ?? "latest"),
+			sort: SORTING::fromAnyString($_GET['sort'] ?? "latest"),
 			filterAssetId: $filterAssetId,
 			filterTag: array_map('trim',array_filter(preg_split('/\s|,/',$_GET['q'] ?? ""))),
 			filterCreator: $filterCreator,
@@ -168,27 +183,6 @@ class AssetQuery{
 }
 
 class AssetLogic{
-	/**
-	 * Writes all Assets in an AssetCollection to the database.
-	 */
-	public static function writeAssetCollectionToDatabase(AssetCollection $newAssetCollection){
-		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Writing asset collection to DB");
-		foreach ($newAssetCollection->assets as $a) {
-			AssetLogic::writeAssetToDatabase($a);
-		}
-		LogLogic::write("Finished writing asset collection to DB");
-		LogLogic::stepOut(__FUNCTION__);
-	}
-
-	/**
-	 * Activates all assets in an AssetCollection.
-	 */
-	public static function activateAssetCollection(AssetCollection $assetCollection){
-		foreach ($assetCollection->assets as $a) {
-			AssetLogic::activateAsset($a);
-		}
-	}
 
 	public static function filterTagArray(array $inputArray) {
 		// Initialize an empty result array
@@ -217,15 +211,7 @@ class AssetLogic{
 		return array_unique($resultArray);
 	}
 
-	/**
-	 * Activates an asset in the database.
-	 * This causes it to show up in regular asset searches.
-	 */
-	public static function activateAsset(Asset $asset){
-		DatabaseLogic::runQuery("UPDATE Asset SET assetActive = '1' WHERE assetId = ?",[$asset->id]);
-	}
-
-	public static function getUrlFromAssetId(string $assetId) : string{
+	public static function getUrlById(string $assetId) : string{
 		$sql = "SELECT assetUrl FROM Asset WHERE assetId = ? LIMIT 1;";
 		$sqlResult = DatabaseLogic::runQuery($sql,[intval($assetId)]);
 		
@@ -233,35 +219,66 @@ class AssetLogic{
 		return $row['assetUrl'];
 	}
 
-	public static function addAssetClickByAssetId(int $assetId){
+	public static function addAssetClickById(int $assetId){
 		$sql = "INSERT INTO Asset(AssetId,assetClicks) VALUES (?,1) ON DUPLICATE KEY UPDATE assetClicks = assetClicks+1;";
 		DatabaseLogic::runQuery($sql,[intval($assetId)]);
 	}
 
-	public static function writeAssetToDatabase(Asset $newAsset){
+	public static function saveAssetToDatabase(Asset $asset) {
+
 		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Inserting Asset: ".$newAsset->url);
 
-		// Base Asset
-		$sql = "INSERT INTO Asset (assetId, assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);";
-		$parameters = [$newAsset->name, $newAsset->url,$newAsset->thumbnailUrl,$newAsset->date, 0 ,$newAsset->license->value,$newAsset->type->value,$newAsset->creator->value];
-		$result = DatabaseLogic::runQuery($sql,$parameters);
+		if($asset->id){
+			LogLogic::write("Updating Asset with id: ".$asset->id);
 
-		// Tags
-		foreach ($newAsset->tags as $tag) {
-			$sql = "INSERT INTO Tag (assetId,tagName) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
-			$parameters = [$newAsset->url,$tag];
+			// Base Asset
+			$sql = "UPDATE Asset SET assetName=?,assetActive=?,assetUrl=?,assetThumbnailUrl=?,assetDate=?,licenseId=?,typeId=?,creatorId=? WHERE assetId = ?";
+			$parameters = [$asset->name,$asset->status->value,$asset->url,$asset->thumbnailUrl,$asset->date,$asset->license->value,$asset->type->value,$asset->creator->value,$asset->id];
 			DatabaseLogic::runQuery($sql,$parameters);
-		}
 
-		// Quirks
-		foreach ($newAsset->quirks as $quirk) {
-			$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
-			$parameters = [$newAsset->url,$quirk->value];
+			// Tags
+			DatabaseLogic::runQuery("DELETE FROM Tag WHERE assetId = ?",[$asset->id]);
+			foreach ($asset->tags as $tag) {
+				$sql = "INSERT INTO Tag (assetId,tagName) VALUES (?,?);";
+				$parameters = [$asset->id,$tag];
+				DatabaseLogic::runQuery($sql,$parameters);
+			}
+
+			// Quirks
+
+			DatabaseLogic::runQuery("DELETE FROM Quirk WHERE assetId = ?",[$asset->id]);
+			foreach ($asset->quirks as $quirk) {
+				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES (?,?);";
+				$parameters = [$asset->id,$quirk->value];
+				DatabaseLogic::runQuery($sql,$parameters);
+			}
+
+		}else{
+			LogLogic::write("Inserting new asset with url:".$asset->url);
+
+			// Base Asset
+			$sql = "INSERT INTO Asset (assetId, assetActive,assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$parameters = [	$asset->status->value, $asset->name, $asset->url,$asset->thumbnailUrl,$asset->date, 0 ,$asset->license->value,$asset->type->value,$asset->creator->value];
 			DatabaseLogic::runQuery($sql,$parameters);
-		}
 
+			// Tags
+			foreach ($asset->tags as $tag) {
+				$sql = "INSERT INTO Tag (assetId,tagName) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
+				$parameters = [$asset->url,$tag];
+				DatabaseLogic::runQuery($sql,$parameters);
+			}
+	
+			// Quirks
+			foreach ($asset->quirks as $quirk) {
+				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
+				$parameters = [$asset->url,$quirk->value];
+				DatabaseLogic::runQuery($sql,$parameters);
+			}
+		}
+		
 		LogLogic::stepOut(__FUNCTION__);
+		return $asset;
+		
 	}
 
 	public static function getAssets(AssetQuery $query): AssetCollection{
@@ -274,17 +291,10 @@ class AssetLogic{
 		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
 		$sqlValues = [];
 
-		// Inclusion filters
+		// Joins
 
-		$sqlCommand .= match ($query->includeTags) {
-			true => " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ",
-			default => " LEFT JOIN (SELECT NULL as assetId, NULL as assetTags) AllTags USING (assetId) "
-		};
-		
-		$sqlCommand .= match($query->includeQuirks) {
-			true => " LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) ",
-			default => " LEFT JOIN (SELECT NULL as assetId, NULL as quirkIds) AllQuirks USING (assetId) "
-		};
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ";
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) ";
 
 		$sqlCommand .= " WHERE TRUE ";
 
@@ -324,17 +334,25 @@ class AssetLogic{
 			$sqlValues = array_merge($sqlValues,$query->filterCreator);
 		}
 
-		if(isset($query->filterStatus)){
+		if($query->filterStatus !== NULL){
 			$sqlCommand .= " AND assetActive=? ";
 			$sqlValues []= $query->filterStatus;
 		}
 
 		// Sort
 		$sqlCommand .= match ($query->sort) {
+
+			// Options for public display
 			SORTING::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
 			SORTING::OLDEST => " ORDER BY assetDate ASC, assetId DESC ",
 			SORTING::RANDOM => " ORDER BY RAND() ",
-			SORTING::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC "
+			SORTING::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC ",
+
+			// Options for internal editor (potentially less optimized)
+			SORTING::LEAST_CLICKED => " ORDER BY assetClicks ASC ",
+			SORTING::MOST_CLICKED => " ORDER BY assetClicks DESC ",
+			SORTING::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) ASC ",
+			SORTING::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) DESC ",
 		};
 
 		// Offset and Limit
@@ -369,28 +387,26 @@ class AssetLogic{
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
 
-			try{
-				$quirks = [];
-				foreach (array_filter(explode(",",$row['quirkIds'])) as $q) {
-					$quirks []= QUIRK::from(intval($q));
-				}
-
-				$output->assets []= new Asset(
-					status: ASSET_STATUS::from($row['assetActive']),
-					thumbnailUrl: $row['assetThumbnailUrl'],
-					id: $row['assetId'],
-					name: $row['assetName'],
-					url: $row['assetUrl'],
-					date: $row['assetDate'],
-					tags: explode(',',$row['assetTags']),
-					type: TYPE::from($row['typeId']),
-					license: LICENSE::from($row['licenseId']),
-					creator: CREATOR::from($row['creatorId']),
-					quirks: $quirks
-				);
-			}catch(Throwable $e){
-				// do nothing
+			$quirks = [];
+			foreach (array_filter(explode(",",$row['quirkIds'] ?? "")) as $q) {
+				$quirks []= QUIRK::from(intval($q));
 			}
+
+			$tags = array_filter(explode(',',$row['assetTags'] ?? ""));
+			
+			$output->assets []= new Asset(
+				status: ASSET_STATUS::from($row['assetActive']),
+				thumbnailUrl: $row['assetThumbnailUrl'],
+				id: $row['assetId'],
+				name: $row['assetName'],
+				url: $row['assetUrl'],
+				date: $row['assetDate'],
+				tags: $tags,
+				type: TYPE::from($row['typeId']),
+				license: LICENSE::from($row['licenseId']),
+				creator: CREATOR::from($row['creatorId']),
+				quirks: $quirks
+			);
 			
 		}
 

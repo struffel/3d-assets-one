@@ -104,12 +104,13 @@ enum CREATOR : int {
 		};
 	}
 
-	public static function fromSlug(string $slug) : CREATOR {
+	public static function fromSlug(string $slug) : ?CREATOR {
 		foreach (CREATOR::cases() as $c) {
 			if($c->slug() === $slug){
 				return $c;
 			}
 		}
+		return null;
 	}
 
 }
