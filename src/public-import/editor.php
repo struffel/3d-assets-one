@@ -6,7 +6,15 @@
 <html lang="en">
 <?php include $_SERVER['DOCUMENT_ROOT'].'/../components/head.php'; ?>
 <body>
-<link rel="stylesheet" href=https://unpkg.com/chota />
+	<style>
+		div{
+			transition: all 1.0s;
+		}
+		.update-output.htmx-settling{
+			background-color: lightblue;
+		}
+	</style>
+	<link rel="stylesheet" href=https://unpkg.com/chota />
 	<form	hx-get="/render/editor-list.php" 
 			hx-target="main" 
 			hx-trigger="change,load,input delay:200ms" 

@@ -1,5 +1,6 @@
 <head>
     <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/remove-me.js"></script>
     <title>3Dassets.one - The asset search engine</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="https://3d1-media.struffelproductions.com/file/3D-Assets-One/favicon/apple-touch-icon.png">

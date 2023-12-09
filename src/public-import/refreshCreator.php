@@ -24,7 +24,9 @@
 		LogLogic::write("Found ".sizeof($result->assets)." new assets");
 		if(sizeof($result->assets) > 0){
 			LogLogic::write("Writing new assets to DB:");
-			AssetIoLogic::writeAssetCollectionToDatabase($result);
+			foreach ($result->assets as $a) {
+				$a->saveToDatabase();
+			}
 			LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
 		}
 

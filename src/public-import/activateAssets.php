@@ -11,15 +11,16 @@
 			sort: SORTING::RANDOM,
 		);
 
-		$assetsToActivate = AssetIoLogic::getAssets($query);
+		$assetsToActivate = AssetLogic::getAssets($query);
 		foreach ($assetsToActivate->assets as $a) {
 
 			$creatorFetcher = CreatorFetcher::fromCreator($a->creator);
 			$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
 
 			ImageLogic::buildAndUploadThumbnailsToBackblazeB2($a,$imageData);
+			$a->status = ASSET_STATUS::ACTIVE;
+			$a->saveToDatabase();
 		}
-		AssetIoLogic::activateAssetCollection($assetsToActivate);
 		DatabaseLogic::commitTransaction();
 	}finally{
 		LogLogic::echoCurrentLog();

@@ -5,7 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 $query = AssetQuery::fromHttpGet(filterStatus:NULL);
 $query->includeQuirks = true;
 $query->includeTags = true;
-$assets = AssetIoLogic::getAssets($query);
+$assets = AssetLogic::getAssets($query);
 ?>
 
 <?php foreach ($assets->assets as $a) { ?>
@@ -64,7 +64,7 @@ $assets = AssetIoLogic::getAssets($query);
 	<div>
 		<button type="submit">Update</button>
 	</div>
-	<div id="update-output-<?=$a->id?>"></div>
+	<div class="update-output" hx-ext="remove-me" id="update-output-<?=$a->id?>"></div>
 </form>
 
 <?php } ?>

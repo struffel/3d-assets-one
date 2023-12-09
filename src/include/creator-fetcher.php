@@ -29,7 +29,7 @@ abstract class CreatorFetcher{
 		$query->filterCreator = [$this->creator];
 		$query->filterStatus = NULL;
 		$query->limit = NULL;
-		$result = AssetIoLogic::getAssets($query);
+		$result = AssetLogic::getAssets($query);
 		$existingUrls = [];
 		foreach ($result->assets as $asset) {
 			$existingUrls []= $asset->url;
