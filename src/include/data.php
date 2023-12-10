@@ -8,7 +8,6 @@ enum CREATOR : int {
 	case CGBOOKCASE = 5;
 	case TEXTURECAN = 6;
 	case NOEMOTIONHDRS = 7;
-	case CHOCOFUR = 9;
 	case GPUOPENMATLIB = 10;
 	case RAWCATALOG = 11;
 	case HDRIWORKSHOP = 12;
@@ -26,7 +25,6 @@ enum CREATOR : int {
 			CREATOR::THREE_D_TEXTURES => '3d-textures',
 			CREATOR::CGBOOKCASE => 'cgbookcase',
 			CREATOR::NOEMOTIONHDRS => 'noemotionhdrs',
-			CREATOR::CHOCOFUR => 'chocofur',
 			CREATOR::GPUOPENMATLIB => 'gpuopen-matlib',
 			CREATOR::RAWCATALOG => 'rawcatalog',
 			CREATOR::HDRIWORKSHOP => 'hdri-workshop',
@@ -46,7 +44,6 @@ enum CREATOR : int {
 			CREATOR::TEXTURECAN => 'Texture Can',
 			CREATOR::CGBOOKCASE => 'CG Bookcase',
 			CREATOR::NOEMOTIONHDRS => 'NoEmotion HDRs',
-			CREATOR::CHOCOFUR => 'Chocofur (Free Section)',
 			CREATOR::GPUOPENMATLIB => 'AMD GPUOpen MaterialX Library',
 			CREATOR::RAWCATALOG => 'Raw Catalog',
 			CREATOR::HDRIWORKSHOP => 'HDRI Workshop',
@@ -66,7 +63,6 @@ enum CREATOR : int {
 			CREATOR::TEXTURECAN => 'Offers free CG textures, free graphics and free patterns for 3D artists.',
 			CREATOR::CGBOOKCASE => 'Free PBR textures that come with all the map types needed to create photorealistic materials.',
 			CREATOR::NOEMOTIONHDRS => 'An older website with an impressive collection of free HDRIs.',
-			CREATOR::CHOCOFUR => 'Improve your Blender 3D projects using thousands of premium quality 3D Blender models and materials! Currently, only the "Free" section is indexed.',
 			CREATOR::GPUOPENMATLIB => 'A collection of high-quality materials and related textures that is available completely for free, hosted by AMD GPUOpen. (Duplicates of materials from Polyhaven are excluded.)',
 			CREATOR::RAWCATALOG => 'A unique library that includes many ready-to-use resources for creating amazing projects in the field of video games, films, animation and visualization.',
 			CREATOR::HDRIWORKSHOP => 'Royalty free, high quality HDRIs with unclipped sun, up to 29 EV range and camera background photos from the location!',
@@ -93,7 +89,6 @@ enum CREATOR : int {
 			CREATOR::TEXTURECAN => 'https://texturecan.com',
 			CREATOR::CGBOOKCASE => 'https://cgbookcase.com',
 			CREATOR::NOEMOTIONHDRS => 'http://noemotionhdrs.net',
-			CREATOR::CHOCOFUR => 'https://store.chocofur.com/search/free',
 			CREATOR::GPUOPENMATLIB => 'https://matlib.gpuopen.com/',
 			CREATOR::RAWCATALOG => 'https://rawcatalog.com',
 			CREATOR::HDRIWORKSHOP => 'https://hdri-workshop.com/',
