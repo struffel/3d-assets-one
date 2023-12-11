@@ -77,7 +77,7 @@ enum CREATOR : int {
 			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
 			CREATOR::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
 			CREATOR::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
-			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues scanned in various european museums.'
+			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.'
 		};
 	}
 
