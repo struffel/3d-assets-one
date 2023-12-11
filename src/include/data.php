@@ -15,6 +15,7 @@ enum CREATOR : int {
 	case POLIIGON = 14;
 	case TEXTURES_COM = 15;
 	case CGMOOD = 16;
+	case THREE_D_SCANS = 18;
 
 	public function slug(): string {
 		return match ($this) {
@@ -31,7 +32,8 @@ enum CREATOR : int {
 			CREATOR::PBRMATERIALS => 'pbrmaterials-com',
 			CREATOR::POLIIGON => 'poliigon',
 			CREATOR::TEXTURES_COM => 'textures-com',
-			CREATOR::CGMOOD => 'cgmood'
+			CREATOR::CGMOOD => 'cgmood',
+			CREATOR::THREE_D_SCANS => 'three-d-scans'
 		};
 	}
 
@@ -50,7 +52,8 @@ enum CREATOR : int {
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com',
 			CREATOR::POLIIGON => 'Poliigon (Free Section)',
 			CREATOR::TEXTURES_COM => 'Textures.com (Free Section)',
-			CREATOR::CGMOOD => 'CGMood (Free Section)'
+			CREATOR::CGMOOD => 'CGMood (Free Section)',
+			CREATOR::THREE_D_SCANS => 'Three D Scans'
 		};
 	}
 
@@ -69,7 +72,8 @@ enum CREATOR : int {
 			CREATOR::PBRMATERIALS => 'PBRMaterials.com, founded in 2022, is dedicated to providing high-end scanned and Substance Designer assets for 3D artists.',
 			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
 			CREATOR::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
-			CREATOR::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.'
+			CREATOR::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
+			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.'
 		};
 	}
 
@@ -95,7 +99,8 @@ enum CREATOR : int {
 			CREATOR::PBRMATERIALS => 'https://pbrmaterials.com',
 			CREATOR::POLIIGON => 'https://www.poliigon.com/search/free',
 			CREATOR::TEXTURES_COM => 'https://www.textures.com/free',
-			CREATOR::CGMOOD => 'https://cgmood.com/free'
+			CREATOR::CGMOOD => 'https://cgmood.com/free',
+			CREATOR::THREE_D_SCANS => 'https://threedscans.com/'
 		};
 	}
 
