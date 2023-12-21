@@ -30,19 +30,21 @@
 						preg_match('/[0-9]{4}\/[0-9]{2}/', $assetImageElement->attr('src'), $matches);
 						$date = isset($matches[0]) ? str_replace('/','-',$matches[0])."-01" : date("Y-m-d");
 
-						$tmpCollection->assets []= new Asset(
-							id: NULL,
-							name: $assetLinkElement->attr('title'),
-							url: $assetLinkElement->attr('href'),
-							thumbnailUrl: $assetImageElement->attr('src'),
-							date: $date,
-							tags:  array_merge(array_filter(preg_split('/[^A-Za-z0-9]/',$assetLinkElement->attr('title'))),['statue','sculpture']),
-							type: TYPE::MODEL_3D,
-							license: LICENSE::CC0,
-							creator: $this->creator,
-							quirks: [],
-							status: ASSET_STATUS::INACTIVE
-						);
+						if( !in_array($assetLinkElement->attr('href'),$existingUrls)){
+							$tmpCollection->assets []= new Asset(
+								id: NULL,
+								name: $assetLinkElement->attr('title'),
+								url: $assetLinkElement->attr('href'),
+								thumbnailUrl: $assetImageElement->attr('src'),
+								date: $date,
+								tags:  array_merge(array_filter(preg_split('/[^A-Za-z0-9]/',$assetLinkElement->attr('title'))),['statue','sculpture']),
+								type: TYPE::MODEL_3D,
+								license: LICENSE::CC0,
+								creator: $this->creator,
+								quirks: [],
+								status: ASSET_STATUS::INACTIVE
+							);
+						}
 
 					}
 				}else{
