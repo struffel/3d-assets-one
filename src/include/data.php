@@ -17,6 +17,24 @@ enum CREATOR : int {
 	case CGMOOD = 16;
 	case THREE_D_SCANS = 18;
 
+	public static function regularRefreshList() : array{
+		return [
+			CREATOR::AMBIENTCG,
+			CREATOR::POLYHAVEN,
+			CREATOR::SHARETEXTURES,
+			CREATOR::THREE_D_TEXTURES,
+			CREATOR::CGBOOKCASE,
+			CREATOR::TEXTURECAN,
+			CREATOR::GPUOPENMATLIB,
+			CREATOR::RAWCATALOG,
+			CREATOR::PBRMATERIALS,
+			CREATOR::POLIIGON,
+			CREATOR::TEXTURES_COM,
+			CREATOR::CGMOOD,
+			CREATOR::THREE_D_SCANS
+		];
+	}
+
 	public function slug(): string {
 		return match ($this) {
 			CREATOR::AMBIENTCG => 'ambientcg',

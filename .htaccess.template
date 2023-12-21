@@ -16,9 +16,6 @@ SetEnv	3D1_B2_BUCKETNAME
 SetEnv	3D1_CDN		
 SetEnv	3D1_UNCACHED
 
-# CRON Settings
-SetEnv 	3D1_REFRESH_CREATOR_ID	1,2,3,4,5,6,10,11,13,14,15,16,18
-
 # Request login
 <If true >
 	AuthType Basic

@@ -11,9 +11,9 @@ try{
 	
 	// Activate one or multiple assets
 
-	if($allActions | $action = "activate" ){
+	if($allActions | $action == "activate" ){
 
-		$maxNumberOfAssets = max(1,intval($_GET['number']));
+		$maxNumberOfAssets = max(1,intval($_GET['number'] ?? 0));
 
 		$query = new AssetQuery(
 			filterStatus:  ASSET_STATUS::INACTIVE,
@@ -41,20 +41,20 @@ try{
 
 	// Refresh one creator
 
-	if($allActions | $action = "refresh"){
+	if($allActions | $action == "refresh"){
 
 		if(isset($_GET['creatorId'])){
-			$creatorId = intval($_GET['creatorId']);
+			$creator = CREATOR::from(intval($_GET['creatorId']));
 		}else{
-			$randomTargets = explode(",",getenv("3D1_REFRESH_CREATOR_ID"));
+			$randomTargets = CREATOR::regularRefreshList();
 			$randomIndex = array_rand($randomTargets);
-			$creatorId = $randomTargets[$randomIndex];
+			$creator = $randomTargets[$randomIndex];
 		}
 
 		$maxNumberOfAssets = intval($_GET['max']??1);
-		LogLogic::write("Refreshing Creator: $creatorId");
+		LogLogic::write("Refreshing Creator: ".$creator->slug());
 
-		$creator = CreatorFetcher::fromCreator(CREATOR::from($creatorId));
+		$creator = CreatorFetcher::fromCreator($creator);
 		LogLogic::write("Created creator object.");
 		$result = $creator->runUpdate();
 
@@ -71,7 +71,7 @@ try{
 		}
 	}
 
-	if( $allActions | $action = "livecheck"){
+	if( $allActions | $action == "livecheck"){
 		// Coming soon
 	}
 	
