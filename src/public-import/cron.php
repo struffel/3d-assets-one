@@ -2,7 +2,7 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
-LogLogic::initialize("Performing cronjob");
+LogLogic::initialize("cron");
 
 $allActions = !isset($_GET['action']);
 $action = $_GET['action'] ?? NULL;
