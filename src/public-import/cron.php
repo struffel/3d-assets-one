@@ -77,7 +77,7 @@ try{
 	if( $allActions | $action == "validate"){
 
 		// Get at least 2 assets to validate, 6 by default
-		$maxNumberOfAssets = max(2,intval($_GET['number'] ?? 4));
+		$maxNumberOfAssets = max(2,intval($_GET['number'] ?? 6));
 		$assetsToCheck = [];
 
 		// Select creator
