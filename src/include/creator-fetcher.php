@@ -57,5 +57,15 @@ abstract class CreatorFetcher{
 	public function fetchThumbnailImage(string $url):string {
 		return FetchLogic::fetchRemoteData($url);
 	}
+
+	public function validateAsset(Asset $asset) : bool {
+		try{
+			FetchLogic::fetchRemoteData($asset->url);
+			return true;
+		}catch(Throwable $e){
+			return false;
+		}
+	}
+
 	public abstract function findNewAssets(array $existingUrls, array $config):AssetCollection;
 }

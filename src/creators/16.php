@@ -8,6 +8,31 @@
 
 		public CREATOR $creator = CREATOR::CGMOOD;
 
+		function validateAsset(Asset $asset): bool {
+			$attempts = 0;
+			$rawHtml = "";
+			while(!$rawHtml){
+				try {
+					$rawHtml = FetchLogic::fetchRemoteData($asset->url);
+				} catch (\Throwable $th) {
+					LogLogic::write("Failed to load site. Attempt: $attempts","WARN");
+					sleep($attempts*2);
+					$attempts = $attempts + 1;
+
+					if($attempts > 6){
+						throw new Exception("Failed to load site, even after multiple attempts.");
+						return false;
+					}
+				}
+			}
+
+			$dom = HtmlLogic::domObjectFromHtmlString($rawHtml);
+			$domQuery = new DomQuery($dom);
+
+			$subscribeLinkInMain = $domQuery->find('main a[href*="/subscribe"]');
+			return sizeof($subscribeLinkInMain) < 1;
+		}
+
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
 			$tmpCollection = new AssetCollection();
@@ -16,7 +41,7 @@
 			$pagesProcessed = 0;
 
 			do{
-				$attempts = 1;
+				$attempts = 0;
 				$rawHtml = "";
 				while(!$rawHtml){
 					try {

@@ -8,6 +8,18 @@
 
 		public CREATOR $creator = CREATOR::POLIIGON;
 
+		function validateAsset(Asset $asset): bool {
+			try{
+				$rawHtml = FetchLogic::fetchRemoteData($asset->url);
+
+				$isFree = stripos($rawHtml,"isfree:c");
+				return $isFree;
+			}catch(Throwable $e){
+				return false;
+			}
+			
+		}
+
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
 			$tmpCollection = new AssetCollection();
