@@ -7,7 +7,7 @@ abstract class CreatorFetcher{
 
 	// General functions
 
-	public static function fromCreator(CREATOR $creator) : CreatorFetcher {
+	public static final function fromCreator(CREATOR $creator) : CreatorFetcher {
 		$id = $creator->value;
 		require_once $_SERVER['DOCUMENT_ROOT']."/../creators/$id.php";
 		$creatorFetcherClassName = "CreatorFetcher$id";
