@@ -18,6 +18,7 @@ for ($i=0; $i < sizeof($assets->assets); $i++) {
 	$id = $assets->assets[$i]->id;
 	$assets->assets[$i]->thumbnailUrl = getenv("3D1_CDN")."/thumbnail/$thumbnailFormat/$id.jpg";
 	unset($assets->assets[$i]->status);
+	unset($assets->assets[$i]->lastSuccessfulValidation);
 }
 
 echo json_encode($assets);
