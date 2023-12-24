@@ -29,8 +29,9 @@
 			$dom = HtmlLogic::domObjectFromHtmlString($rawHtml);
 			$domQuery = new DomQuery($dom);
 
-			$subscribeLinkInMain = $domQuery->find('main a[href*="/subscribe"]');
-			return sizeof($subscribeLinkInMain) < 1;
+			$downloadButton = $domQuery->find('.download-button')[0];
+			
+			return preg_match('/.*Free download.*/',$downloadButton->text());
 		}
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
