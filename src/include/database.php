@@ -71,13 +71,19 @@ class DatabaseLogic{
 
 		if(sizeof($parameters) > 0){
 
-			// Turn any enums into their native representation
+			// Turn any enums into their native representation and DateTime with a string
 			for ($i=0; $i < sizeof($parameters); $i++) { 
+
 				if($parameters[$i] instanceof \BackedEnum){
 					$parameters[$i] = $parameters[$i]->value;
 				}
+
+				if($parameters[$i] instanceof \DateTime){
+					$parameters[$i] = $parameters[$i]->format('Y-m-d H:i:s');
+				}
 			}
-			//echo "<pre>"; var_dump($sql,$parameters); echo "</pre>";
+			
+			
 			$result = DatabaseLogic::$connection->execute_query($sql,$parameters);
 			if(DatabaseLogic::$connection->error){
 				LogLogic::write("SQL execution ERROR: ".DatabaseLogic::$connection->error,"SQL-ERROR");

@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Asset (
 	licenseId INT NOT NULL,
 	typeId INT NOT NULL,
 	creatorId INT NOT NULL,
+	lastSuccessfulValidation DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (assetId)
 );
 

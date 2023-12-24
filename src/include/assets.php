@@ -9,6 +9,8 @@ enum SORTING: string{
 	case LEAST_CLICKED = "least-clicked";
 	case MOST_TAGGED = "most-tagged";
 	case LEAST_TAGGED = "least-tagged";
+	case OLDEST_VALIDATION_SUCCESS = "oldest-validation-success";
+	case LATEST_VALIDATION_SUCCESS = "latest-validation-success";
 
 	/**
 	 * Returns the enum value for the string. 
@@ -31,18 +33,28 @@ enum ASSET_STATUS: int {
 	 * erroneously detects a certain page as an asset and keeping it in the DB is easier
 	 * than adding all relevant edge cases to the fetching function.
 	 */
-	case BLOCKED = -1;
+	case MANUALLY_BLOCKED = -1;
 
 	/**
 	 * The asset is not active and awaits activation.
 	 * This happens with a freshly registered asset that has not yet had its thumbnail processed.
 	 */
-	case INACTIVE = 0;
+	case PENDING = 0;
 
 	/**
 	 * The asset is active and can be found in regular searches.
 	 */
 	case ACTIVE = 1;
+
+	/**
+	 * The asset is not active because it has failed its validation check.
+	 */
+	case VALIDATION_FAILED_RECENTLY = -2;
+
+	/**
+	 * The a
+	 */
+	case VALIDATION_FAILED_PERMANENTLY = -3;
 }
 
 /**
@@ -61,7 +73,8 @@ class Asset{
 		public LICENSE $license,
 		public CREATOR $creator,
 		public array $quirks = [],	// Array of QUIRK
-		public ASSET_STATUS $status = ASSET_STATUS::INACTIVE
+		public ASSET_STATUS $status = ASSET_STATUS::PENDING,
+		public ?DateTime $lastSuccessfulValidation = NULL
 	){}
 }
 
@@ -232,8 +245,8 @@ class AssetLogic{
 			LogLogic::write("Updating Asset with id: ".$asset->id);
 
 			// Base Asset
-			$sql = "UPDATE Asset SET assetName=?,assetActive=?,assetUrl=?,assetThumbnailUrl=?,assetDate=?,licenseId=?,typeId=?,creatorId=? WHERE assetId = ?";
-			$parameters = [$asset->name,$asset->status->value,$asset->url,$asset->thumbnailUrl,$asset->date,$asset->license->value,$asset->type->value,$asset->creator->value,$asset->id];
+			$sql = "UPDATE Asset SET assetName=?,assetActive=?,assetUrl=?,assetThumbnailUrl=?,assetDate=?,licenseId=?,typeId=?,creatorId=?,lastSuccessfulValidation=? WHERE assetId = ?";
+			$parameters = [$asset->name,$asset->status->value,$asset->url,$asset->thumbnailUrl,$asset->date,$asset->license->value,$asset->type->value,$asset->creator->value,$asset->lastSuccessfulValidation,$asset->id];
 			DatabaseLogic::runQuery($sql,$parameters);
 
 			// Tags
@@ -288,7 +301,7 @@ class AssetLogic{
 		
 
 		// Begin defining SQL string and parameters for prepared statement
-		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
+		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,lastSuccessfulValidation,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
 		$sqlValues = [];
 
 		// Joins
@@ -344,7 +357,7 @@ class AssetLogic{
 
 			// Options for public display
 			SORTING::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
-			SORTING::OLDEST => " ORDER BY assetDate ASC, assetId DESC ",
+			SORTING::OLDEST => " ORDER BY assetDate ASC, assetId ASC ",
 			SORTING::RANDOM => " ORDER BY RAND() ",
 			SORTING::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC ",
 
@@ -353,6 +366,8 @@ class AssetLogic{
 			SORTING::MOST_CLICKED => " ORDER BY assetClicks DESC ",
 			SORTING::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) ASC ",
 			SORTING::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) DESC ",
+			SORTING::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RAND() ",
+			SORTING::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RAND() "
 		};
 
 		// Offset and Limit
@@ -405,7 +420,8 @@ class AssetLogic{
 				type: TYPE::from($row['typeId']),
 				license: LICENSE::from($row['licenseId']),
 				creator: CREATOR::from($row['creatorId']),
-				quirks: $quirks
+				quirks: $quirks,
+				lastSuccessfulValidation: new DateTime($row['lastSuccessfulValidation'])
 			);
 			
 		}

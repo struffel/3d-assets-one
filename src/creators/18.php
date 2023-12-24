@@ -42,7 +42,7 @@
 								license: LICENSE::CC0,
 								creator: $this->creator,
 								quirks: [],
-								status: ASSET_STATUS::INACTIVE
+								status: ASSET_STATUS::PENDING
 							);
 						}
 
