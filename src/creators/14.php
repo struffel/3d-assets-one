@@ -8,6 +8,22 @@
 
 		public CREATOR $creator = CREATOR::POLIIGON;
 
+		private function extractId($url){
+			return end(explode('/', rtrim($url, '/')));
+		}
+
+		private function isInExistingUrls($url, $existingUrls) {
+			// Extracting ID from the input link
+			
+			$id = $this->extractId($url);
+			$existingIds = [];
+			foreach ($existingUrls as $eU) {
+				$existingIds []= $this->extractId($eU);
+			}
+		
+			return in_array($id,$existingIds);
+		}
+
 		function validateAsset(Asset $asset): bool {
 			try{
 				$rawHtml = FetchLogic::fetchRemoteData($asset->url);
@@ -38,7 +54,7 @@
 					$urlPath = $assetBox->attr('href');
 					$url = $config['baseUrl'].$urlPath;
 
-					if(!in_array($url,$existingUrls)){
+					if(!$this->isInExistingUrls($url,$existingUrls)){
 
 						$name = $assetBox->find('img')->attr('alt');
 
