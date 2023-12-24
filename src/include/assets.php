@@ -39,7 +39,7 @@ enum ASSET_STATUS: int {
 	 * The asset is not active and awaits activation.
 	 * This happens with a freshly registered asset that has not yet had its thumbnail processed.
 	 */
-	case INACTIVE = 0;
+	case PENDING = 0;
 
 	/**
 	 * The asset is active and can be found in regular searches.
@@ -73,7 +73,7 @@ class Asset{
 		public LICENSE $license,
 		public CREATOR $creator,
 		public array $quirks = [],	// Array of QUIRK
-		public ASSET_STATUS $status = ASSET_STATUS::INACTIVE,
+		public ASSET_STATUS $status = ASSET_STATUS::PENDING,
 		public ?DateTime $lastSuccessfulValidation = NULL
 	){}
 }

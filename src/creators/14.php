@@ -64,7 +64,7 @@
 							license: LICENSE::CUSTOM,
 							creator: $this->creator,
 							quirks: [QUIRK::SIGNUP_REQUIRED],
-							status: ASSET_STATUS::INACTIVE
+							status: ASSET_STATUS::PENDING
 						);
 					}
 				}

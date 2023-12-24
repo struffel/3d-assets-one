@@ -16,7 +16,7 @@ try{
 		$maxNumberOfAssets = max(1,intval($_GET['number'] ?? 0));
 
 		$query = new AssetQuery(
-			filterStatus:  ASSET_STATUS::INACTIVE,
+			filterStatus:  ASSET_STATUS::PENDING,
 			limit: $maxNumberOfAssets,
 			sort: SORTING::RANDOM,
 		);
@@ -63,7 +63,7 @@ try{
 			LogLogic::write("Writing new assets to DB:");
 			foreach ($result->assets as $a) {
 				DatabaseLogic::startTransaction();
-				$a->status = ASSET_STATUS::INACTIVE;	// Failsave in case the creator fetching function does not set it properly.
+				$a->status = ASSET_STATUS::PENDING;	// Failsave in case the creator fetching function does not set it properly.
 				AssetLogic::saveAssetToDatabase($a);
 				DatabaseLogic::commitTransaction();
 			}
