@@ -9,28 +9,20 @@
 		public CREATOR $creator = CREATOR::CGMOOD;
 
 		function validateAsset(Asset $asset): bool {
-			$attempts = 0;
-			$rawHtml = "";
-			while(!$rawHtml){
-				try {
-					$rawHtml = FetchLogic::fetchRemoteData($asset->url);
-				} catch (\Throwable $th) {
-					LogLogic::write("Failed to load site. Attempt: $attempts","WARN");
-					sleep($attempts*2);
-				}
-				$attempts = $attempts + 1;
-				if($attempts > 6){
-					throw new Exception("Failed to load site, even after multiple attempts.");
-					return false;
-				}
-			}
+			$rawHtml = FetchLogic::fetchRemoteData($asset->url);
 
 			$dom = HtmlLogic::domObjectFromHtmlString($rawHtml);
 			$domQuery = new DomQuery($dom);
 
-			$downloadButton = $domQuery->find('.download-button')[0];
+			$downloadButtonCandidates = $domQuery->find('.download-button');
 			
-			return preg_match('/.*Free download.*/',$downloadButton->text());
+			if(sizeof($downloadButtonCandidates) > 0){
+				$downloadButton = $downloadButtonCandidates[0];
+				return preg_match('/.*Free download.*/',$downloadButton->text());
+			}else{
+				return false;
+			}
+			
 		}
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
