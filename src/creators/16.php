@@ -17,12 +17,11 @@
 				} catch (\Throwable $th) {
 					LogLogic::write("Failed to load site. Attempt: $attempts","WARN");
 					sleep($attempts*2);
-					$attempts = $attempts + 1;
-
-					if($attempts > 6){
-						throw new Exception("Failed to load site, even after multiple attempts.");
-						return false;
-					}
+				}
+				$attempts = $attempts + 1;
+				if($attempts > 6){
+					throw new Exception("Failed to load site, even after multiple attempts.");
+					return false;
 				}
 			}
 

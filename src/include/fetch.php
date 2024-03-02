@@ -16,7 +16,7 @@ class FetchLogic{
 			$content = $result->getBody();
 			LogLogic::write("Request successful!");
 		}catch(GuzzleHttp\Exception\ClientException $e){
-			LogLogic::write("Request error, Status code: ".$e->getResponse()->getBody()->getContents(),"HTTP-ERROR");
+			LogLogic::write("Request error, Status code: ".$e->getResponse()->getStatusCode(),"HTTP-ERROR");
 			$content = "";
 		}
 		
