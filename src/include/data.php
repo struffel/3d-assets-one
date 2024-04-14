@@ -16,6 +16,7 @@ enum CREATOR : int {
 	case TEXTURES_COM = 15;
 	case CGMOOD = 16;
 	case THREE_D_SCANS = 18;
+	case LOCATION_TEXTURES = 19;
 
 	public static function regularRefreshList() : array{
 		return [
@@ -31,7 +32,8 @@ enum CREATOR : int {
 			CREATOR::POLIIGON,
 			CREATOR::TEXTURES_COM,
 			CREATOR::CGMOOD,
-			CREATOR::THREE_D_SCANS
+			CREATOR::THREE_D_SCANS,
+			CREATOR::LOCATION_TEXTURES
 		];
 	}
 
@@ -51,7 +53,8 @@ enum CREATOR : int {
 			CREATOR::POLIIGON => 'poliigon',
 			CREATOR::TEXTURES_COM => 'textures-com',
 			CREATOR::CGMOOD => 'cgmood',
-			CREATOR::THREE_D_SCANS => 'three-d-scans'
+			CREATOR::THREE_D_SCANS => 'three-d-scans',
+			CREATOR::LOCATION_TEXTURES => 'location-textures'
 		};
 	}
 
@@ -71,7 +74,8 @@ enum CREATOR : int {
 			CREATOR::POLIIGON => 'Poliigon (Free Section)',
 			CREATOR::TEXTURES_COM => 'Textures.com (Free Section)',
 			CREATOR::CGMOOD => 'CGMood (Free Section)',
-			CREATOR::THREE_D_SCANS => 'Three D Scans'
+			CREATOR::THREE_D_SCANS => 'Three D Scans',
+			CREATOR::LOCATION_TEXTURES => 'Location Textures'
 		};
 	}
 
@@ -91,13 +95,15 @@ enum CREATOR : int {
 			CREATOR::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
 			CREATOR::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
 			CREATOR::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
-			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.'
+			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.',
+			CREATOR::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.'
 		};
 	}
 
 	public function licenseUrl(): string {
 		return match ($this){
 			CREATOR::AMBIENTCG => 'https://docs.ambientcg.com/license/',
+			CREATOR::LOCATION_TEXTURES => 'https://locationtextures.com/privacy-policy/',
 			default => ""
 		};
 	}
@@ -118,7 +124,9 @@ enum CREATOR : int {
 			CREATOR::POLIIGON => 'https://www.poliigon.com/search/free',
 			CREATOR::TEXTURES_COM => 'https://www.textures.com/free',
 			CREATOR::CGMOOD => 'https://cgmood.com/free',
-			CREATOR::THREE_D_SCANS => 'https://threedscans.com/'
+			CREATOR::THREE_D_SCANS => 'https://threedscans.com/',
+			CREATOR::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/'
+
 		};
 	}
 
