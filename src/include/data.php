@@ -83,7 +83,7 @@ enum CREATOR: int
 			CREATOR::CGMOOD => 'CGMood (Free Section)',
 			CREATOR::THREE_D_SCANS => 'Three D Scans',
 			CREATOR::LOCATION_TEXTURES => 'Location Textures',
-			CREATOR::PBR_PX => 'PBR PX'
+			CREATOR::PBR_PX => 'PBRPX'
 		};
 	}
 
