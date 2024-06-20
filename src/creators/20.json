@@ -4,5 +4,5 @@
 	"viewPageBaseUrl":"https://library.pbrpx.com/#/asset?asset=",
 	"mediaBaseUrl":"https://asset.pbrpx.com/",
 	"thumbnailIdentifierString":"preview_360_360",
-	"maxAssetsPerRound": 3
+	"maxAssetsPerRound": 5
 }
