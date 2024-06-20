@@ -1,6 +1,7 @@
 <?php
 
-enum CREATOR : int {
+enum CREATOR: int
+{
 	case AMBIENTCG = 1;
 	case POLYHAVEN = 2;
 	case SHARETEXTURES = 3;
@@ -17,8 +18,10 @@ enum CREATOR : int {
 	case CGMOOD = 16;
 	case THREE_D_SCANS = 18;
 	case LOCATION_TEXTURES = 19;
+	case PBR_PX = 20;
 
-	public static function regularRefreshList() : array{
+	public static function regularRefreshList(): array
+	{
 		return [
 			CREATOR::AMBIENTCG,
 			CREATOR::POLYHAVEN,
@@ -33,11 +36,13 @@ enum CREATOR : int {
 			CREATOR::TEXTURES_COM,
 			CREATOR::CGMOOD,
 			CREATOR::THREE_D_SCANS,
-			CREATOR::LOCATION_TEXTURES
+			CREATOR::LOCATION_TEXTURES,
+			CREATOR::PBR_PX
 		];
 	}
 
-	public function slug(): string {
+	public function slug(): string
+	{
 		return match ($this) {
 			CREATOR::AMBIENTCG => 'ambientcg',
 			CREATOR::POLYHAVEN => 'polyhaven',
@@ -54,11 +59,13 @@ enum CREATOR : int {
 			CREATOR::TEXTURES_COM => 'textures-com',
 			CREATOR::CGMOOD => 'cgmood',
 			CREATOR::THREE_D_SCANS => 'three-d-scans',
-			CREATOR::LOCATION_TEXTURES => 'location-textures'
+			CREATOR::LOCATION_TEXTURES => 'location-textures',
+			CREATOR::PBR_PX => "pbr-px"
 		};
 	}
 
-	public function name(): string {
+	public function name(): string
+	{
 		return match ($this) {
 			CREATOR::AMBIENTCG => 'ambientCG',
 			CREATOR::POLYHAVEN => 'Poly Haven',
@@ -75,11 +82,13 @@ enum CREATOR : int {
 			CREATOR::TEXTURES_COM => 'Textures.com (Free Section)',
 			CREATOR::CGMOOD => 'CGMood (Free Section)',
 			CREATOR::THREE_D_SCANS => 'Three D Scans',
-			CREATOR::LOCATION_TEXTURES => 'Location Textures'
+			CREATOR::LOCATION_TEXTURES => 'Location Textures',
+			CREATOR::PBR_PX => 'PBR PX'
 		};
 	}
 
-	public function description(): string {
+	public function description(): string
+	{
 		return match ($this) {
 			CREATOR::THREE_D_TEXTURES => 'Free seamless PBR textures and unique creations in Substance Designer.',
 			CREATOR::AMBIENTCG => '2000+ Public Domain materials, HDRIs and models for Physically Based Rendering.',
@@ -96,19 +105,22 @@ enum CREATOR : int {
 			CREATOR::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
 			CREATOR::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
 			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.',
-			CREATOR::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.'
+			CREATOR::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.',
+			CREATOR::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.'
 		};
 	}
 
-	public function licenseUrl(): string {
-		return match ($this){
+	public function licenseUrl(): string
+	{
+		return match ($this) {
 			CREATOR::AMBIENTCG => 'https://docs.ambientcg.com/license/',
 			CREATOR::LOCATION_TEXTURES => 'https://locationtextures.com/privacy-policy/',
 			default => ""
 		};
 	}
 
-	public function baseUrl(): string {
+	public function baseUrl(): string
+	{
 		return match ($this) {
 			CREATOR::THREE_D_TEXTURES => "https://3dtextures.me",
 			CREATOR::AMBIENTCG => 'https://ambientCG.com',
@@ -125,32 +137,34 @@ enum CREATOR : int {
 			CREATOR::TEXTURES_COM => 'https://www.textures.com/free',
 			CREATOR::CGMOOD => 'https://cgmood.com/free',
 			CREATOR::THREE_D_SCANS => 'https://threedscans.com/',
-			CREATOR::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/'
-
+			CREATOR::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/',
+			CREATOR::PBR_PX => 'https://library.pbrpx.com/'
 		};
 	}
 
-	public static function fromSlug(string $slug) : ?CREATOR {
+	public static function fromSlug(string $slug): ?CREATOR
+	{
 		foreach (CREATOR::cases() as $c) {
-			if($c->slug() === $slug){
+			if ($c->slug() === $slug) {
 				return $c;
 			}
 		}
 		return null;
 	}
-
 }
 
-enum QUIRK : int {
+enum QUIRK: int
+{
 	case SIGNUP_REQUIRED = 1;
-	#case PAYMENT_REQUIRED = 2;
+		#case PAYMENT_REQUIRED = 2;
 	case ADS = 3;
 	case ASSET_PACK = 4;
 	case LIMITED_FREE_DOWNLOADS = 5;
 	#case LIMITED_FREE_QUALITY = 6;
 
-	public function slug() : string{
-		return match ($this){
+	public function slug(): string
+	{
+		return match ($this) {
 			QUIRK::SIGNUP_REQUIRED => 'sign-up',
 			QUIRK::ADS => 'ads',
 			QUIRK::ASSET_PACK => 'asset-pack',
@@ -158,8 +172,9 @@ enum QUIRK : int {
 		};
 	}
 
-	public function name() : string{
-		return match ($this){
+	public function name(): string
+	{
+		return match ($this) {
 			QUIRK::SIGNUP_REQUIRED => 'Sign-up Required',
 			QUIRK::ADS => 'On-site Ads',
 			QUIRK::ASSET_PACK => 'Asset Packs',
@@ -167,24 +182,26 @@ enum QUIRK : int {
 		};
 	}
 
-	public static function fromSlug(string $slug) : QUIRK {
+	public static function fromSlug(string $slug): QUIRK
+	{
 		foreach (QUIRK::cases() as $c) {
-			if($c->slug() === $slug){
+			if ($c->slug() === $slug) {
 				return $c;
 			}
 		}
 	}
-
 }
 
-enum TYPE : int {
+enum TYPE: int
+{
 	case OTHER = 0;
 	case PBR_MATERIAL = 1;
 	case MODEL_3D = 2;
 	case SUBSTANCE_MATERIAL = 3;
 	case HDRI = 4;
 
-	public function slug(): string {
+	public function slug(): string
+	{
 		return match ($this) {
 			TYPE::OTHER => 'other',
 			TYPE::PBR_MATERIAL => 'pbr-material',
@@ -194,7 +211,8 @@ enum TYPE : int {
 		};
 	}
 
-	public function name(): string {
+	public function name(): string
+	{
 		return match ($this) {
 			TYPE::OTHER => 'Other',
 			TYPE::PBR_MATERIAL => 'PBR material',
@@ -204,28 +222,30 @@ enum TYPE : int {
 		};
 	}
 
-	public static function fromSlug(string $slug) : TYPE {
+	public static function fromSlug(string $slug): TYPE
+	{
 		foreach (TYPE::cases() as $c) {
-			if($c->slug() === $slug){
+			if ($c->slug() === $slug) {
 				return $c;
 			}
 		}
 	}
-
 }
 
-enum LICENSE : int {
+enum LICENSE: int
+{
 	case CUSTOM = 0;
 	case CC0 = 1;
-	#case CC_BY = 2;
-	#case CC_BY_SA = 3;
-	#case CC_BY_NC = 4;
+		#case CC_BY = 2;
+		#case CC_BY_SA = 3;
+		#case CC_BY_NC = 4;
 	case CC_BY_ND = 5;
-	#case CC_BY_NC_SA = 6;
-	#case CC_BY_NC_ND = 7;
+		#case CC_BY_NC_SA = 6;
+		#case CC_BY_NC_ND = 7;
 	case APACHE_2_0 = 8;
 
-	public function slug(): string {
+	public function slug(): string
+	{
 		return match ($this) {
 			LICENSE::CUSTOM => 'custom',
 			LICENSE::CC0 => 'cc-0',
@@ -239,7 +259,8 @@ enum LICENSE : int {
 		};
 	}
 
-	public function name(): string {
+	public function name(): string
+	{
 		return match ($this) {
 			LICENSE::CUSTOM => 'Custom License - Check Website',
 			LICENSE::CC0 => 'Creative Commons CC0',
@@ -253,9 +274,10 @@ enum LICENSE : int {
 		};
 	}
 
-	public static function fromSlug(string $slug) : LICENSE {
+	public static function fromSlug(string $slug): LICENSE
+	{
 		foreach (LICENSE::cases() as $c) {
-			if($c->slug() === $slug){
+			if ($c->slug() === $slug) {
 				return $c;
 			}
 		}
