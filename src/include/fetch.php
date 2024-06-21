@@ -1,9 +1,9 @@
 <?php
 
 class FetchLogic{
-	public static function fetchRemoteData(string $url, array $headers = []) : string{
+	public static function fetchRemoteData(string $url, array $headers = [], string $method = 'GET',$body = NULL) : string{
 		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Fetching URL: $url");
+		LogLogic::write("Fetching URL: $url using $method with body '$body'");
 
 		if(!isset($headers['User-Agent'])){
 			$headers['User-Agent'] = "3dassets.one / Fetching";
@@ -11,8 +11,11 @@ class FetchLogic{
 
 		$client = new GuzzleHttp\Client();
 		try{
-			$options = ['headers' => $headers]; 				// GPT: Add headers to the request options
-			$result = $client->request('GET',$url,$options);
+			$options = [
+				'headers' => $headers,
+				'body' => $body
+			]; 				
+			$result = $client->request($method,$url,$options);
 			$content = $result->getBody();
 			LogLogic::write("Request successful!");
 		}catch(GuzzleHttp\Exception\ClientException $e){
@@ -25,17 +28,20 @@ class FetchLogic{
 		return $content;
 	}
 
-	public static function fetchRemoteJson(string $url,array $headers = []) : mixed{
+	public static function fetchRemoteJson(string $url,array $headers = [], string $method = 'GET',$body = NULL,$jsonContentTypeHeader = false) : mixed{
 		LogLogic::stepIn(__FUNCTION__);
-		$result = json_decode(FetchLogic::fetchRemoteData($url,$headers),true);
+		if($jsonContentTypeHeader){
+			$headers['Content-Type'] = "application/json";
+		}
+		$result = json_decode(FetchLogic::fetchRemoteData(url:$url,headers:$headers,method:$method,body:$body),true);
 		LogLogic::write("Received and parsed JSON.");
 		LogLogic::stepOut(__FUNCTION__);
 		return $result;
 	}
 
-	public static function fetchRemoteCommaSeparatedList(string $url, array $headers = []) : array{
+	public static function fetchRemoteCommaSeparatedList(string $url, array $headers = [], string $method = 'GET',$body = NULL) : array{
 		LogLogic::stepIn(__FUNCTION__);
-		$content = FetchLogic::fetchRemoteData($url,$headers);
+		$content = FetchLogic::fetchRemoteData($url,$headers,$method,body:$body);
 		$content = str_replace("\n","",$content);
 
 		$contentArray = explode(",",$content);
