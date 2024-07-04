@@ -44,7 +44,7 @@
 					<?php } ?>
 				</select>
 
-				<label for="avoid[]">Exclude</label>
+				<label class="form-label" for="avoid[]">Exclude</label>
 				<select size="<?=sizeof(QUIRK::cases())?>" class="multi-select" name="avoid[]" multiple>
 					<?php foreach(QUIRK::cases() as $c){ ?>
 						<option class="form-option" <?=in_array($c->slug(),$_GET['avoid']??[]) ? 'selected' : '' ?> value="<?=$c->slug()?>"><?=$c->name()?></option>
