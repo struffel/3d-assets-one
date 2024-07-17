@@ -22,6 +22,10 @@ abstract class CreatorFetcher{
 		DatabaseLogic::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);",[$this->creator->value,$key,$value]);
 	}
 
+	protected final function getConfig() : array {
+		return json_decode(file_get_contents("../creators/".$this->creator->value.".json"),associative:TRUE);
+	}
+
 	public final function runUpdate() : AssetCollection{
 
 		// Get existing URLs
@@ -38,7 +42,7 @@ abstract class CreatorFetcher{
 
 		// Get new assets using creator-specific method
 		// Passing in the list of existing URLs and
-		$newAssetCollection = $this->findNewAssets($existingUrls,json_decode(file_get_contents("../creators/".$this->creator->value.".json"),true));
+		$newAssetCollection = $this->findNewAssets($existingUrls,$this->getConfig(),true);
 
 		// Perform post-processing on the results
 		for ($i=0; $i < sizeof($newAssetCollection->assets); $i++) { 

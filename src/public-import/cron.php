@@ -114,7 +114,14 @@ try{
 			$currentDateTime = new DateTime();
 
 			// Test if the asset is still valid
-			if($creatorFetcher->validateAsset($asset)){
+			try {
+				$testResult = $creatorFetcher->validateAsset($asset);
+			} catch (\Throwable $th) {
+				LogLogic::write("Skipping this asset because validation function threw exception.","ERROR");
+				continue;
+			}
+
+			if($testResult){
 				$asset->lastSuccessfulValidation = $currentDateTime;
 				$asset->status = ASSET_STATUS::ACTIVE;
 				LogLogic::write("Validation OK");
