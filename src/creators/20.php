@@ -6,6 +6,23 @@
 
 		public CREATOR $creator = CREATOR::PBR_PX;
 
+		function validateAsset(Asset $asset): bool {
+
+			$config = $this->getConfig();
+
+			// Extract the id from the url and compose the query
+			$assetDetailsBody = ['asset' => end(explode("=",strtok( $asset->url, '_' )))];
+			
+			try{
+				$response = FetchLogic::fetchRemoteJson(url:$config['assetBaseUrl'],method:'POST',body:json_encode($assetDetailsBody),jsonContentTypeHeader:true);
+				
+				// Test if there is an errno and if it is 0
+				return isset($response['errno']) && $response['errno'] == 0;
+			}catch(Throwable $e){
+				return false;
+			}
+		}
+
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
 			$tmpCollection = new AssetCollection();

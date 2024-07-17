@@ -21,6 +21,9 @@ class FetchLogic{
 		}catch(GuzzleHttp\Exception\ClientException $e){
 			LogLogic::write("Request error, Status code: ".$e->getResponse()->getStatusCode(),"HTTP-ERROR");
 			$content = "";
+		}catch(Exception $e){
+			LogLogic::write("Generic request error: ".$e->getMessage(),"HTTP-ERROR");
+			$content = "";
 		}
 		
 		LogLogic::write("Content length: ".strlen($content)."");
