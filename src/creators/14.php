@@ -26,17 +26,14 @@
 
 		function validateAsset(Asset $asset): bool {
 
-			// HOTFIX
-
-			return true;
-			/*try{
+			try{
 				$rawHtml = FetchLogic::fetchRemoteData($asset->url);
 
-				$isFree = stripos($rawHtml,"isfree:c");
+				$isFree = stripos($rawHtml,"IsFree:m");
 				return $isFree;
 			}catch(Throwable $e){
 				return false;
-			}*/
+			}
 			
 		}
 
