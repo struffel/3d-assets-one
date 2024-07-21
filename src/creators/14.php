@@ -24,19 +24,6 @@
 			return in_array($id,$existingIds);
 		}
 
-		function validateAsset(Asset $asset): bool {
-
-			try{
-				$rawHtml = FetchLogic::fetchRemoteData($asset->url);
-
-				$isFree = stripos($rawHtml,"IsFree:m");
-				return $isFree;
-			}catch(Throwable $e){
-				return false;
-			}
-			
-		}
-
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 
 			$tmpCollection = new AssetCollection();
