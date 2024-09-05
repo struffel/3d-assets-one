@@ -2,13 +2,26 @@
 
 	// cgbookcase
 
+	use Rct567\DomQuery\DomQuery;
+
 	class CreatorFetcher5 extends CreatorFetcher{
 
 		public CREATOR $creator = CREATOR::CGBOOKCASE;
 
 		function findNewAssets(array $existingUrls, array $config):AssetCollection{
 			
-			$urlArray = FetchLogic::fetchRemoteCommaSeparatedList($config['urlList']);
+			$rawHtml = FetchLogic::fetchRemoteData($config['baseUrl']);
+
+			$dom = HtmlLogic::domObjectFromHtmlString($rawHtml);
+			$domQuery = new DomQuery($dom);
+
+			$assetLinks = $domQuery->find('a[href*="/textures/"]');
+
+			$urlArray = [];
+
+			foreach ($assetLinks as $aL) {
+				$urlArray []= "https://www.cgbookcase.com" . $aL->href;
+			}
 
 			$tmpCollection = new AssetCollection();
 
