@@ -20,7 +20,7 @@
 			$urlArray = [];
 
 			foreach ($assetLinks as $aL) {
-				$urlArray []= "https://www.cgbookcase.com" . $aL->href;
+				$urlArray []= "https://www.cgbookcase.com" . $aL->href . "?source=3dassets.one";
 			}
 
 			$tmpCollection = new AssetCollection();
