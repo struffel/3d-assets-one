@@ -1,0 +1,13 @@
+{
+	"indexingBaseUrl": "https://textures.twinbru.com/ods/products",
+	"indexingBaseParameters": {
+		"pageSize": 10,
+		"sortAttribute": "launch",
+		"sortDirection": "DSC",
+		"prefilter": "status.eq.RN/bvs_special.ne.any(customer%20special,treatment%20special)/has3dTexture.eq.True"
+	},
+	"viewPageBaseUrl": "https://textures.twinbru.com/products/",
+	"thumbnailQueryBaseUrl": "https://textures.twinbru.com/ods/assets",
+	"thumbnailBaseUrl": "https://textures.twinbru.com/assets/",
+	"sessionCookieUrl": "https://textures.twinbru.com/layout?item=products&account=bru"
+}

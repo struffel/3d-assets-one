@@ -19,6 +19,7 @@ enum CREATOR: int
 	case THREE_D_SCANS = 18;
 	case LOCATION_TEXTURES = 19;
 	case PBR_PX = 20;
+	case TWINBRU = 21;
 
 	public static function regularRefreshList(): array
 	{
@@ -37,7 +38,8 @@ enum CREATOR: int
 			CREATOR::CGMOOD,
 			CREATOR::THREE_D_SCANS,
 			CREATOR::LOCATION_TEXTURES,
-			CREATOR::PBR_PX
+			CREATOR::PBR_PX,
+			CREATOR::TWINBRU
 		];
 	}
 
@@ -60,7 +62,8 @@ enum CREATOR: int
 			CREATOR::CGMOOD => 'cgmood',
 			CREATOR::THREE_D_SCANS => 'three-d-scans',
 			CREATOR::LOCATION_TEXTURES => 'location-textures',
-			CREATOR::PBR_PX => "pbr-px"
+			CREATOR::PBR_PX => "pbr-px",
+			CREATOR::TWINBRU => "twinbru"
 		};
 	}
 
@@ -83,7 +86,8 @@ enum CREATOR: int
 			CREATOR::CGMOOD => 'CGMood (Free Section)',
 			CREATOR::THREE_D_SCANS => 'Three D Scans',
 			CREATOR::LOCATION_TEXTURES => 'Location Textures',
-			CREATOR::PBR_PX => 'PBRPX'
+			CREATOR::PBR_PX => 'PBRPX',
+			CREATOR::TWINBRU => 'Twinbru'
 		};
 	}
 
@@ -106,7 +110,8 @@ enum CREATOR: int
 			CREATOR::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
 			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.',
 			CREATOR::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.',
-			CREATOR::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.'
+			CREATOR::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
+			CREATOR::TWINBRU => 'Twinbru.'
 		};
 	}
 
@@ -138,7 +143,8 @@ enum CREATOR: int
 			CREATOR::CGMOOD => 'https://cgmood.com/free',
 			CREATOR::THREE_D_SCANS => 'https://threedscans.com/',
 			CREATOR::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/',
-			CREATOR::PBR_PX => 'https://library.pbrpx.com/'
+			CREATOR::PBR_PX => 'https://library.pbrpx.com/',
+			CREATOR::TWINBRU => 'https://textures.twinbru.com'
 		};
 	}
 
