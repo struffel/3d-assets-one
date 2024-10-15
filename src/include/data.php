@@ -111,7 +111,7 @@ enum CREATOR: int
 			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.',
 			CREATOR::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.',
 			CREATOR::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
-			CREATOR::TWINBRU => 'Twinbru.'
+			CREATOR::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.'
 		};
 	}
 
