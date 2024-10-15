@@ -72,7 +72,7 @@ class CreatorFetcher21 extends CreatorFetcher
 						url: $config['thumbnailQueryBaseUrl'] . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.BL_20/stockId.eq." . $twinbruAsset['itemId']])
 					);
 
-					if (!$thumbnailQueryResponse['results'][0]['item']['assetId']) {
+					if (sizeof($thumbnailQueryResponse['results']) == 0) {
 						LogLogic::write("Skipping because faulty thumbnail", "WARN");
 						continue;
 					}
