@@ -43,6 +43,12 @@ class CreatorFetcher21 extends CreatorFetcher
 		if ($rawData) {
 			$assetList = $rawData['results'];
 
+			// Reset page counter
+			if ($page >= $rawData['totalPageCount'] ?? 0) {
+				LogLogic::write("Reset page counter because end has been reached.");
+				$page = 0;
+			}
+
 			foreach ($assetList as $twinbruAsset) {
 
 				// Get the asset's fields
