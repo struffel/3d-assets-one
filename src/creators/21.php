@@ -61,35 +61,10 @@ class CreatorFetcher21 extends CreatorFetcher
 					$thumbnailQueryResponse = NULL;
 					$thumbnailQueryResponse = FetchLogic::fetchRemoteJson(
 						headers: $headers,
-						url: $config['thumbnailQueryBaseUrl'] . "?" . http_build_query(["filter" => "stockId.eq." . $twinbruAsset['itemId']])
+						url: $config['thumbnailQueryBaseUrl'] . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.BL_20/stockId.eq." . $twinbruAsset['itemId']])
 					);
 
-					$thumbnailUrl = NULL;
-
-					// try for BL_20
-
-					foreach ($thumbnailQueryResponse['results'] as $result) {
-
-						if ((($result['item'] ?? [])['renderScene'] ?? "") != "BL_20") {
-							continue;
-						}
-
-						$thumbnailUrl = $config['thumbnailBaseUrl'] . $result['item']['assetId'] . "/Thumbnail.jpg";
-					}
-
-					// try other BL_* as alternative
-					if (!$thumbnailUrl) {
-						foreach ($thumbnailQueryResponse['results'] as $result) {
-
-							if (!preg_match('/BL_[0-9]+/', (($result['item'] ?? [])['renderScene'] ?? ""))) {
-								continue;
-							}
-
-							$thumbnailUrl = $config['thumbnailBaseUrl'] . $result['item']['assetId'] . "/Thumbnail.jpg";
-						}
-					}
-
-
+					$thumbnailUrl = $config['thumbnailBaseUrl'] . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";
 
 					LogLogic::write("Resolved thumbnail $thumbnailUrl");
 
