@@ -62,12 +62,13 @@ class CreatorFetcher21 extends CreatorFetcher
 				// Build the asset's base URL
 				$assetUrl = $config['viewPageBaseUrl'] . $twinbruAsset['itemId'];
 
-				// Create asset if it's not recognized
+				// Create asset if it is not yet in DB
 				if (!in_array($assetUrl, $existingUrls)) {
 
+					// Thumbnail
 					$thumbnailUrl = NULL;
 
-					foreach (['BL_20_CU','BL_20'] as $viewType) {
+					foreach (['BL_20_CU', 'BL_20'] as $viewType) {
 						// Get the thumbnail URL
 						$thumbnailQueryResponse = NULL;
 						$thumbnailQueryResponse = FetchLogic::fetchRemoteJson(
@@ -89,7 +90,7 @@ class CreatorFetcher21 extends CreatorFetcher
 					LogLogic::write("Resolved thumbnail $thumbnailUrl");
 
 
-					// Extract information from response
+					// Tags
 					$tags = ["fabric"];
 					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['quality'] ?? ""));
 					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['characteristics'] ?? ""));
@@ -100,17 +101,26 @@ class CreatorFetcher21 extends CreatorFetcher
 
 					$tags = array_unique(array_filter($tags));
 
+					// Type
 					$type = TYPE::PBR_MATERIAL;
 
+					// Date
 					$date = substr($twinbruAsset['launch'] ?? date("Ym"), 0, 4);
 					$date .= "-";
 					$date .= substr($twinbruAsset['launch'] ?? date("Ym"), 4, 2);
 					$date .= "-01";
 
+					// Name
+					if ($twinbruAsset['designName'] == $twinbruAsset['collectionName']) {
+						$name = $twinbruAsset['collectionName'] . " / " . $twinbruAsset['main_colour_type_description'];
+					} else {
+						$name = $twinbruAsset['designName'] . " / " . $twinbruAsset['collectionName'] . " / " . $twinbruAsset['main_colour_type_description'];
+					}
+
 					// Build asset
 					$tmpCollection->assets[] = new Asset(
 						id: NULL,
-						name: $twinbruAsset['designName'] . " / " . $twinbruAsset['collectionName'] . " / " . $twinbruAsset['main_colour_type_description'],
+						name: $name,
 						url: $assetUrl,
 						thumbnailUrl: $thumbnailUrl,
 						date: $date,
