@@ -65,19 +65,26 @@ class CreatorFetcher21 extends CreatorFetcher
 				// Create asset if it's not recognized
 				if (!in_array($assetUrl, $existingUrls)) {
 
-					// Get the thumbnail URL
-					$thumbnailQueryResponse = NULL;
-					$thumbnailQueryResponse = FetchLogic::fetchRemoteJson(
-						headers: $headers,
-						url: $config['thumbnailQueryBaseUrl'] . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.BL_20/stockId.eq." . $twinbruAsset['itemId']])
-					);
+					$thumbnailUrl = NULL;
 
-					if (sizeof($thumbnailQueryResponse['results']) == 0) {
+					foreach (['BL_20_CU','BL_20'] as $viewType) {
+						// Get the thumbnail URL
+						$thumbnailQueryResponse = NULL;
+						$thumbnailQueryResponse = FetchLogic::fetchRemoteJson(
+							headers: $headers,
+							url: $config['thumbnailQueryBaseUrl'] . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.$viewType/stockId.eq." . $twinbruAsset['itemId']])
+						);
+
+						if (sizeof($thumbnailQueryResponse['results']) > 0) {
+							$thumbnailUrl = $config['thumbnailBaseUrl'] . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";
+							break;
+						}
+					}
+
+					if (!$thumbnailUrl) {
 						LogLogic::write("Skipping because faulty thumbnail", "WARN");
 						continue;
 					}
-
-					$thumbnailUrl = $config['thumbnailBaseUrl'] . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";
 
 					LogLogic::write("Resolved thumbnail $thumbnailUrl");
 
