@@ -47,6 +47,8 @@ class CreatorFetcher21 extends CreatorFetcher
 			if ($page >= $rawData['totalPageCount'] ?? 0) {
 				LogLogic::write("Reset page counter because end has been reached.");
 				$page = 0;
+			} else {
+				LogLogic::write("Current page is $page, end page is" . ($rawData['totalPageCount'] ?? 0));
 			}
 
 			foreach ($assetList as $twinbruAsset) {
