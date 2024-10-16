@@ -7,6 +7,23 @@ class CreatorFetcher21 extends CreatorFetcher
 
 	public CREATOR $creator = CREATOR::TWINBRU;
 
+	private static string $tagRegex = '/[^A-Za-z0-9%]/';
+
+	private function extractTags(array|string $input)
+	{
+		if (is_array($input)) {
+			return array_merge(
+				...array_map(
+					fn($a) => preg_split(self::$tagRegex, $a),
+					array_values(
+						$input
+					)
+				)
+			);
+		}
+		return preg_split(self::$tagRegex, $input);
+	}
+
 	function findNewAssets(array $existingUrls, array $config): AssetCollection
 	{
 
@@ -91,18 +108,31 @@ class CreatorFetcher21 extends CreatorFetcher
 
 
 					// Tags
-					$tags = ["fabric"];
-					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['quality'] ?? ""));
-					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['characteristics'] ?? ""));
-					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['brand'] ?? ""));
-					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['designName'] ?? ""));
-					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['collectionName'] ?? ""));
-					array_merge($tags, preg_split('/[^A-Za-z0-9%]/', $twinbruAsset['main_colour_type_description'] ?? ""));
+					$tags = array_unique(
+						array_filter(
+							array_merge(
+								$this->extractTags($twinbruAsset['class'] ?? ""),
+								$this->extractTags($twinbruAsset['use'] ?? ""),
+								$this->extractTags($twinbruAsset['finish'] ?? ""),
+								$this->extractTags($twinbruAsset['quality'] ?? ""),
+								$this->extractTags($twinbruAsset['characteristics'] ?? ""),
+								$this->extractTags($twinbruAsset['brand'] ?? ""),
+								$this->extractTags($twinbruAsset['company'] ?? ""),
+								$this->extractTags($twinbruAsset['designName'] ?? ""),
+								$this->extractTags($twinbruAsset['collectionName'] ?? ""),
+								$this->extractTags($twinbruAsset['colouring'] ?? ""),
+								$this->extractTags($twinbruAsset['main_colour_type_description'] ?? ""),
+								$this->extractTags($twinbruAsset['cat_woven'] ?? []),
+								$this->extractTags($twinbruAsset['end_use'] ?? []),
+								$this->extractTags($twinbruAsset['colour_type_description'] ?? [])
+							)
+						)
+					);
 
-					$tags = array_unique(array_filter($tags));
+					LogLogic::write("Resolved tags: " . implode(',', $tags));
 
 					// Type
-					$type = TYPE::PBR_MATERIAL;
+					$type = ($twinbruAsset['has3dTexture'] ?? true) ? TYPE::PBR_MATERIAL : TYPE::OTHER;
 
 					// Date
 					$date = substr($twinbruAsset['launch'] ?? date("Ym"), 0, 4);
