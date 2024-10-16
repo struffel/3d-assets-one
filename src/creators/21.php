@@ -68,7 +68,7 @@ class CreatorFetcher21 extends CreatorFetcher
 					// Thumbnail
 					$thumbnailUrl = NULL;
 
-					foreach (['BL_20_CU', 'BL_20'] as $viewType) {
+					foreach (['BL_20', 'BL_20_CU'] as $viewType) {
 						// Get the thumbnail URL
 						$thumbnailQueryResponse = NULL;
 						$thumbnailQueryResponse = FetchLogic::fetchRemoteJson(
