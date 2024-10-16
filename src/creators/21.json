@@ -1,7 +1,7 @@
 {
 	"indexingBaseUrl": "https://textures.twinbru.com/ods/products",
 	"indexingBaseParameters": {
-		"pageSize": 10,
+		"pageSize": 25,
 		"sortAttribute": "launch",
 		"sortDirection": "DSC",
 		"prefilter": "status.eq.RN/bvs_special.ne.any(customer%20special,treatment%20special)/has3dTexture.eq.True"
