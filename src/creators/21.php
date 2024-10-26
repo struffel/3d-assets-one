@@ -45,16 +45,15 @@ class CreatorFetcher21 extends CreatorFetcher
 
 		$headers = array_merge(FetchLogic::$defaultHeaders, ["Cookie" => "ods-token=$odsToken"]);
 
-		try {
-			$rawData = FetchLogic::fetchRemoteJson(
-				headers: $headers,
-				url: $config['indexingBaseUrl'] . "?" . http_build_query($requestBody),
-				method: 'GET'
-			);
-		} catch (Throwable $e) {
+		$rawData = FetchLogic::fetchRemoteJson(
+			headers: $headers,
+			url: $config['indexingBaseUrl'] . "?" . http_build_query($requestBody),
+			method: 'GET'
+		);
+
+		if ($rawData == "") {
+			LogLogic::write("Reset page counter because of an error.");
 			$page = 0;
-			$rawData = NULL;
-			LogLogic::write($e->getMessage(), "ERROR");
 		}
 
 		if ($rawData) {
@@ -77,7 +76,7 @@ class CreatorFetcher21 extends CreatorFetcher
 				}
 
 				// Build the asset's base URL
-				$assetUrl = $config['viewPageBaseUrl'] . $twinbruAsset['itemId'];
+				$assetUrl = $config['viewPageBaseUrl'] . $twinbruAsset['itemId'] . "?" . $config['viewPageSuffix'];
 
 				// Create asset if it is not yet in DB
 				if (!in_array($assetUrl, $existingUrls)) {
