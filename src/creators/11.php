@@ -38,7 +38,8 @@
 							type: TYPE::from($typeId),
 							creator: $this->creator,
 							license: LICENSE::CUSTOM,
-							thumbnailUrl: $rawCatalogAsset->cover
+							thumbnailUrl: $rawCatalogAsset->cover,
+							quirks:[QUIRK::SIGNUP_REQUIRED]
 						);
 
 						$tmpCollection->assets []= $tmpAsset;
