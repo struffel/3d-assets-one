@@ -17,6 +17,8 @@ try{
 
 		if(isset($_GET['creatorId'])){
 			$creators = [CREATOR::from(intval($_GET['creatorId']))];
+		}else{
+			$creators = [];
 		}
 
 		$query = new AssetQuery(
