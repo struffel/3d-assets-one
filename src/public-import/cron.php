@@ -15,10 +15,15 @@ try{
 
 		$maxNumberOfAssets = max(1,intval($_GET['number'] ?? 0));
 
+		if(isset($_GET['creatorId'])){
+			$creators = [CREATOR::from(intval($_GET['creatorId']))];
+		}
+
 		$query = new AssetQuery(
 			filterStatus:  ASSET_STATUS::PENDING,
 			limit: $maxNumberOfAssets,
 			sort: SORTING::RANDOM,
+			filterCreator:$creators ?? NULL
 		);
 	
 		$assetsToActivate = AssetLogic::getAssets($query);

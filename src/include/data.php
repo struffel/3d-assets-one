@@ -20,6 +20,7 @@ enum CREATOR: int
 	case LOCATION_TEXTURES = 19;
 	case PBR_PX = 20;
 	case TWINBRU = 21;
+	case LIGHTBEANS = 22;
 
 	public static function regularRefreshList(): array
 	{
@@ -39,7 +40,8 @@ enum CREATOR: int
 			CREATOR::THREE_D_SCANS,
 			CREATOR::LOCATION_TEXTURES,
 			CREATOR::PBR_PX,
-			CREATOR::TWINBRU
+			CREATOR::TWINBRU,
+			CREATOR::LIGHTBEANS
 		];
 	}
 
@@ -63,7 +65,8 @@ enum CREATOR: int
 			CREATOR::THREE_D_SCANS => 'three-d-scans',
 			CREATOR::LOCATION_TEXTURES => 'location-textures',
 			CREATOR::PBR_PX => "pbr-px",
-			CREATOR::TWINBRU => "twinbru"
+			CREATOR::TWINBRU => "twinbru",
+			CREATOR::LIGHTBEANS => "lightbeans"
 		};
 	}
 
@@ -87,7 +90,8 @@ enum CREATOR: int
 			CREATOR::THREE_D_SCANS => 'Three D Scans',
 			CREATOR::LOCATION_TEXTURES => 'Location Textures',
 			CREATOR::PBR_PX => 'PBRPX',
-			CREATOR::TWINBRU => 'Twinbru'
+			CREATOR::TWINBRU => 'Twinbru',
+			CREATOR::LIGHTBEANS => 'Lightbeans'
 		};
 	}
 
@@ -111,7 +115,8 @@ enum CREATOR: int
 			CREATOR::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.',
 			CREATOR::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.',
 			CREATOR::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
-			CREATOR::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.'
+			CREATOR::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.',
+			CREATOR::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.'
 		};
 	}
 
@@ -144,7 +149,8 @@ enum CREATOR: int
 			CREATOR::THREE_D_SCANS => 'https://threedscans.com/',
 			CREATOR::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/',
 			CREATOR::PBR_PX => 'https://library.pbrpx.com/',
-			CREATOR::TWINBRU => 'https://textures.twinbru.com'
+			CREATOR::TWINBRU => 'https://textures.twinbru.com',
+			CREATOR::LIGHTBEANS => 'https://lightbeans.com'
 		};
 	}
 
