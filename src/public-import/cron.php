@@ -4,14 +4,17 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
 LogLogic::initialize("cron");
 
-$allActions = !isset($_GET['action']);
-$action = $_GET['action'] ?? NULL;
+if($_GET['action'] ?? false){
+	$action = CRON_ACTION::from($_GET['action']);
+}else{
+	$action = CRON_ACTION::cases()[random_int(0,2)];
+}
 
 try{
 	
 	// Activate one or multiple assets
 
-	if($allActions | $action == "activate" ){
+	if($action == CRON_ACTION::ACTIVATE ){
 
 		$maxNumberOfAssets = max(1,intval($_GET['number'] ?? 0));
 
@@ -48,7 +51,7 @@ try{
 
 	// Refresh one creator
 
-	if($allActions | $action == "refresh"){
+	if( $action == CRON_ACTION::REFRESH){
 
 		if(isset($_GET['creatorId'])){
 			$creator = CREATOR::from(intval($_GET['creatorId']));
@@ -81,7 +84,7 @@ try{
 
 	// Validate assets
 
-	if( $allActions | $action == "validate"){
+	if($action == CRON_ACTION::VALIDATE){
 
 		// Get at least 2 assets to validate, 6 by default
 		$maxNumberOfAssets = max(2,intval($_GET['number'] ?? 6));

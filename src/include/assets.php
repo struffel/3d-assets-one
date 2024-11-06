@@ -1,5 +1,11 @@
 <?php
 
+enum CRON_ACTION : string {
+	case REFRESH = "refresh";
+	case ACTIVATE = "activate";
+	case VALIDATE = "validate";
+}
+
 enum SORTING: string{
 	case POPULAR = "popular";
 	case LATEST = "latest";
