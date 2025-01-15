@@ -39,7 +39,8 @@
 							type: TYPE::from($config['types'][$acgAsset['dataType']]),
 							license: LICENSE::CC0,
 							creator: $this->creator,
-							id: NULL
+							id: NULL,
+							quirks:[QUIRK::ADS]
 						);
 
 						$tmpCollection->assets[] = $tmpAsset;
