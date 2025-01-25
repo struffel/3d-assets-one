@@ -16,6 +16,7 @@
 				"include"=>"displayData,tagData,imageData"
 			];
 
+			$existingUrls = array_map(fn($u) => strtolower($u), $existingUrls);
 
 			$targetUrl = $config['apiUrl']."?".http_build_query($initialParameters);
 
@@ -28,7 +29,7 @@
 				// Iterate through result
 				foreach ($result['foundAssets'] as $acgAsset) {
 
-					if(!in_array($acgAsset['shortLink'],$existingUrls)){
+					if(!in_array(strtolower($acgAsset['shortLink']),$existingUrls)){
 
 						$tmpAsset = new Asset(
 							url:$acgAsset['shortLink'],
