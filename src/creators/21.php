@@ -24,6 +24,14 @@ class CreatorFetcher21 extends CreatorFetcher
 		return preg_split(self::$tagRegex, $input);
 	}
 
+	public function processUrl(string $url): string
+	{
+		return StringLogic::addHttpParameters($url, [
+			'utm_source' => '3dassets.one',
+			'utm_campaign' => 'twinbru'
+		]);
+	}
+
 	function findNewAssets(array $existingUrls, array $config): AssetCollection
 	{
 

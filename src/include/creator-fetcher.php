@@ -62,6 +62,10 @@ abstract class CreatorFetcher{
 		return FetchLogic::fetchRemoteData($url);
 	}
 
+	public function processUrl(string $url):string{
+		return $url;
+	}
+
 	public function validateAsset(Asset $asset) : bool {
 		try{
 			FetchLogic::fetchRemoteData($asset->url);
