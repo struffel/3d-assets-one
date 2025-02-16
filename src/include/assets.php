@@ -231,11 +231,14 @@ class AssetLogic{
 	}
 
 	public static function getUrlById(string $assetId) : string{
-		$sql = "SELECT assetUrl FROM Asset WHERE assetId = ? LIMIT 1;";
+		$sql = "SELECT assetUrl,creatorId FROM Asset WHERE assetId = ? LIMIT 1;";
 		$sqlResult = DatabaseLogic::runQuery($sql,[intval($assetId)]);
 		
 		$row = $sqlResult->fetch_assoc();
-		return $row['assetUrl'];
+
+		$creatorFetcher = CreatorFetcher::fromCreator(Creator::from($row['creatorId']));
+
+		return $creatorFetcher->processUrl($row['assetUrl']);
 	}
 
 	public static function addAssetClickById(int $assetId){
