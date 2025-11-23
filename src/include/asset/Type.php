@@ -32,12 +32,23 @@ enum Type: int
 		};
 	}
 
-	public static function fromSlug(string $slug): TYPE
+	public static function fromSlug(string $slug): Type
 	{
 		foreach (TYPE::cases() as $c) {
 			if ($c->slug() === $slug) {
 				return $c;
 			}
 		}
+	}
+
+	public static function fromTex1Tag(string $tex1Tag): Type
+	{
+		return match ($tex1Tag) {
+			"pbr-scanned", "pbr-procedural", "pbr-approximated", "pbr-multiangle", "pbr-stereo" => Type::PBR_MATERIAL,
+			"sbsar-procedural" => Type::SUBSTANCE_MATERIAL,
+			"hdri-real" => Type::HDRI,
+			"3d-modeled", "3d-scanned", "3d-models" => Type::MODEL_3D,
+			default => Type::OTHER,
+		};
 	}
 }

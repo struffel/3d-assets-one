@@ -46,7 +46,7 @@
 							try{
 								$thumbnailUrl = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['large']['s3']['url'];
 							}catch(Throwable $e){
-								LogLogic::write($e->getMessage()." / 1st attempt failed... / ".$wpPost['link'],"IMG-ERROR");
+								Log::write($e->getMessage()." / 1st attempt failed... / ".$wpPost['link'],"IMG-ERROR");
 							}
 
 							// 2nd attempt
@@ -54,7 +54,7 @@
 								try{
 									$thumbnailUrl = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'];
 								}catch(Throwable $e){
-									LogLogic::write($e->getMessage()." / 2nd attempt failed... / ".$wpPost['link'],"IMG-ERROR");
+									Log::write($e->getMessage()." / 2nd attempt failed... / ".$wpPost['link'],"IMG-ERROR");
 								}
 							}
 

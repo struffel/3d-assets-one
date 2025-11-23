@@ -2,6 +2,9 @@
 
 namespace misc;
 
+use asset\Asset;
+use indexing\BackblazeB2;
+
 class Image
 {
 	private static array $thumbnailTemplate = [
@@ -26,12 +29,12 @@ class Image
 
 	public static function buildAndUploadThumbnailsToBackblazeB2(Asset $asset, string $originalImageData)
 	{
-		LogLogic::stepIn(__FUNCTION__);
-		foreach (ImageLogic::$thumbnailTemplate as $t) {
-			$tmpThumbnail = ImageLogic::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
-			BackblazeB2Logic::uploadData($tmpThumbnail, ImageLogic::getBackblazeB2ThumbnailPath($t[2], $t[0], $t[1], $asset));
+		Log::stepIn(__FUNCTION__);
+		foreach (Image::$thumbnailTemplate as $t) {
+			$tmpThumbnail = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
+			BackblazeB2::uploadData($tmpThumbnail, Image::getBackblazeB2ThumbnailPath($t[2], $t[0], $t[1], $asset));
 		}
-		LogLogic::stepOut(__FUNCTION__);
+		Log::stepOut(__FUNCTION__);
 	}
 
 	public static function parseImageIntoPng(string $imageBlob): string
@@ -48,8 +51,8 @@ class Image
 
 	public static function createThumbnailFromImageData(string $originalImageData, int $size, string $extension, string $backgroundColor): string
 	{
-		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Building variation: $size/$extension/$backgroundColor ");
+		Log::stepIn(__FUNCTION__);
+		Log::write("Building variation: $size/$extension/$backgroundColor ");
 		$originalImageData = ImageLogic::parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing
@@ -74,7 +77,7 @@ class Image
 			$outputImage = $outputImage->flattenImages();
 		}
 
-		LogLogic::stepOut(__FUNCTION__);
+		Log::stepOut(__FUNCTION__);
 		return $outputImage->getImageBlob();
 	}
 

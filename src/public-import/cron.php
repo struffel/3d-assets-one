@@ -2,7 +2,7 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
 
-LogLogic::initialize("cron");
+Log::initialize("cron");
 
 if($_GET['action'] ?? false){
 	$action = CRON_ACTION::from($_GET['action']);
@@ -36,7 +36,7 @@ try{
 	
 			DatabaseLogic::startTransaction();
 
-			LogLogic::write("Getting thumbnail for asset ". $a->id." from url ".$a->thumbnailUrl);
+			Log::write("Getting thumbnail for asset ". $a->id." from url ".$a->thumbnailUrl);
 	
 			$creatorFetcher = CreatorFetcher::fromCreator($a->creator);
 			$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
@@ -62,22 +62,22 @@ try{
 		}
 
 		$maxNumberOfAssets = intval($_GET['max']??1);
-		LogLogic::write("Refreshing Creator: ".$creator->slug());
+		Log::write("Refreshing Creator: ".$creator->slug());
 
 		$creatorFetcher = CreatorFetcher::fromCreator($creator);
-		LogLogic::write("Created creator object.");
+		Log::write("Created creator object.");
 		$result = $creatorFetcher->runUpdate();
 
-		LogLogic::write("Found ".sizeof($result->assets)." new assets");
+		Log::write("Found ".sizeof($result->assets)." new assets");
 		if(sizeof($result->assets) > 0){
-			LogLogic::write("Writing new assets to DB:");
+			Log::write("Writing new assets to DB:");
 			foreach ($result->assets as $a) {
 				DatabaseLogic::startTransaction();
 				$a->status = AssetStatus::PENDING;	// Failsave in case the creator fetching function does not set it properly.
 				AssetLogic::saveAssetToDatabase($a);
 				DatabaseLogic::commitTransaction();
 			}
-			LogLogic::write("Wrote ".sizeof($result->assets)." new assets.");
+			Log::write("Wrote ".sizeof($result->assets)." new assets.");
 		}
 	}
 
@@ -117,8 +117,8 @@ try{
 
 			DatabaseLogic::startTransaction();
 
-			LogLogic::write("Testing asset ".$asset->id);
-			LogLogic::write("Asset made by ".$asset->creator->slug());
+			Log::write("Testing asset ".$asset->id);
+			Log::write("Asset made by ".$asset->creator->slug());
 
 			$creatorFetcher = CreatorFetcher::fromCreator($asset->creator);
 			$currentDateTime = new DateTime();
@@ -127,24 +127,24 @@ try{
 			try {
 				$testResult = $creatorFetcher->validateAsset($asset);
 			} catch (\Throwable $th) {
-				LogLogic::write("Skipping this asset because validation function threw exception.","ERROR");
+				Log::write("Skipping this asset because validation function threw exception.","ERROR");
 				continue;
 			}
 
 			if($testResult){
 				$asset->lastSuccessfulValidation = $currentDateTime;
 				$asset->status = AssetStatus::ACTIVE;
-				LogLogic::write("Validation OK");
+				Log::write("Validation OK");
 			}else{
 
 				// If the asset is invalid and was already invalid before the test, check if its last successful validation was 2 or more days ago.
 				// In that case it is considered failed permanently and will not be added to the validation rotation again.
 				if($asset->status == AssetStatus::ACTIVE | $currentDateTime->diff($asset->lastSuccessfulValidation)->d < 2){
 					$asset->status = AssetStatus::VALIDATION_FAILED_RECENTLY;
-					LogLogic::write("Validation Failed (Recently)","WARN");
+					Log::write("Validation Failed (Recently)","WARN");
 				}else{
 					$asset->status = AssetStatus::VALIDATION_FAILED_PERMANENTLY;
-					LogLogic::write("Validation Failed (Permanently)","WARN");
+					Log::write("Validation Failed (Permanently)","WARN");
 				}
 					
 			}
@@ -156,5 +156,5 @@ try{
 	}
 	
 }finally{
-	LogLogic::echoCurrentLog();
+	Log::echoCurrentLog();
 }

@@ -11,37 +11,37 @@ class Log{
 	private static string $logDirectory = "";
 
 	public static function write(string $message,string $logType = ""){
-		if(isset(LogLogic::$logName)){
-			$logFile = LogLogic::$logDirectory.LogLogic::$logName.".log";
-			$message = StringLogic::removeNewline(">".date('Y-m-d|H:i:s',time())."\t".str_pad($logType,10)."\t".str_repeat("\t",LogLogic::$logIndent).$message)."\n";
-			LogLogic::createFileIfNotPresent($logFile);
+		if(isset(Log::$logName)){
+			$logFile = Log::$logDirectory.Log::$logName.".log";
+			$message = StringLogic::removeNewline(">".date('Y-m-d|H:i:s',time())."\t".str_pad($logType,10)."\t".str_repeat("\t",Log::$logIndent).$message)."\n";
+			Log::createFileIfNotPresent($logFile);
 			error_log($message,3,$logFile);
 		}
 	}
 
 	public static function stepIn($message = ""){
-		LogLogic::write("---> $message");
-		LogLogic::$logIndent = max(0,LogLogic::$logIndent + 1);
+		Log::write("---> $message");
+		Log::$logIndent = max(0,Log::$logIndent + 1);
 	}
 
 	public static function stepOut($message = ""){
-		LogLogic::$logIndent = max(0,LogLogic::$logIndent - 1);
-		LogLogic::write("<--- $message");
+		Log::$logIndent = max(0,Log::$logIndent - 1);
+		Log::write("<--- $message");
 		
 	}
 
 	public static function initialize(string $logName){
 
-		LogLogic::$logDirectory = $_SERVER['DOCUMENT_ROOT']."/../log/";
+		Log::$logDirectory = $_SERVER['DOCUMENT_ROOT']."/../log/";
 		
 		// Create log dir if it is missing
-		if (!file_exists(LogLogic::$logDirectory)) {
-			mkdir(LogLogic::$logDirectory, 0777, true);
+		if (!file_exists(Log::$logDirectory)) {
+			mkdir(Log::$logDirectory, 0777, true);
 		}
 		
-		LogLogic::cleanUpLogDirectory();
-		LogLogic::$logName = $logName."_".time();
-		LogLogic::write("Initialized logging","INIT");
+		Log::cleanUpLogDirectory();
+		Log::$logName = $logName."_".time();
+		Log::write("Initialized logging","INIT");
 	}
 
 	private static function createFileIfNotPresent($file){
@@ -51,14 +51,14 @@ class Log{
 	}
 
 	public static function echoCurrentLog(){
-		if(isset(LogLogic::$logName)){
+		if(isset(Log::$logName)){
 			try{
 				header("content-type: text/plain");
 			}catch(Throwable $e){
 				echo "<pre>";
 			}
 			
-			echo file_get_contents(LogLogic::$logDirectory.LogLogic::$logName.".log");
+			echo file_get_contents(Log::$logDirectory.Log::$logName.".log");
 		}
 	}
 
@@ -67,18 +67,18 @@ class Log{
 		$timeLimit = time() - ($deleteOlderThanDays * 24 * 60 * 60);
 	
 		// Open the directory
-		if ($handle = opendir(LogLogic::$logDirectory)) {
+		if ($handle = opendir(Log::$logDirectory)) {
 			// Loop through the directory
 			while (false !== ($file = readdir($handle))) {
 				// Exclude current and parent directory entries
 				if ($file != "." && $file != "..") {
-					$filePath = LogLogic::$logDirectory . $file;
+					$filePath = Log::$logDirectory . $file;
 	
 					// Check if the file is a regular file and older than the time limit
 					if (is_file($filePath) && filemtime($filePath) < $timeLimit) {
 						// Delete the file
 						unlink($filePath);
-						LogLogic::write("Deleted old log: ".$filePath);
+						Log::write("Deleted old log: ".$filePath);
 					}
 				}
 			}

@@ -2,38 +2,40 @@
 
 namespace indexing;
 
+use asset\Asset;
+use asset\AssetLogic;
+use asset\AssetQuery;
+use AssetCollection;
 use creator\Creator;
+use Fetch;
 use misc\Database;
+use misc\Log;
+use Throwable;
 
 abstract class CreatorIndexer
 {
 
 	// Class variables
-	public readonly Creator $target;
+	//public static Creator $creator;
 
 	// General functions
 
-	protected final function getFetchingState(string $key): ?string
+	protected static final function getFetchingState(string $key): ?string
 	{
-		return Database::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?", [$this->creator->value, $key])->fetch_assoc()['stateValue'] ?? NULL;
+		return Database::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?", [self::$creator->value, $key])->fetch_assoc()['stateValue'] ?? NULL;
 	}
 
-	protected final function saveFetchingState(string $key, string $value): void
+	protected static final function saveFetchingState(string $key, string $value): void
 	{
-		Database::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [$this->creator->value, $key, $value]);
+		Database::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [self::$creator->value, $key, $value]);
 	}
 
-	protected final function getConfig(): array
-	{
-		return json_decode(file_get_contents("../creators/" . $this->indexingTarget->value . ".json"), associative: TRUE);
-	}
-
-	public final function runUpdate(): AssetCollection
+	public static final function runUpdate(): AssetCollection
 	{
 
 		// Get existing URLs
 		$query = new AssetQuery();
-		$query->filterCreator = [$this->creator];
+		$query->filterCreator = [self::$creator];
 		$query->filterStatus = NULL;
 		$query->limit = NULL;
 		$result = AssetLogic::getAssets($query);
@@ -41,17 +43,17 @@ abstract class CreatorIndexer
 		foreach ($result->assets as $asset) {
 			$existingUrls[] = $asset->url;
 		}
-		LogLogic::write("Found " . sizeof($existingUrls) . " existing URLs for creator.");
+		Log::write("Found " . sizeof($existingUrls) . " existing URLs for creator.");
 
 		// Get new assets using creator-specific method
 		// Passing in the list of existing URLs and
-		$newAssetCollection = $this->findNewAssets($existingUrls, $this->getConfig(), true);
+		$newAssetCollection = static::findNewAssets($existingUrls);
 
 		// Perform post-processing on the results
 		for ($i = 0; $i < sizeof($newAssetCollection->assets); $i++) {
 			// Expand and clean up the tag array
 			$newAssetCollection->assets[$i]->tags = array_merge($newAssetCollection->assets[$i]->tags, preg_split('/\s+/', $newAssetCollection->assets[$i]->name));
-			$newAssetCollection->assets[$i]->tags[] = $this->creator->slug();
+			$newAssetCollection->assets[$i]->tags[] = self::$creator->slug();
 			$newAssetCollection->assets[$i]->tags = AssetLogic::filterTagArray($newAssetCollection->assets[$i]->tags);
 		}
 
@@ -60,25 +62,25 @@ abstract class CreatorIndexer
 
 	// Creator-specific functions
 
-	public function fetchThumbnailImage(string $url): string
+	public static function fetchThumbnailImage(string $url): string
 	{
-		return FetchLogic::fetchRemoteData($url);
+		return Fetch::fetchRemoteData($url);
 	}
 
-	public function processUrl(string $url): string
+	public static function processUrl(string $url): string
 	{
 		return $url;
 	}
 
-	public function validateAsset(Asset $asset): bool
+	public static function validateAsset(Asset $asset): bool
 	{
 		try {
-			FetchLogic::fetchRemoteData($asset->url);
+			Fetch::fetchRemoteData($asset->url);
 			return true;
 		} catch (Throwable $e) {
 			return false;
 		}
 	}
 
-	public abstract function findNewAssets(array $existingUrls, array $config): AssetCollection;
+	public abstract static function findNewAssets(array $existingUrls): AssetCollection;
 }

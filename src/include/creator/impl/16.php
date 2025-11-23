@@ -39,7 +39,7 @@
 					try {
 						$rawHtml = FetchLogic::fetchRemoteData($config['indexingBaseUrl'].$page);
 					} catch (\Throwable $th) {
-						LogLogic::write("Failed to load site. Attempt: $attempts","WARN");
+						Log::write("Failed to load site. Attempt: $attempts","WARN");
 						sleep($attempts*2);
 						$attempts = $attempts + 1;
 
@@ -65,7 +65,7 @@
 						}
 					}
 					if(!$type){
-						LogLogic::write("Skipping ".$assetImageElement->attr('data-product-url')." because it does not match the URL schema.");
+						Log::write("Skipping ".$assetImageElement->attr('data-product-url')." because it does not match the URL schema.");
 					} 
 					elseif (!in_array($assetImageElement->attr('data-product-url'),$existingUrls)){
 

@@ -45,7 +45,7 @@ class CreatorFetcher22 extends CreatorFetcher
 
 				$tags = explode(' ', $title);
 				$tags = array_filter($tags, fn($tag) => !in_array($tag, $config['bannedTags']));
-				LogLogic::write("Resolved tags: " . implode(',', $tags));
+				Log::write("Resolved tags: " . implode(',', $tags));
 
 				// Type
 				$type = TYPE::PBR_MATERIAL;

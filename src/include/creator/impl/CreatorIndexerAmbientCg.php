@@ -1,16 +1,37 @@
 <?php
 
+use asset\Asset;
+use asset\License;
+use asset\Type;
 use creator\Creator;
+use creator\Quirk;
 use indexing\CreatorIndexer;
+use misc\Log;
 
 class CreatorIndexerAmbientCg extends CreatorIndexer
 {
-	public const Creator = Creator::AMBIENTCG;
 
-	public function findNewAssets(array $existingUrls, array $config): AssetCollection
+	private static string $apiUrl = "https://ambientcg.com/api/v2/full_json";
+
+	private static array $typeMapping = [
+		"Material" => Type::PBR_MATERIAL,
+		"Decal" => Type::PBR_MATERIAL,
+		"Atlas" => Type::PBR_MATERIAL,
+		"HDRI" => Type::HDRI,
+		"3DModel" => Type::MODEL_3D,
+		"SculptingBrush" => Type::OTHER,
+		"Terrain" => Type::OTHER,
+		"SBSAR" => Type::PBR_MATERIAL,
+		"Substance" => Type::PBR_MATERIAL,
+		"PlainTexture" => Type::PBR_MATERIAL,
+		"Brush" => Type::OTHER,
+		"HDRIElement" => Type::HDRI
+	];
+
+	public static function findNewAssets(array $existingUrls): AssetCollection
 	{
-		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Start looking for new assets");
+		Log::stepIn(__FUNCTION__);
+		Log::write("Start looking for new assets");
 
 		// Contact API and get new assets
 		$initialParameters = [
@@ -21,13 +42,13 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 
 		$existingUrls = array_map(fn($u) => strtolower($u), $existingUrls);
 
-		$targetUrl = $config['apiUrl'] . "?" . http_build_query($initialParameters);
+		$targetUrl = self::$apiUrl . "?" . http_build_query($initialParameters);
 
 		// Prepare asset collection
 		$tmpCollection = new AssetCollection();
 
 		while ($targetUrl != "") {
-			$result = FetchLogic::fetchRemoteJson($targetUrl);
+			$result = Fetch::fetchRemoteJson($targetUrl);
 
 			// Iterate through result
 			foreach ($result['foundAssets'] as $acgAsset) {
@@ -40,21 +61,21 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 						date: $acgAsset['releaseDate'],
 						name: $acgAsset['displayName'],
 						tags: $acgAsset['tags'],
-						type: TYPE::from($config['types'][$acgAsset['dataType']]),
-						license: LICENSE::CC0,
-						creator: $this->creator,
+						type: Type::from(self::$typeMapping[$acgAsset['dataType']]),
+						license: License::CC0,
+						creator: Creator::AMBIENTCG,
 						id: NULL,
-						quirks: [QUIRK::ADS]
+						quirks: [Quirk::ADS]
 					);
 
 					$tmpCollection->assets[] = $tmpAsset;
-					LogLogic::write("Found new asset: " . $tmpAsset->url);
+					Log::write("Found new asset: " . $tmpAsset->url);
 				}
 			}
 
 			$targetUrl = $result['nextPageHttp'] ?? "";
 		}
-		LogLogic::stepOut(__FUNCTION__);
+		Log::stepOut(__FUNCTION__);
 		return $tmpCollection;
 	}
 }

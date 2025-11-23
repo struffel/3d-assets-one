@@ -49,7 +49,7 @@
 						$assetDetailsBody = ['asset' => $pbrPxAsset['id']];
 						$pbrPxAssetDetailsRaw = FetchLogic::fetchRemoteJson(url:$config['assetBaseUrl'],method:'POST',body:json_encode($assetDetailsBody),jsonContentTypeHeader:true);
 
-						//LogLogic::write(print_r($pbrPxAssetDetailsRaw));
+						//Log::write(print_r($pbrPxAssetDetailsRaw));
 
 						$pbrPxAssetDetails = $pbrPxAssetDetailsRaw['data'][0];
 

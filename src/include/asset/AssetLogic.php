@@ -55,10 +55,10 @@ class AssetLogic
 	public static function saveAssetToDatabase(Asset $asset)
 	{
 
-		LogLogic::stepIn(__FUNCTION__);
+		Log::stepIn(__FUNCTION__);
 
 		if ($asset->id) {
-			LogLogic::write("Updating Asset with id: " . $asset->id);
+			Log::write("Updating Asset with id: " . $asset->id);
 
 			// Base Asset
 			$sql = "UPDATE Asset SET assetName=?,assetActive=?,assetUrl=?,assetThumbnailUrl=?,assetDate=?,licenseId=?,typeId=?,creatorId=?,lastSuccessfulValidation=? WHERE assetId = ?";
@@ -82,7 +82,7 @@ class AssetLogic
 				DatabaseLogic::runQuery($sql, $parameters);
 			}
 		} else {
-			LogLogic::write("Inserting new asset with url:" . $asset->url);
+			Log::write("Inserting new asset with url:" . $asset->url);
 
 			// Base Asset
 			$sql = "INSERT INTO Asset (assetId, assetActive,assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
@@ -104,14 +104,14 @@ class AssetLogic
 			}
 		}
 
-		LogLogic::stepOut(__FUNCTION__);
+		Log::stepOut(__FUNCTION__);
 		return $asset;
 	}
 
 	public static function getAssets(AssetQuery $query): AssetCollection
 	{
-		LogLogic::stepIn(__FUNCTION__);
-		LogLogic::write("Loading assets based on query: " . var_export($query, true));
+		Log::stepIn(__FUNCTION__);
+		Log::write("Loading assets based on query: " . var_export($query, true));
 
 
 
@@ -240,7 +240,7 @@ class AssetLogic
 			);
 		}
 
-		LogLogic::stepOut(__FUNCTION__);
+		Log::stepOut(__FUNCTION__);
 		return $output;
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace asset;
 
-enum LICENSE: int
+enum License: int
 {
 	case CUSTOM = 0;
 	case CC0 = 1;

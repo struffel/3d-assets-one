@@ -60,7 +60,7 @@ class CreatorFetcher21 extends CreatorFetcher
 		);
 
 		if ($rawData == "") {
-			LogLogic::write("Reset page counter because of an error.");
+			Log::write("Reset page counter because of an error.");
 			$page = 0;
 		}
 
@@ -69,10 +69,10 @@ class CreatorFetcher21 extends CreatorFetcher
 
 			// Reset page counter
 			if ($page >= $rawData['totalPageCount'] ?? 0) {
-				LogLogic::write("Reset page counter because end has been reached.");
+				Log::write("Reset page counter because end has been reached.");
 				$page = 0;
 			} else {
-				LogLogic::write("Current page is $page, end page is " . ($rawData['totalPageCount'] ?? 0));
+				Log::write("Current page is $page, end page is " . ($rawData['totalPageCount'] ?? 0));
 			}
 
 			foreach ($assetList as $twinbruAsset) {
@@ -107,11 +107,11 @@ class CreatorFetcher21 extends CreatorFetcher
 					}
 
 					if (!$thumbnailUrl) {
-						LogLogic::write("Skipping because faulty thumbnail", "WARN");
+						Log::write("Skipping because faulty thumbnail", "WARN");
 						continue;
 					}
 
-					LogLogic::write("Resolved thumbnail $thumbnailUrl");
+					Log::write("Resolved thumbnail $thumbnailUrl");
 
 
 					// Tags
@@ -136,7 +136,7 @@ class CreatorFetcher21 extends CreatorFetcher
 						)
 					);
 
-					LogLogic::write("Resolved tags: " . implode(',', $tags));
+					Log::write("Resolved tags: " . implode(',', $tags));
 
 					// Type
 					$type = ($twinbruAsset['has3dTexture'] ?? true) ? TYPE::PBR_MATERIAL : TYPE::OTHER;
@@ -175,7 +175,7 @@ class CreatorFetcher21 extends CreatorFetcher
 		}
 
 		// Increase page counter
-		LogLogic::write("Increasing page counter.");
+		Log::write("Increasing page counter.");
 		$page += 1;
 		$this->saveFetchingState("page", $page);
 

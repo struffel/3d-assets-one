@@ -1,5 +1,50 @@
+<?php
+
+
+namespace creator\impl;
+
+use asset\Asset;
+use asset\License;
+use asset\Type;
+use AssetCollection;
+use creator\Creator;
+use indexing\CreatorIndexer;
+
+class CreatorIndexerNoEmotionsHdr extends CreatorIndexer
 {
-	"urlList": [
+
+
+	public static function findNewAssets(array $existingUrls): AssetCollection
+	{
+
+		$tmpCollection = new AssetCollection();
+
+		foreach (self::$urlList as $url) {
+
+			if (!in_array($url, $existingUrls)) {
+
+				$category = ucfirst(substr(pathinfo($url)['filename'], 3));
+				$name = explode("=", $url)[1];
+
+				$tmpAsset = new Asset(
+					id: NULL,
+					name: $name,
+					date: "2010-" . preg_split('/=|_/', $url)[1],
+					thumbnailUrl: "http://noemotionhdrs.net/Previews/772x386/$category/$name.jpg",
+					url: $url,
+					tags: ['Sky', $category],
+					type: Type::HDRI,
+					creator: Creator::NOEMOTIONHDRS,
+					license: License::CC_BY_ND,
+				);
+
+				$tmpCollection->assets[] = $tmpAsset;
+			}
+		}
+
+		return $tmpCollection;
+	}
+	private static array $urlList = [
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FH",
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FG",
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FF",
@@ -151,5 +196,5 @@
 		"http://noemotionhdrs.net/hdrother.html#:~:text=11%2D13%5FForest%5FB",
 		"http://noemotionhdrs.net/hdrother.html#:~:text=11%2D13%5FForest%5FC",
 		"http://noemotionhdrs.net/hdrother.html#:~:text=11%2D13%5FForest%5FD"
-	]
+	];
 }
