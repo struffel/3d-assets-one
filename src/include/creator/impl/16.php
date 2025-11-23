@@ -80,7 +80,7 @@
 							license: LICENSE::CUSTOM,
 							creator: $this->creator,
 							quirks: [QUIRK::SIGNUP_REQUIRED,QUIRK::LIMITED_FREE_DOWNLOADS],
-							status: ASSET_STATUS::PENDING
+							status: AssetStatus::PENDING
 						);
 
 					}

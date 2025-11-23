@@ -45,7 +45,7 @@ if($_POST['id'] ?? false){
 	}
 
 	if(isset($_POST['status'])){
-		$a->status = ASSET_STATUS::from(intval($_POST['status']));
+		$a->status = AssetStatus::from(intval($_POST['status']));
 	}
 
 	// Arrays

@@ -27,7 +27,7 @@
 		</select>
 		<select name="status">
 			<option value></option>
-			<?php foreach(ASSET_STATUS::cases() as $c){ ?>
+			<?php foreach(AssetStatus::cases() as $c){ ?>
 				<option class="form-option" value="<?=$c->value?>"><?=$c->name?></option>
 			<?php } ?>
 		</select>

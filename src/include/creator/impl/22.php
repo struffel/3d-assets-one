@@ -67,7 +67,7 @@ class CreatorFetcher22 extends CreatorFetcher
 					quirks: [
 						QUIRK::SIGNUP_REQUIRED
 					],
-					status: ASSET_STATUS::PENDING
+					status: AssetStatus::PENDING
 				);
 			}
 		}

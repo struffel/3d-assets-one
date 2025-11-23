@@ -86,7 +86,7 @@
 							license: LICENSE::CC0,
 							creator: $this->creator,
 							quirks: [],
-							status: ASSET_STATUS::PENDING
+							status: AssetStatus::PENDING
 						);
 
 						$processedAssets += 1;

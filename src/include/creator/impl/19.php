@@ -62,7 +62,7 @@
 								license: LICENSE::CUSTOM,
 								creator: $this->creator,
 								quirks: [],
-								status: ASSET_STATUS::PENDING
+								status: AssetStatus::PENDING
 							);
 
 							$processedAssets += 1;

@@ -25,7 +25,7 @@ try{
 		}
 
 		$query = new AssetQuery(
-			filterStatus:  ASSET_STATUS::PENDING,
+			filterStatus:  AssetStatus::PENDING,
 			limit: $maxNumberOfAssets,
 			sort: SORTING::RANDOM,
 			filterCreator:$creators ?? NULL
@@ -42,7 +42,7 @@ try{
 			$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
 	
 			ImageLogic::buildAndUploadThumbnailsToBackblazeB2($a,$imageData);
-			$a->status = ASSET_STATUS::ACTIVE;
+			$a->status = AssetStatus::ACTIVE;
 			AssetLogic::saveAssetToDatabase($a);
 	
 			DatabaseLogic::commitTransaction();
@@ -73,7 +73,7 @@ try{
 			LogLogic::write("Writing new assets to DB:");
 			foreach ($result->assets as $a) {
 				DatabaseLogic::startTransaction();
-				$a->status = ASSET_STATUS::PENDING;	// Failsave in case the creator fetching function does not set it properly.
+				$a->status = AssetStatus::PENDING;	// Failsave in case the creator fetching function does not set it properly.
 				AssetLogic::saveAssetToDatabase($a);
 				DatabaseLogic::commitTransaction();
 			}
@@ -100,7 +100,7 @@ try{
 		// Get active assets to check
 		$assetsToCheck = array_merge($assetsToCheck, AssetLogic::getAssets(new AssetQuery(
 			limit: $maxNumberOfAssets/2,
-			filterStatus: ASSET_STATUS::ACTIVE,
+			filterStatus: AssetStatus::ACTIVE,
 			sort: SORTING::OLDEST_VALIDATION_SUCCESS,
 			filterCreator: $filterCreator
 		))->assets);
@@ -108,7 +108,7 @@ try{
 		// Get assets that failed their validation
 		$assetsToCheck = array_merge($assetsToCheck, AssetLogic::getAssets(new AssetQuery(
 			limit: $maxNumberOfAssets/2,
-			filterStatus: ASSET_STATUS::VALIDATION_FAILED_RECENTLY,
+			filterStatus: AssetStatus::VALIDATION_FAILED_RECENTLY,
 			sort: SORTING::RANDOM,
 			filterCreator: $filterCreator
 		))->assets);
@@ -133,17 +133,17 @@ try{
 
 			if($testResult){
 				$asset->lastSuccessfulValidation = $currentDateTime;
-				$asset->status = ASSET_STATUS::ACTIVE;
+				$asset->status = AssetStatus::ACTIVE;
 				LogLogic::write("Validation OK");
 			}else{
 
 				// If the asset is invalid and was already invalid before the test, check if its last successful validation was 2 or more days ago.
 				// In that case it is considered failed permanently and will not be added to the validation rotation again.
-				if($asset->status == ASSET_STATUS::ACTIVE | $currentDateTime->diff($asset->lastSuccessfulValidation)->d < 2){
-					$asset->status = ASSET_STATUS::VALIDATION_FAILED_RECENTLY;
+				if($asset->status == AssetStatus::ACTIVE | $currentDateTime->diff($asset->lastSuccessfulValidation)->d < 2){
+					$asset->status = AssetStatus::VALIDATION_FAILED_RECENTLY;
 					LogLogic::write("Validation Failed (Recently)","WARN");
 				}else{
-					$asset->status = ASSET_STATUS::VALIDATION_FAILED_PERMANENTLY;
+					$asset->status = AssetStatus::VALIDATION_FAILED_PERMANENTLY;
 					LogLogic::write("Validation Failed (Permanently)","WARN");
 				}
 					

@@ -1,6 +1,8 @@
 <?php
 
-class LogLogic{
+namespace misc;
+
+class Log{
 
 	private static int $logIndent = 0;
 

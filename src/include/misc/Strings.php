@@ -1,6 +1,8 @@
 <?php
 
-class StringLogic
+namespace misc;
+
+class Strings
 {
 	public static function onlySmallLetters(string $input)
 	{

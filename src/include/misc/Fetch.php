@@ -1,6 +1,6 @@
 <?php
 
-class FetchLogic
+class Fetch
 {
 
 	public static array $defaultHeaders = [

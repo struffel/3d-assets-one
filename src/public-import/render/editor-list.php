@@ -31,7 +31,7 @@ $assets = AssetLogic::getAssets($query);
 
 	<div>
 		<select  name="status">
-			<?php foreach(ASSET_STATUS::cases() as $c){ ?>
+			<?php foreach(AssetStatus::cases() as $c){ ?>
 				<option <?= $a->status == $c ? 'selected' : '' ?> class="form-option" value="<?=$c->value?>"><?=$c->name?></option>
 			<?php } ?>
 		</select>
