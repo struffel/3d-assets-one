@@ -1,21 +1,45 @@
 <?php
 
+namespace creator\impl;
+
+use asset\Asset;
+use asset\AssetStatus;
+use asset\License;
+use asset\Type;
+use AssetCollection;
+use creator\Creator;
+use creator\Quirk;
+use Fetch;
+use indexing\CreatorIndexer;
+use misc\Html;
+use misc\Log;
+
 // lightbeans
 
-class CreatorFetcher22 extends CreatorFetcher
+class CreatorIndexerLightbeans extends CreatorIndexer
 {
 
-	public CREATOR $creator = CREATOR::LIGHTBEANS;
+	protected static Creator $creator = Creator::LIGHTBEANS;
 
-	function findNewAssets(array $existingUrls, array $config): AssetCollection
+	private static string $sitemapUrl = "https://lightbeans.com/sitemap.xml";
+	private static string $sitemapUrlMustContain = "lightbeans.com/en/texture/";
+	private static int $maxPerIteration = 10;
+	private static array $bannedTags = [
+		"Lightbeans",
+		"|",
+		"-",
+		"from"
+	];
+
+	public static function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		// Collect assets
 
 		$tmpCollection = new AssetCollection();
 
-		$rawSitemapXml = FetchLogic::fetchRemoteData(
-			url: $config['sitemapUrl']
+		$rawSitemapXml = Fetch::fetchRemoteData(
+			url: self::$sitemapUrl
 		);
 
 		if ($rawSitemapXml) {
@@ -24,19 +48,19 @@ class CreatorFetcher22 extends CreatorFetcher
 			$newUrls = [];
 
 			foreach ($sitemap->url as $url) {
-				if (!in_array($url->loc, $existingUrls) && str_contains($url->loc, $config['sitemapUrlMustContain'])) {
+				if (!in_array($url->loc, $existingUrls) && str_contains($url->loc, self::$sitemapUrlMustContain)) {
 					$newUrls[] = (string) $url->loc;
 				}
-				if (sizeof($newUrls) >= $config['maxPerIteration']) {
+				if (sizeof($newUrls) >= self::$maxPerIteration) {
 					break;
 				}
 			}
 
 			foreach ($newUrls as $newUrl) {
 
-				$html = FetchLogic::fetchRemoteData($newUrl);
-				$dom = HtmlLogic::domObjectFromHtmlString($html);
-				$metatags = HtmlLogic::readMetatagsFromHtmlString($html);
+				$html = Fetch::fetchRemoteData($newUrl);
+				$dom = Html::domObjectFromHtmlString($html);
+				$metatags = Html::readMetatagsFromHtmlString($html);
 
 				$thumbnailUrl = str_replace("dynamic-rectangle-image", "dynamic-square-image", $metatags['og:image'] ?? "");
 
@@ -44,11 +68,11 @@ class CreatorFetcher22 extends CreatorFetcher
 				$title = str_replace("| Lightbeans", "", $title);
 
 				$tags = explode(' ', $title);
-				$tags = array_filter($tags, fn($tag) => !in_array($tag, $config['bannedTags']));
+				$tags = array_filter($tags, fn($tag) => !in_array($tag, self::$bannedTags));
 				Log::write("Resolved tags: " . implode(',', $tags));
 
 				// Type
-				$type = TYPE::PBR_MATERIAL;
+				$type = Type::PBR_MATERIAL;
 
 				// Date
 				$date = date("Y-m-d");
@@ -62,10 +86,10 @@ class CreatorFetcher22 extends CreatorFetcher
 					date: $date,
 					tags: $tags,
 					type: $type,
-					license: LICENSE::CUSTOM,
-					creator: $this->creator,
+					license: License::CUSTOM,
+					creator: self::$creator,
 					quirks: [
-						QUIRK::SIGNUP_REQUIRED
+						Quirk::SIGNUP_REQUIRED
 					],
 					status: AssetStatus::PENDING
 				);
@@ -75,11 +99,11 @@ class CreatorFetcher22 extends CreatorFetcher
 		return $tmpCollection;
 	}
 
-	public function fetchThumbnailImage(string $url): string
+	public static function fetchThumbnailImage(string $url): string
 	{
 
 		// Load the image
-		$image = FetchLogic::fetchRemoteData($url);
+		$image = Fetch::fetchRemoteData($url);
 		$imagick = new Imagick();
 		$imagick->readImageBlob($image);
 

@@ -16,7 +16,7 @@ abstract class CreatorIndexer
 {
 
 	// Class variables
-	//public static Creator $creator;
+	protected static Creator $creator;
 
 	// General functions
 

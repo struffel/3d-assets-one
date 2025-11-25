@@ -1,8 +1,0 @@
-{
-	"indexingBaseUrl": "https://api.pbrpx.com/home/api_product/getPmsg",
-	"assetBaseUrl": "https://api.pbrpx.com/home/api_product/getasset",
-	"viewPageBaseUrl":"https://library.pbrpx.com/#/asset?asset=",
-	"mediaBaseUrl":"https://asset.pbrpx.com/",
-	"thumbnailIdentifierString":"preview_360_360",
-	"maxAssetsPerRound": 5
-}

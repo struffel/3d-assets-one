@@ -1,8 +1,0 @@
-{
-	"indexingBaseUrl": "https://cgmood.com/free?page=",
-	"maxPagesPerIteration": 3,
-	"urlTypeRegex":{
-		"#/3d-model/#": 2,
-		"#/material/#": 1
-	}
-}
