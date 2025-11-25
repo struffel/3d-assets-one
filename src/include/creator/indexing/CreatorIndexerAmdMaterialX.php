@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\Asset;
 use asset\License;
@@ -15,6 +15,8 @@ use misc\Image;
 
 class CreatorIndexerAmdMaterialX extends CreatorIndexer
 {
+
+	protected static Creator $creator = Creator::GPUOPENMATLIB;
 
 	private static string $apiUrl = 'https://api.matlib.gpuopen.com/api/materials/?limit=50&ordering=-published_date&status=Published&updateKey=1&offset=0';
 	private static string $tagApiUrl = 'https://api.matlib.gpuopen.com/api/tags/';

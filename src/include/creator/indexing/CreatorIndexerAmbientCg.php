@@ -1,16 +1,21 @@
 <?php
 
+namespace creator\indexing;
+
 use asset\Asset;
 use asset\License;
 use asset\Type;
+use AssetCollection;
 use creator\Creator;
 use creator\Quirk;
+use Fetch;
 use indexing\CreatorIndexer;
 use misc\Log;
 
 class CreatorIndexerAmbientCg extends CreatorIndexer
 {
 
+	protected static Creator $creator = Creator::AMBIENTCG;
 	private static string $apiUrl = "https://ambientcg.com/api/v2/full_json";
 
 	private static array $typeMapping = [

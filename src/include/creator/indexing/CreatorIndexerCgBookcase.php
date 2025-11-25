@@ -1,36 +1,52 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\Asset;
 use asset\License;
 use asset\Type;
 use AssetCollection;
 use creator\Creator;
-use creator\Quirk;
 use Fetch;
 use indexing\CreatorIndexer;
 use misc\Html;
 use misc\Image;
 use misc\Strings;
+use Rct567\DomQuery\DomQuery;
 
-class CreatorFetcher6 extends CreatorIndexer
+
+class CreatorIndexerCgBookcase extends CreatorIndexer
 {
 
-	private static string $urlList = "https://www.texturecan.com/tex1-list.php";
+
+	protected static Creator $creator = Creator::CGBOOKCASE;
+	private static string $baseUrl = "https://www.cgbookcase.com/textures/";
 	private static int $maxAssets = 5;
 
 	public static function findNewAssets(array $existingUrls): AssetCollection
 	{
 
-		$urlArray = Fetch::fetchRemoteCommaSeparatedList(self::$urlList);
+		$rawHtml = Fetch::fetchRemoteData(self::$baseUrl);
+
+		$dom = Html::domObjectFromHtmlString($rawHtml);
+		$domQuery = new DomQuery($dom);
+
+		$assetLinks = $domQuery->find('a[href*="/textures/"]');
+
+		$urlArray = [];
+
+		foreach ($assetLinks as $aL) {
+			$urlArray[] = "https://www.cgbookcase.com" . $aL->href . "?source=3dassets.one";
+		}
 
 		$tmpCollection = new AssetCollection();
 
 		$countAssets = 0;
 		foreach ($urlArray as $url) {
 			if (!in_array($url, $existingUrls)) {
-				$metaTags = Html::readMetatagsFromHtmlString(Fetch::fetchRemoteData($url));
+
+				$siteContent = Fetch::fetchRemoteData($url);
+				$metaTags = Html::readMetatagsFromHtmlString($siteContent);
 
 				$tmpAsset = new Asset(
 					id: NULL,
@@ -40,9 +56,8 @@ class CreatorFetcher6 extends CreatorIndexer
 					tags: Strings::explodeFilterTrim(",", $metaTags['tex1:tags']),
 					type: Type::fromTex1Tag($metaTags['tex1:type']),
 					license: License::CC0,
-					creator: Creator::TEXTURECAN,
-					thumbnailUrl: $metaTags['tex1:preview-image'],
-					quirks: [Quirk::ADS]
+					creator: Creator::CGBOOKCASE,
+					thumbnailUrl: $metaTags['tex1:preview-image']
 				);
 
 				$tmpCollection->assets[] = $tmpAsset;
@@ -53,6 +68,8 @@ class CreatorFetcher6 extends CreatorIndexer
 				}
 			}
 		}
+
+
 
 		return $tmpCollection;
 	}

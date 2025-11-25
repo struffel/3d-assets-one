@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\Asset;
 use asset\License;
@@ -16,6 +16,8 @@ use Throwable;
 
 class CreatorIndexer3dTextures extends CreatorIndexer
 {
+
+	protected static Creator $creator = Creator::THREE_D_TEXTURES;
 
 	private static string $apiUrl = "https://3dtextures.me/wp-json/wp/v2/";
 	private static int $maxAssets = 500;

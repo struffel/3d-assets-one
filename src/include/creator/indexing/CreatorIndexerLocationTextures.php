@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 // Location Textures
 
 use asset\Asset;

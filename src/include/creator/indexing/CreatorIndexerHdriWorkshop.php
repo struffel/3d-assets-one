@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\Asset;
 use asset\License;
@@ -14,6 +14,7 @@ use indexing\CreatorIndexer;
 
 class CreatorIndexerHdriWorkshop extends CreatorIndexer
 {
+	protected static Creator $creator = Creator::HDRIWORKSHOP;
 
 	private static string $apiUrl = "https://hdri-workshop.com/api";
 

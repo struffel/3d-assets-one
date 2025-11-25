@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\Asset;
 use asset\License;
@@ -16,6 +16,7 @@ use SimpleXMLElement;
 
 class CreatorIndexerRawCatalog extends CreatorIndexer
 {
+	protected static Creator $creator = Creator::RAWCATALOG;
 
 	private static string $apiUrl = "https://rawcatalog.com/freeset.xml";
 	private static int $maxAssetsPerRound = 100;

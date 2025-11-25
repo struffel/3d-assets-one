@@ -1,7 +1,7 @@
 <?php
 
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\Asset;
 use asset\License;
@@ -13,6 +13,7 @@ use indexing\CreatorIndexer;
 class CreatorIndexerNoEmotionsHdr extends CreatorIndexer
 {
 
+	protected static Creator $creator = Creator::NOEMOTIONHDRS;
 
 	public static function findNewAssets(array $existingUrls): AssetCollection
 	{

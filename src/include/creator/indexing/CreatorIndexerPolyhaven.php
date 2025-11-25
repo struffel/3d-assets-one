@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\Asset;
 use asset\License;
@@ -14,6 +14,7 @@ use misc\Log;
 
 class CreatorIndexerPolyhaven extends CreatorIndexer
 {
+	protected static Creator $creator = Creator::POLYHAVEN;
 
 	private static string $apiUrl = "https://api.polyhaven.com/assets";
 	private static string $viewBaseUrl = "https://polyhaven.com/a/";

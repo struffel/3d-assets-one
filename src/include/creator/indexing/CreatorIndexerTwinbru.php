@@ -2,7 +2,7 @@
 
 // twinbru
 
-namespace creator\impl;
+namespace creator\indexing;
 
 use asset\AssetStatus;
 use asset\License;

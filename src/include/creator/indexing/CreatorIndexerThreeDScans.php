@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\impl;
+namespace creator\indexing;
 // Three D Scans
 
 use asset\Asset;
@@ -16,6 +16,8 @@ use Rct567\DomQuery\DomQuery;
 
 class CreatorIndexerThreeDScans extends CreatorIndexer
 {
+
+	
 
 	protected static Creator $creator = Creator::THREE_D_SCANS;
 	private static string $indexingBaseUrl = "https://threedscans.com/page/";
