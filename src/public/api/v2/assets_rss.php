@@ -9,7 +9,7 @@ header("content-Type: application/rss+xml");
 
 $query = AssetQuery::fromHttpGet();
 $query->sort = Sorting::LATEST;
-$assetCollection = AssetLogic::getAssets($query);
+$assetCollection = $query->execute();
 
 echo '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
 

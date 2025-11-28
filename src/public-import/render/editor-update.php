@@ -14,7 +14,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 if ($_POST['id'] ?? false) {
 	Database::startTransaction();
 	$query = new AssetQuery(filterAssetId: [$_POST['id']], filterStatus: NULL);
-	$assets = AssetLogic::getAssets($query);
+	$assets = $query->execute();
 	$a = $assets->assets[0];
 
 	if (!$a) {

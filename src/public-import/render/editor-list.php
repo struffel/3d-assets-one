@@ -10,7 +10,7 @@ use asset\Type;
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 $query = AssetQuery::fromHttpGet(filterStatus: NULL);
-$assets = AssetLogic::getAssets($query);
+$assets = $query->execute();
 ?>
 
 <?php foreach ($assets->assets as $a) { ?>

@@ -46,7 +46,7 @@ abstract class CreatorIndexer
 		$query->filterCreator = [$this->creator];
 		$query->filterStatus = NULL;
 		$query->limit = NULL;
-		$result = AssetLogic::getAssets($query);
+		$result = $query->execute();
 		$existingUrls = [];
 		foreach ($result->assets as $asset) {
 			$existingUrls[] = $asset->url;

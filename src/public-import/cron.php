@@ -43,7 +43,7 @@ try {
 			filterCreator: $creators ?? NULL
 		);
 
-		$assetsToActivate = AssetLogic::getAssets($query);
+		$assetsToActivate = $query->execute();
 		foreach ($assetsToActivate->assets as $a) {
 
 			Database::startTransaction();
@@ -110,20 +110,20 @@ try {
 		}
 
 		// Get active assets to check
-		$assetsToCheck = array_merge($assetsToCheck, AssetLogic::getAssets(new AssetQuery(
+		$assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(
 			limit: $maxNumberOfAssets / 2,
 			filterStatus: AssetStatus::ACTIVE,
 			sort: Sorting::OLDEST_VALIDATION_SUCCESS,
 			filterCreator: $filterCreator
-		))->assets);
+		))->execute()->assets);
 
 		// Get assets that failed their validation
-		$assetsToCheck = array_merge($assetsToCheck, AssetLogic::getAssets(new AssetQuery(
+		$assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(
 			limit: $maxNumberOfAssets / 2,
 			filterStatus: AssetStatus::VALIDATION_FAILED_RECENTLY,
 			sort: Sorting::RANDOM,
 			filterCreator: $filterCreator
-		))->assets);
+		))->execute()->assets);
 
 		foreach ($assetsToCheck as $asset) {
 

@@ -4,6 +4,9 @@ namespace asset;
 
 use creator\Creator;
 use asset\Quirk;
+use DateTime;
+use misc\Database;
+use misc\Log;
 
 class AssetQuery
 {
@@ -110,5 +113,141 @@ class AssetQuery
 			filterAvoidQuirk: $filterAvoidQuirk,
 			filterStatus: $filterStatus
 		);
+	}
+
+	public function execute(): AssetCollection
+	{
+		Log::stepIn(__FUNCTION__);
+		Log::write("Loading assets based on query: " . var_export($this, true));
+
+
+
+		// Begin defining SQL string and parameters for prepared statement
+		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,lastSuccessfulValidation,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
+		$sqlValues = [];
+
+		// Joins
+
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ";
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) ";
+
+		$sqlCommand .= " WHERE TRUE ";
+
+
+		foreach ($this->filterTag as $tag) {
+			$sqlCommand .= " AND assetId IN (SELECT assetId FROM Tag WHERE tagName = ? ) ";
+			$sqlValues[] = $tag;
+		}
+
+		foreach ($this->filterAvoidQuirk as $quirk) {
+			$sqlCommand .= " AND assetId NOT IN (SELECT assetId FROM Quirk WHERE quirkId = ? ) ";
+			$sqlValues[] = $quirk->value;
+		}
+
+
+		if (sizeof($this->filterAssetId) > 0) {
+			$ph = Database::generatePlaceholder($this->filterAssetId);
+			$sqlCommand .= " AND assetId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterAssetId);
+		}
+
+		if (sizeof($this->filterType) > 0) {
+			$ph = Database::generatePlaceholder($this->filterType);
+			$sqlCommand .= " AND typeId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterType);
+		}
+
+		if (sizeof($this->filterLicense) > 0) {
+			$ph = Database::generatePlaceholder($this->filterLicense);
+			$sqlCommand .= " AND licenseId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterLicense);
+		}
+
+		if (sizeof($this->filterCreator) > 0) {
+			$ph = Database::generatePlaceholder($this->filterCreator);
+			$sqlCommand .= " AND creatorId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterCreator);
+		}
+
+		if ($this->filterStatus !== NULL) {
+			$sqlCommand .= " AND assetActive=? ";
+			$sqlValues[] = $this->filterStatus;
+		}
+
+		// Sort
+		$sqlCommand .= match ($this->sort) {
+
+			// Options for public display
+			Sorting::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
+			Sorting::OLDEST => " ORDER BY assetDate ASC, assetId ASC ",
+			Sorting::RANDOM => " ORDER BY RAND() ",
+			Sorting::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC ",
+
+			// Options for internal editor (potentially less optimized)
+			Sorting::LEAST_CLICKED => " ORDER BY assetClicks ASC ",
+			Sorting::MOST_CLICKED => " ORDER BY assetClicks DESC ",
+			Sorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) ASC ",
+			Sorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) DESC ",
+			Sorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RAND() ",
+			Sorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RAND() "
+		};
+
+		// Offset and Limit
+		if ($this->limit != NULL) {
+			// Clean up query
+			$this->limit = max(1, $this->limit);
+			$this->offset = max(0, $this->offset);
+
+			$sqlCommand .= " LIMIT ? OFFSET ? ";
+			$sqlValues[] = $this->limit;
+			$sqlValues[] = $this->offset;
+		}
+
+
+		// Fetch data from DB
+		$databaseOutput = Database::runQuery($sqlCommand, $sqlValues);
+		$databaseOutputFoundRows = Database::runQuery("SELECT FOUND_ROWS() as RowCount;");
+
+		// Prepare the final asset collection
+		$output = new AssetCollection(
+			totalNumberOfAssetsInBackend: $databaseOutputFoundRows->fetch_assoc()['RowCount']
+		);
+
+		// Add a query for more assets, if there are any 
+		if ($output->totalNumberOfAssetsInBackend > $this->offset + $this->limit) {
+			$nextCollectionQuery = clone $this;
+			$nextCollectionQuery->offset += $nextCollectionQuery->limit;
+			$output->nextCollection = $nextCollectionQuery;
+		}
+
+
+		// Assemble the asset objects
+		while ($row = $databaseOutput->fetch_assoc()) {
+
+			$quirks = [];
+			foreach (array_filter(explode(",", $row['quirkIds'] ?? "")) as $q) {
+				$quirks[] = Quirk::from(intval($q));
+			}
+
+			$tags = array_filter(explode(',', $row['assetTags'] ?? ""));
+
+			$output->assets[] = new Asset(
+				status: AssetStatus::from($row['assetActive']),
+				thumbnailUrl: $row['assetThumbnailUrl'],
+				id: $row['assetId'],
+				name: $row['assetName'],
+				url: $row['assetUrl'],
+				date: $row['assetDate'],
+				tags: $tags,
+				type: Type::from($row['typeId']),
+				license: License::from($row['licenseId']),
+				creator: Creator::from($row['creatorId']),
+				quirks: $quirks,
+				lastSuccessfulValidation: new DateTime($row['lastSuccessfulValidation'])
+			);
+		}
+
+		Log::stepOut(__FUNCTION__);
+		return $output;
 	}
 }

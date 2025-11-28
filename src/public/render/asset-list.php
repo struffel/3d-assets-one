@@ -6,7 +6,7 @@ use asset\AssetQuery;
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 $query = AssetQuery::fromHttpGet();
-$assets = AssetLogic::getAssets($query);
+$assets = $query->execute();
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 

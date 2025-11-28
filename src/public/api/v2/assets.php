@@ -7,7 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-type: application/json");
 
 $query = AssetQuery::fromHttpGet();
-$assets = AssetLogic::getAssets($query);
+$assets = $query->execute();
 
 $thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {
 	"256-JPG-FFFFFF" => "256-JPG-FFFFFF",
