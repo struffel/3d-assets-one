@@ -1,12 +1,21 @@
 <?php
 
 use asset\AssetLogic;
+use asset\AssetQuery;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 $assetId = intval($_GET['id'] ?? "0");
 
-$url = AssetLogic::getUrlById($assetId);
+$query = new AssetQuery(
+	offset: 0,
+	limit: 1,
+	filterAssetId: [$assetId]
+);
+$result = $query->execute();
+$asset = $result->assets[0] ?? null;
+
+$url = $asset ? $asset->url : null;
 if ($url) {
 	header("Location: $url");
 } else {
