@@ -1,0 +1,20 @@
+meta {
+  name: rawcatalog
+  type: http
+  seq: 11
+}
+
+get {
+  url: https://import.dev.3dassets.one/cron.php?creatorId=11&action=refresh
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creatorId: 11
+  action: refresh
+}
+
+settings {
+  encodeUrl: true
+}

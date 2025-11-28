@@ -1,0 +1,20 @@
+meta {
+  name: lightbeans
+  type: http
+  seq: 22
+}
+
+get {
+  url: https://import.dev.3dassets.one/cron.php?creatorId=22&action=refresh
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creatorId: 22
+  action: refresh
+}
+
+settings {
+  encodeUrl: true
+}

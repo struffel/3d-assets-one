@@ -1,0 +1,20 @@
+meta {
+  name: 3d-textures
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://import.dev.3dassets.one/cron.php?creatorId=4&action=refresh
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creatorId: 4
+  action: refresh
+}
+
+settings {
+  encodeUrl: true
+}

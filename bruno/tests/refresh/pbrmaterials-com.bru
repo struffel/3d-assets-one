@@ -1,0 +1,20 @@
+meta {
+  name: pbrmaterials-com
+  type: http
+  seq: 13
+}
+
+get {
+  url: https://import.dev.3dassets.one/cron.php?creatorId=13&action=refresh
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creatorId: 13
+  action: refresh
+}
+
+settings {
+  encodeUrl: true
+}
