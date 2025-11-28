@@ -174,7 +174,7 @@ enum Creator: int
 			Creator::AMBIENTCG => new \creator\indexing\CreatorIndexerAmbientCg(),
 			Creator::POLYHAVEN => new \creator\indexing\CreatorIndexerPolyHaven(),
 			Creator::SHARETEXTURES => new \creator\indexing\CreatorIndexerShareTextures(),
-			Creator::THREE_D_TEXTURES => new \creator\indexing\CreatorIndexer3DTextures(),
+			Creator::THREE_D_TEXTURES => new \creator\indexing\CreatorIndexer3dTextures(),
 			Creator::CGBOOKCASE => new \creator\indexing\CreatorIndexerCGBookcase(),
 			Creator::TEXTURECAN => new \creator\indexing\CreatorIndexerTextureCan(),
 			Creator::NOEMOTIONHDRS => new \creator\indexing\CreatorIndexerNoEmotionsHdr(),
