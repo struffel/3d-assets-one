@@ -14,7 +14,7 @@ use asset\Quirk;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use misc\Log;
-use misc\Strings;
+use misc\StringUtil;
 
 class CreatorIndexerTwinbru extends CreatorIndexer
 {
@@ -53,7 +53,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 
 	public function processUrl(string $url): string
 	{
-		return Strings::addHttpParameters($url, [
+		return StringUtil::addHttpParameters($url, [
 			'utm_source' => '3dassets.one',
 			'utm_campaign' => 'twinbru'
 		]);

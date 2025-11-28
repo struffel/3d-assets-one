@@ -2,7 +2,7 @@
 
 namespace misc;
 
-class Strings
+class StringUtil
 {
 	public static function filterTagArray(array $inputArray)
 	{

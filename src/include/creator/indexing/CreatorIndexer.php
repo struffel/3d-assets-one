@@ -10,7 +10,7 @@ use Exception;
 use misc\Fetch;
 use misc\Database;
 use misc\Log;
-use misc\Strings;
+use misc\StringUtil;
 use Throwable;
 
 abstract class CreatorIndexer
@@ -62,7 +62,7 @@ abstract class CreatorIndexer
 			// Expand and clean up the tag array
 			$newAssetCollection->assets[$i]->tags = array_merge($newAssetCollection->assets[$i]->tags, preg_split('/\s+/', $newAssetCollection->assets[$i]->name));
 			$newAssetCollection->assets[$i]->tags[] = $this->creator->slug();
-			$newAssetCollection->assets[$i]->tags = Strings::filterTagArray($newAssetCollection->assets[$i]->tags);
+			$newAssetCollection->assets[$i]->tags = StringUtil::filterTagArray($newAssetCollection->assets[$i]->tags);
 		}
 
 		return $newAssetCollection;

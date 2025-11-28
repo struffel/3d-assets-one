@@ -17,7 +17,7 @@ class Log
 	{
 		if (isset(Log::$logName)) {
 			$logFile = Log::$logDirectory . Log::$logName . ".log";
-			$message = Strings::removeNewline(">" . date('Y-m-d|H:i:s', time()) . "\t" . str_pad($logType, 10) . "\t" . str_repeat("\t", Log::$logIndent) . $message) . "\n";
+			$message = StringUtil::removeNewline(">" . date('Y-m-d|H:i:s', time()) . "\t" . str_pad($logType, 10) . "\t" . str_repeat("\t", Log::$logIndent) . $message) . "\n";
 			Log::createFileIfNotPresent($logFile);
 			error_log($message, 3, $logFile);
 		}

@@ -11,7 +11,7 @@ use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use misc\Html;
 use misc\Image;
-use misc\Strings;
+use misc\StringUtil;
 use Rct567\DomQuery\DomQuery;
 
 
@@ -53,7 +53,7 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 					name: $metaTags['tex1:name'],
 					url: $url,
 					date: $metaTags['tex1:release-date'],
-					tags: Strings::explodeFilterTrim(",", $metaTags['tex1:tags']),
+					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags']),
 					type: Type::fromTex1Tag($metaTags['tex1:type']),
 					license: License::CC0,
 					creator: Creator::CGBOOKCASE,
