@@ -9,7 +9,7 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use Fetch;
+use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 
 // textures.com

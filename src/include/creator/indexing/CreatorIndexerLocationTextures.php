@@ -9,7 +9,7 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use Fetch;
+use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;

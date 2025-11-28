@@ -1,12 +1,13 @@
 <?php
 
+
+
 use asset\AssetLogic;
 use asset\AssetQuery;
 use asset\AssetStatus;
 use misc\CronAction;
 use asset\Sorting;
 use creator\Creator;
-use creator\indexing\CreatorIndexer;
 use misc\Database;
 use misc\Image;
 use misc\Log;
@@ -163,6 +164,9 @@ try {
 			Database::commitTransaction();
 		}
 	}
+} catch (\Throwable $th) {
+	Log::write("Cron job failed with error: " . $th->getMessage(), "ERROR");
+	http_response_code(500);
 } finally {
 	Log::echoCurrentLog();
 }

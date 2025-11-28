@@ -14,26 +14,26 @@ enum Quirk: int
 	public function slug(): string
 	{
 		return match ($this) {
-			QUIRK::SIGNUP_REQUIRED => 'sign-up',
-			QUIRK::ADS => 'ads',
-			QUIRK::ASSET_PACK => 'asset-pack',
-			QUIRK::LIMITED_FREE_DOWNLOADS => 'limited-free-downloads'
+			self::SIGNUP_REQUIRED => 'sign-up',
+			self::ADS => 'ads',
+			self::ASSET_PACK => 'asset-pack',
+			self::LIMITED_FREE_DOWNLOADS => 'limited-free-downloads'
 		};
 	}
 
 	public function name(): string
 	{
 		return match ($this) {
-			QUIRK::SIGNUP_REQUIRED => 'Sign-up Required',
-			QUIRK::ADS => 'On-site Ads',
-			QUIRK::ASSET_PACK => 'Asset Packs',
-			QUIRK::LIMITED_FREE_DOWNLOADS => 'Limited Number of Free Downloads'
+			self::SIGNUP_REQUIRED => 'Sign-up Required',
+			self::ADS => 'On-site Ads',
+			self::ASSET_PACK => 'Asset Packs',
+			self::LIMITED_FREE_DOWNLOADS => 'Limited Number of Free Downloads'
 		};
 	}
 
 	public static function fromSlug(string $slug): ?self
 	{
-		foreach (Quirk::cases() as $c) {
+		foreach (self::cases() as $c) {
 			if ($c->slug() === $slug) {
 				return $c;
 			}

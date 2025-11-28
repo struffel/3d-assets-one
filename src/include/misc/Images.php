@@ -56,7 +56,7 @@ class Image
 		$originalImageData = self::parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing
-		$tmpImage = new Imagick();
+		$tmpImage = new \Imagick();
 		$tmpImage->readImageBlob($originalImageData);
 		$tmpImage->setbackgroundcolor('transparent');
 		$tmpImage->setGravity(imagick::GRAVITY_CENTER);
@@ -66,9 +66,9 @@ class Image
 		$offsetX = ($size - $tmpImage->getImageWidth()) / 2;
 		$offsetY = ($size - $tmpImage->getImageHeight()) / 2;
 
-		$outputImage = new Imagick();
+		$outputImage = new \Imagick();
 		$outputImage->newImage($size, $size, 'transparent', 'png');
-		$outputImage->compositeImage($tmpImage, imagick::COMPOSITE_DEFAULT, $offsetX, $offsetY);
+		$outputImage->compositeImage($tmpImage, \Imagick::COMPOSITE_DEFAULT, $offsetX, $offsetY);
 
 		$outputImage->setImageFormat(strtolower($extension));
 
@@ -84,7 +84,7 @@ class Image
 	public static function removeUniformBackground(string $imageBlob, int $targetX, int $targetY, int $fuzz): string
 	{
 		$imageBlob = ImageLogic::parseImageIntoPng($imageBlob);
-		$tmpImage = new Imagick();
+		$tmpImage = new \Imagick();
 		$tmpImage->readImageBlob($imageBlob);
 		$targetColor = $tmpImage->getImagePixelColor($targetX, $targetY);
 		$tmpImage->transparentPaintImage($targetColor, 0, Imagick::getQuantum() * $fuzz, false);

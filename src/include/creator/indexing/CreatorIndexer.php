@@ -7,7 +7,8 @@ use asset\AssetCollection;
 use asset\AssetLogic;
 use asset\AssetQuery;
 use creator\Creator;
-use Fetch;
+use Exception;
+use misc\Fetch;
 use misc\Database;
 use misc\Log;
 use Throwable;
@@ -16,7 +17,14 @@ abstract class CreatorIndexer
 {
 
 	// Class variables
-	protected Creator $creator;
+	protected Creator $creator {
+		get {
+			return $this->creator;
+		}
+		/*set(Creator $value) {
+			throw new Exception("Cannot change creator of indexer.");
+		}*/
+	}
 
 	// General functions
 
@@ -53,7 +61,7 @@ abstract class CreatorIndexer
 		for ($i = 0; $i < sizeof($newAssetCollection->assets); $i++) {
 			// Expand and clean up the tag array
 			$newAssetCollection->assets[$i]->tags = array_merge($newAssetCollection->assets[$i]->tags, preg_split('/\s+/', $newAssetCollection->assets[$i]->name));
-			$newAssetCollection->assets[$i]->tags[] = self::$creator->slug();
+			$newAssetCollection->assets[$i]->tags[] = $this->creator->slug();
 			$newAssetCollection->assets[$i]->tags = AssetLogic::filterTagArray($newAssetCollection->assets[$i]->tags);
 		}
 

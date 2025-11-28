@@ -1,12 +1,14 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
+use asset\License;
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-type: application/json");
 
 $licenses = [];
 
 foreach (License::cases() as $l) {
-	$licenses []= [
+	$licenses[] = [
 		"id" => $l->value,
 		"slug" => $l->slug(),
 		"name" => $l->name()

@@ -17,10 +17,10 @@ class Asset
 		public string $url,
 		public string $thumbnailUrl,
 		public string $date,
-		public array $tags = [],
 		public Type $type,
 		public License $license,
 		public Creator $creator,
+		public array $tags = [],
 		public array $quirks = [],	// Array of QUIRK
 		public AssetStatus $status = AssetStatus::PENDING,
 		public ?DateTime $lastSuccessfulValidation = NULL

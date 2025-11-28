@@ -11,7 +11,7 @@ use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
 use Exception;
-use Fetch;
+use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use misc\Html;
 use misc\Log;

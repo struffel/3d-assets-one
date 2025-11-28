@@ -9,7 +9,7 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use Fetch;
+use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use misc\Html;
 use misc\Log;
@@ -104,7 +104,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 
 		// Load the image
 		$image = Fetch::fetchRemoteData($url);
-		$imagick = new Imagick();
+		$imagick = new \Imagick();
 		$imagick->readImageBlob($image);
 
 		//Get the dimensions of the original image

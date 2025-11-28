@@ -4,13 +4,14 @@
 
 namespace creator\indexing;
 
+use asset\Asset;
 use asset\AssetStatus;
 use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use Fetch;
+use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use misc\Log;
 use misc\Strings;
@@ -181,7 +182,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 					}
 
 					// Build asset
-					$tmpCollection->assets[] = new Type(
+					$tmpCollection->assets[] = new Asset(
 						id: NULL,
 						name: $name,
 						url: $assetUrl,

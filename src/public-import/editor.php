@@ -1,10 +1,11 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 use asset\AssetStatus;
 use asset\Sorting;
 use creator\Creator;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
+
 ?>
 
 <!DOCTYPE html>

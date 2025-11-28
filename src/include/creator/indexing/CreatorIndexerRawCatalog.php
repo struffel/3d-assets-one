@@ -8,7 +8,7 @@ use asset\License;
 use asset\Type;
 use creator\Creator;
 use asset\Quirk;
-use Fetch;
+use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use SimpleXMLElement;
 

@@ -1,5 +1,10 @@
 <?php
 
+namespace misc;
+
+use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use misc\Log;
 
 class Fetch
@@ -19,7 +24,7 @@ class Fetch
 			$headers = self::$defaultHeaders;
 		}
 
-		$client = new GuzzleHttp\Client(['cookies' => true]);
+		$client = new Client(['cookies' => true]);
 		try {
 			$options = [
 				'headers' => $headers,
@@ -31,7 +36,7 @@ class Fetch
 			$cookieJar = $client->getConfig('cookies');
 			$cookie = $cookieJar->getCookieByName($targetCookieName)->getValue();
 			Log::write("Cookie Request successful!");
-		} catch (GuzzleHttp\Exception\ClientException $e) {
+		} catch (ClientException $e) {
 			Log::write("Cookie Request error, Status code: " . $e->getResponse()->getStatusCode(), "HTTP-ERROR");
 			$cookie = NULL;
 		} catch (Exception $e) {
@@ -53,7 +58,7 @@ class Fetch
 			$headers = self::$defaultHeaders;
 		}
 
-		$client = new GuzzleHttp\Client();
+		$client = new Client();
 		try {
 			$options = [
 				'headers' => $headers,
@@ -62,7 +67,7 @@ class Fetch
 			$result = $client->request($method, $url, $options);
 			$content = $result->getBody();
 			Log::write("Request successful!");
-		} catch (GuzzleHttp\Exception\ClientException $e) {
+		} catch (ClientException $e) {
 			Log::write("Request error, Status code: " . $e->getResponse()->getStatusCode(), "HTTP-ERROR");
 			$content = "";
 		} catch (Exception $e) {
