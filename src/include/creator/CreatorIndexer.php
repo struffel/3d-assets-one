@@ -16,26 +16,26 @@ abstract class CreatorIndexer
 {
 
 	// Class variables
-	protected static Creator $creator;
+	protected Creator $creator;
 
 	// General functions
 
-	protected static final function getFetchingState(string $key): ?string
+	protected final function getFetchingState(string $key): ?string
 	{
-		return Database::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?", [self::$creator->value, $key])->fetch_assoc()['stateValue'] ?? NULL;
+		return Database::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?", [$this->creator->value, $key])->fetch_assoc()['stateValue'] ?? NULL;
 	}
 
-	protected static final function saveFetchingState(string $key, string $value): void
+	protected final function saveFetchingState(string $key, string $value): void
 	{
-		Database::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [self::$creator->value, $key, $value]);
+		Database::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [$this->creator->value, $key, $value]);
 	}
 
-	public static final function runUpdate(): AssetCollection
+	public final function runUpdate(): AssetCollection
 	{
 
 		// Get existing URLs
 		$query = new AssetQuery();
-		$query->filterCreator = [self::$creator];
+		$query->filterCreator = [$this->creator];
 		$query->filterStatus = NULL;
 		$query->limit = NULL;
 		$result = AssetLogic::getAssets($query);
@@ -47,7 +47,7 @@ abstract class CreatorIndexer
 
 		// Get new assets using creator-specific method
 		// Passing in the list of existing URLs and
-		$newAssetCollection = static::findNewAssets($existingUrls);
+		$newAssetCollection = $this->findNewAssets($existingUrls);
 
 		// Perform post-processing on the results
 		for ($i = 0; $i < sizeof($newAssetCollection->assets); $i++) {
@@ -62,17 +62,17 @@ abstract class CreatorIndexer
 
 	// Creator-specific functions
 
-	public static function fetchThumbnailImage(string $url): string
+	public function fetchThumbnailImage(string $url): string
 	{
 		return Fetch::fetchRemoteData($url);
 	}
 
-	public static function processUrl(string $url): string
+	public function processUrl(string $url): string
 	{
 		return $url;
 	}
 
-	public static function validateAsset(Asset $asset): bool
+	public function validateAsset(Asset $asset): bool
 	{
 		try {
 			Fetch::fetchRemoteData($asset->url);
@@ -82,5 +82,5 @@ abstract class CreatorIndexer
 		}
 	}
 
-	public abstract static function findNewAssets(array $existingUrls): AssetCollection;
+	public abstract function findNewAssets(array $existingUrls): AssetCollection;
 }

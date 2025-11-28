@@ -2,6 +2,9 @@
 
 namespace asset;
 
+use creator\Creator;
+use indexing\CreatorIndexer;
+use misc\Database;
 
 class AssetLogic
 {
@@ -37,13 +40,14 @@ class AssetLogic
 	public static function getUrlById(string $assetId): string
 	{
 		$sql = "SELECT assetUrl,creatorId FROM Asset WHERE assetId = ? LIMIT 1;";
-		$sqlResult = DatabaseLogic::runQuery($sql, [intval($assetId)]);
+		$sqlResult = Database::runQuery($sql, [intval($assetId)]);
 
 		$row = $sqlResult->fetch_assoc();
 
-		$creatorFetcher = CreatorFetcher::fromCreator(Creator::from($row['creatorId']));
+		$creator = Creator::from($row['creatorId']);
+		$creatorFetcher = $creator->getIndexer();
 
-		return $creatorFetcher->processUrl($row['assetUrl']);
+		return $creatorFetcherprocessUrl($row['assetUrl']);
 	}
 
 	public static function addAssetClickById(int $assetId)

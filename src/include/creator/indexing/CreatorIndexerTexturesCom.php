@@ -17,10 +17,10 @@ use indexing\CreatorIndexer;
 class CreatorIndexerTexturesCom extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::TEXTURES_COM;
+	protected Creator $creator = Creator::TEXTURES_COM;
 
-	private static string $apiBaseUrl = "https://www.textures.com/api/v1/texture/search?filter=free&page=";
-	private static array $categoryMapping = [
+	private string $apiBaseUrl = "https://www.textures.com/api/v1/texture/search?filter=free&page=";
+	private array $categoryMapping = [
 		"114553" => Type::MODEL_3D,
 		"114561" => Type::OTHER,
 		"114548" => Type::PBR_MATERIAL,
@@ -34,7 +34,7 @@ class CreatorIndexerTexturesCom extends CreatorIndexer
 		"114571" => Type::OTHER
 	];
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
@@ -42,7 +42,7 @@ class CreatorIndexerTexturesCom extends CreatorIndexer
 		$page = 1;
 
 		do {
-			$apiData = Fetch::fetchRemoteJson(self::$apiBaseUrl . $page);
+			$apiData = Fetch::fetchRemoteJson($this->apiBaseUrl . $page);
 
 			$assetsFoundThisIteration = sizeof($apiData['data']);
 			foreach ($apiData['data'] as $texComAsset) {
@@ -58,7 +58,7 @@ class CreatorIndexerTexturesCom extends CreatorIndexer
 						thumbnailUrl: "https://textures.com/" . $texComAsset['picture'],
 						date: $texComAsset['defaultPhotoSet']['createdAtUtc'],
 						tags: array_filter(preg_split('/[^A-Za-z0-9]/', $texComAsset['defaultPhotoSet']['titleThumbnail'])),
-						type: self::$categoryMapping[$texComAsset['defaultCategoryId']] ?? Type::OTHER,
+						type: $this->categoryMapping[$texComAsset['defaultCategoryId']] ?? Type::OTHER,
 						license: License::CUSTOM,
 						creator: Creator::TEXTURES_COM,
 						quirks: [Quirk::SIGNUP_REQUIRED],

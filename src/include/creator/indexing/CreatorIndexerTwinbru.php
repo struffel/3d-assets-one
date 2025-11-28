@@ -18,39 +18,39 @@ use misc\Strings;
 class CreatorIndexerTwinbru extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::TWINBRU;
+	protected Creator $creator = Creator::TWINBRU;
 
-	private static string $tagRegex = '/[^A-Za-z0-9%]/';
+	private string $tagRegex = '/[^A-Za-z0-9%]/';
 
-	private static string $indexingBaseUrl = 'https://textures.twinbru.com/ods/products';
-	private static array $indexingBaseParameters = [
+	private string $indexingBaseUrl = 'https://textures.twinbru.com/ods/products';
+	private array $indexingBaseParameters = [
 		'pageSize' => 25,
 		'sortAttribute' => 'launch',
 		'sortDirection' => 'DSC',
 		'prefilter' => 'status.eq.RN/bvs_special.ne.any(customer%20special,treatment%20special)/has3dTexture.eq.True'
 	];
-	private static string $viewPageBaseUrl = 'https://textures.twinbru.com/products/';
-	private static string $viewPageSuffix = 'utm_source=3dassets.one';
-	private static string $thumbnailQueryBaseUrl = 'https://textures.twinbru.com/ods/assets';
-	private static string $thumbnailBaseUrl = 'https://textures.twinbru.com/assets/';
-	private static string $sessionCookieUrl = 'https://textures.twinbru.com/layout?item=products&account=bru';
+	private string $viewPageBaseUrl = 'https://textures.twinbru.com/products/';
+	private string $viewPageSuffix = 'utm_source=3dassets.one';
+	private string $thumbnailQueryBaseUrl = 'https://textures.twinbru.com/ods/assets';
+	private string $thumbnailBaseUrl = 'https://textures.twinbru.com/assets/';
+	private string $sessionCookieUrl = 'https://textures.twinbru.com/layout?item=products&account=bru';
 
-	private static function extractTags(array|string $input)
+	private function extractTags(array|string $input)
 	{
 		if (is_array($input)) {
 			return array_merge(
 				...array_map(
-					fn($a) => preg_split(self::$tagRegex, $a),
+					fn($a) => preg_split($this->tagRegex, $a),
 					array_values(
 						$input
 					)
 				)
 			);
 		}
-		return preg_split(self::$tagRegex, $input);
+		return preg_split($this->tagRegex, $input);
 	}
 
-	public static function processUrl(string $url): string
+	public function processUrl(string $url): string
 	{
 		return Strings::addHttpParameters($url, [
 			'utm_source' => '3dassets.one',
@@ -58,30 +58,30 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 		]);
 	}
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		// Open a session
 
 		$odsToken = Fetch::fetchRemoteCookie(
 			targetCookieName: "ods-token",
-			url: self::$sessionCookieUrl
+			url: $this->sessionCookieUrl
 		);
 
 
 		// Collect assets
 
 		$tmpCollection = new AssetCollection();
-		$page = self::getFetchingState("page") ?? 1;
+		$page = $this->getFetchingState("page") ?? 1;
 
-		$requestBody = self::$indexingBaseParameters;
+		$requestBody = $this->indexingBaseParameters;
 		$requestBody["page"] = $page;
 
 		$headers = array_merge(Fetch::$defaultHeaders, ["Cookie" => "ods-token=$odsToken"]);
 
 		$rawData = Fetch::fetchRemoteJson(
 			headers: $headers,
-			url: self::$indexingBaseUrl . "?" . http_build_query($requestBody),
+			url: $this->indexingBaseUrl . "?" . http_build_query($requestBody),
 			method: 'GET'
 		);
 
@@ -110,7 +110,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 				}
 
 				// Build the asset's base URL
-				$assetUrl = self::$viewPageBaseUrl . $twinbruAsset['itemId'] . "?" . self::$viewPageSuffix;
+				$assetUrl = $this->viewPageBaseUrl . $twinbruAsset['itemId'] . "?" . $this->viewPageSuffix;
 
 				// Create asset if it is not yet in DB
 				if (!in_array($assetUrl, $existingUrls)) {
@@ -123,11 +123,11 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 						$thumbnailQueryResponse = NULL;
 						$thumbnailQueryResponse = Fetch::fetchRemoteJson(
 							headers: $headers,
-							url: self::$thumbnailQueryBaseUrl . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.$viewType/stockId.eq." . $twinbruAsset['itemId']])
+							url: $this->thumbnailQueryBaseUrl . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.$viewType/stockId.eq." . $twinbruAsset['itemId']])
 						);
 
 						if (sizeof($thumbnailQueryResponse['results']) > 0) {
-							$thumbnailUrl = self::$thumbnailBaseUrl . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";
+							$thumbnailUrl = $this->thumbnailBaseUrl . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";
 							break;
 						}
 					}
@@ -144,20 +144,20 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 					$tags = array_unique(
 						array_filter(
 							array_merge(
-								self::extractTags($twinbruAsset['class'] ?? ""),
-								self::extractTags($twinbruAsset['use'] ?? ""),
-								self::extractTags($twinbruAsset['finish'] ?? ""),
-								self::extractTags($twinbruAsset['quality'] ?? ""),
-								self::extractTags($twinbruAsset['characteristics'] ?? ""),
-								self::extractTags($twinbruAsset['brand'] ?? ""),
-								self::extractTags($twinbruAsset['company'] ?? ""),
-								self::extractTags($twinbruAsset['designName'] ?? ""),
-								self::extractTags($twinbruAsset['collectionName'] ?? ""),
-								self::extractTags($twinbruAsset['colouring'] ?? ""),
-								self::extractTags($twinbruAsset['main_colour_type_description'] ?? ""),
-								self::extractTags($twinbruAsset['cat_woven'] ?? []),
-								self::extractTags($twinbruAsset['end_use'] ?? []),
-								self::extractTags($twinbruAsset['colour_type_description'] ?? [])
+								$this->extractTags($twinbruAsset['class'] ?? ""),
+								$this->extractTags($twinbruAsset['use'] ?? ""),
+								$this->extractTags($twinbruAsset['finish'] ?? ""),
+								$this->extractTags($twinbruAsset['quality'] ?? ""),
+								$this->extractTags($twinbruAsset['characteristics'] ?? ""),
+								$this->extractTags($twinbruAsset['brand'] ?? ""),
+								$this->extractTags($twinbruAsset['company'] ?? ""),
+								$this->extractTags($twinbruAsset['designName'] ?? ""),
+								$this->extractTags($twinbruAsset['collectionName'] ?? ""),
+								$this->extractTags($twinbruAsset['colouring'] ?? ""),
+								$this->extractTags($twinbruAsset['main_colour_type_description'] ?? ""),
+								$this->extractTags($twinbruAsset['cat_woven'] ?? []),
+								$this->extractTags($twinbruAsset['end_use'] ?? []),
+								$this->extractTags($twinbruAsset['colour_type_description'] ?? [])
 							)
 						)
 					);
@@ -190,7 +190,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 						tags: $tags,
 						type: $type,
 						license: License::CUSTOM,
-						creator: self::$creator,
+						creator: $this->creator,
 						quirks: [
 							Quirk::SIGNUP_REQUIRED
 						],
@@ -203,7 +203,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 		// Increase page counter
 		Log::write("Increasing page counter.");
 		$page += 1;
-		self::saveFetchingState("page", $page);
+		$this->saveFetchingState("page", $page);
 
 
 

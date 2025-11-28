@@ -2,7 +2,6 @@
 
 namespace creator;
 
-use CreatorIndexerAmbientCg;
 use indexing\CreatorIndexer;
 
 enum Creator: int
@@ -169,10 +168,27 @@ enum Creator: int
 		return null;
 	}
 
-	public function getIndexer(): string
+	public function getIndexer(): CreatorIndexer
 	{
 		return match ($this) {
-			Creator::AMBIENTCG => CreatorIndexerAmbientCg::class,
+			Creator::AMBIENTCG => new \creator\indexing\CreatorIndexerAmbientCg(),
+			Creator::POLYHAVEN => new \creator\indexing\CreatorIndexerPolyHaven(),
+			Creator::SHARETEXTURES => new \creator\indexing\CreatorIndexerShareTextures(),
+			Creator::THREE_D_TEXTURES => new \creator\indexing\CreatorIndexer3DTextures(),
+			Creator::CGBOOKCASE => new \creator\indexing\CreatorIndexerCGBookcase(),
+			Creator::TEXTURECAN => new \creator\indexing\CreatorIndexerTextureCan(),
+			Creator::NOEMOTIONHDRS => new \creator\indexing\CreatorIndexerNoEmotionsHdr(),
+			Creator::GPUOPENMATLIB => new \creator\indexing\CreatorIndexerAmdMaterialX(),
+			Creator::RAWCATALOG => new \creator\indexing\CreatorIndexerRawCatalog(),
+			Creator::HDRIWORKSHOP => new \creator\indexing\CreatorIndexerHDRIWorkshop(),
+			Creator::POLIIGON => new \creator\indexing\CreatorIndexerPoliigon(),
+			Creator::TEXTURES_COM => new \creator\indexing\CreatorIndexerTexturesCom(),
+			Creator::CGMOOD => new \creator\indexing\CreatorIndexerCGMood(),
+			Creator::THREE_D_SCANS => new \creator\indexing\CreatorIndexerThreeDScans(),
+			Creator::LOCATION_TEXTURES => new \creator\indexing\CreatorIndexerLocationTextures(),
+			Creator::PBR_PX => new \creator\indexing\CreatorIndexerPBRPX(),
+			Creator::TWINBRU => new \creator\indexing\CreatorIndexerTwinbru(),
+			Creator::LIGHTBEANS => new \creator\indexing\CreatorIndexerLightbeans(),
 		};
 	}
 }

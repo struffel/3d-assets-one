@@ -14,18 +14,18 @@ use misc\Html;
 use misc\Image;
 use misc\Strings;
 
-class CreatorFetcher6 extends CreatorIndexer
+class CreatorIndexerTextureCan extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::TEXTURECAN;
+	protected Creator $creator = Creator::TEXTURECAN;
 
-	private static string $urlList = "https://www.texturecan.com/tex1-list.php";
-	private static int $maxAssets = 5;
+	private string $urlList = "https://www.texturecan.com/tex1-list.php";
+	private int $maxAssets = 5;
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
-		$urlArray = Fetch::fetchRemoteCommaSeparatedList(self::$urlList);
+		$urlArray = Fetch::fetchRemoteCommaSeparatedList($this->urlList);
 
 		$tmpCollection = new AssetCollection();
 
@@ -50,7 +50,7 @@ class CreatorFetcher6 extends CreatorIndexer
 				$tmpCollection->assets[] = $tmpAsset;
 
 				$countAssets++;
-				if ($countAssets >= self::$maxAssets) {
+				if ($countAssets >= $this->maxAssets) {
 					break;
 				}
 			}
@@ -59,7 +59,7 @@ class CreatorFetcher6 extends CreatorIndexer
 		return $tmpCollection;
 	}
 
-	public static function fetchThumbnailImage(string $url): string
+	public function fetchThumbnailImage(string $url): string
 	{
 		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 2, 2, 0.015);
 	}

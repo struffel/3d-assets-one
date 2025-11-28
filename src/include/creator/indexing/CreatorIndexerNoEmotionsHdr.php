@@ -13,14 +13,14 @@ use indexing\CreatorIndexer;
 class CreatorIndexerNoEmotionsHdr extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::NOEMOTIONHDRS;
+	protected Creator $creator = Creator::NOEMOTIONHDRS;
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
 
-		foreach (self::$urlList as $url) {
+		foreach ($this->urlList as $url) {
 
 			if (!in_array($url, $existingUrls)) {
 
@@ -45,7 +45,7 @@ class CreatorIndexerNoEmotionsHdr extends CreatorIndexer
 
 		return $tmpCollection;
 	}
-	private static array $urlList = [
+	private array $urlList = [
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FH",
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FG",
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FF",

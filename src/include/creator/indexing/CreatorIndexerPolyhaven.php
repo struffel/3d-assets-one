@@ -14,29 +14,29 @@ use misc\Log;
 
 class CreatorIndexerPolyhaven extends CreatorIndexer
 {
-	protected static Creator $creator = Creator::POLYHAVEN;
+	protected Creator $creator = Creator::POLYHAVEN;
 
-	private static string $apiUrl = "https://api.polyhaven.com/assets";
-	private static string $viewBaseUrl = "https://polyhaven.com/a/";
-	private static string $thumbnailUrlPrefix = "https://cdn.polyhaven.com/asset_img/thumbs/";
-	private static string $thumbnailUrlSuffix = ".png?height=512";
-	private static array $typeMapping = [
+	private string $apiUrl = "https://api.polyhaven.com/assets";
+	private string $viewBaseUrl = "https://polyhaven.com/a/";
+	private string $thumbnailUrlPrefix = "https://cdn.polyhaven.com/asset_img/thumbs/";
+	private string $thumbnailUrlSuffix = ".png?height=512";
+	private array $typeMapping = [
 		"0" => Type::HDRI,
 		"1" => Type::PBR_MATERIAL,
 		"2" => Type::MODEL_3D
 	];
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		// Prepare asset collection
 		$tmpCollection = new AssetCollection();
-		$result = Fetch::fetchRemoteJson(self::$apiUrl);
+		$result = Fetch::fetchRemoteJson($this->apiUrl);
 
 		// Iterate through result
 		foreach ($result as $key => $phAsset) {
 
-			$url = self::$viewBaseUrl . $key;
+			$url = $this->viewBaseUrl . $key;
 
 			if (!in_array($url, $existingUrls)) {
 
@@ -46,8 +46,8 @@ class CreatorIndexerPolyhaven extends CreatorIndexer
 					date: date('Y-m-d', $phAsset['date_published']),
 					name: $phAsset['name'],
 					tags: $phAsset['tags'],
-					thumbnailUrl: self::$thumbnailUrlPrefix . $key . self::$thumbnailUrlSuffix,
-					type: TYPE::from(self::$typeMapping[$phAsset['type']]),
+					thumbnailUrl: $this->thumbnailUrlPrefix . $key . $this->thumbnailUrlSuffix,
+					type: TYPE::from($this->typeMapping[$phAsset['type']]),
 					license: License::CC0,
 					creator: Creator::POLYHAVEN,
 					quirks: [Quirk::ADS]

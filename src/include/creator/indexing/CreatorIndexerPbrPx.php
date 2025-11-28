@@ -17,25 +17,25 @@ use Throwable;
 class CreatorIndexerPbrPx extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::PBR_PX;
+	protected Creator $creator = Creator::PBR_PX;
 
-	private static string $indexingBaseUrl = "https://api.pbrpx.com/home/api_product/getPmsg";
-	private static string $assetBaseUrl = "https://api.pbrpx.com/home/api_product/getasset";
-	private static string $viewPageBaseUrl = "https://library.pbrpx.com/#/asset?asset=";
-	private static string $mediaBaseUrl = "https://asset.pbrpx.com/";
-	private static string $thumbnailIdentifierString = "preview_360_360";
-	private static int $maxAssetsPerRound = 5;
+	private string $indexingBaseUrl = "https://api.pbrpx.com/home/api_product/getPmsg";
+	private string $assetBaseUrl = "https://api.pbrpx.com/home/api_product/getasset";
+	private string $viewPageBaseUrl = "https://library.pbrpx.com/#/asset?asset=";
+	private string $mediaBaseUrl = "https://asset.pbrpx.com/";
+	private string $thumbnailIdentifierString = "preview_360_360";
+	private int $maxAssetsPerRound = 5;
 
 
 
-	public static function validateAsset(Asset $asset): bool
+	public function validateAsset(Asset $asset): bool
 	{
 
 		// Extract the id from the url and compose the query
 		$assetDetailsBody = ['asset' => end(explode("=", strtok($asset->url, '_')))];
 
 		try {
-			$response = Fetch::fetchRemoteJson(url: self::$assetBaseUrl, method: 'POST', body: json_encode($assetDetailsBody), jsonContentTypeHeader: true);
+			$response = Fetch::fetchRemoteJson(url: $this->assetBaseUrl, method: 'POST', body: json_encode($assetDetailsBody), jsonContentTypeHeader: true);
 
 			// Test if there is an errno and if it is 0
 			return isset($response['errno']) && $response['errno'] == 0;
@@ -44,19 +44,19 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 		}
 	}
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
 		$page = 1;
 
 		$processedAssets = 0;
-		$maxAssets = self::$maxAssetsPerRound;
+		$maxAssets = $this->maxAssetsPerRound;
 
 		do {
 			$assetsFoundThisIteration = 0;
 			$assetListBody = ['page_number' => $page];
-			$assetListRaw = Fetch::fetchRemoteJson(url: self::$indexingBaseUrl, method: 'POST', body: json_encode($assetListBody), jsonContentTypeHeader: true);
+			$assetListRaw = Fetch::fetchRemoteJson(url: $this->indexingBaseUrl, method: 'POST', body: json_encode($assetListBody), jsonContentTypeHeader: true);
 
 			$assetList = $assetListRaw['data']['data'];
 
@@ -64,12 +64,12 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 
 				$assetsFoundThisIteration += 1;
 
-				$assetUrl = self::$viewPageBaseUrl . $pbrPxAsset['id'];
+				$assetUrl = $this->viewPageBaseUrl . $pbrPxAsset['id'];
 
 				if (!in_array($assetUrl, $existingUrls)) {
 					// Fetch asset details
 					$assetDetailsBody = ['asset' => $pbrPxAsset['id']];
-					$pbrPxAssetDetailsRaw = Fetch::fetchRemoteJson(url: self::$assetBaseUrl, method: 'POST', body: json_encode($assetDetailsBody), jsonContentTypeHeader: true);
+					$pbrPxAssetDetailsRaw = Fetch::fetchRemoteJson(url: $this->assetBaseUrl, method: 'POST', body: json_encode($assetDetailsBody), jsonContentTypeHeader: true);
 
 					//Log::write(print_r($pbrPxAssetDetailsRaw));
 
@@ -89,10 +89,10 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 
 					// Decide on thumbnail
 					$thumbnailUrlCandidates = explode("+", $pbrPxAssetDetails['img_url']);
-					$thumbnailUrl = self::$mediaBaseUrl . $thumbnailUrlCandidates[0];
+					$thumbnailUrl = $this->mediaBaseUrl . $thumbnailUrlCandidates[0];
 					foreach ($thumbnailUrlCandidates as $t) {
-						if (str_contains($t, self::$thumbnailIdentifierString)) {
-							$thumbnailUrl = self::$mediaBaseUrl . $t;
+						if (str_contains($t, $this->thumbnailIdentifierString)) {
+							$thumbnailUrl = $this->mediaBaseUrl . $t;
 						}
 					}
 
@@ -106,7 +106,7 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 						tags: $tags,
 						type: $type,
 						license: License::CC0,
-						creator: self::$creator,
+						creator: $this->creator,
 						quirks: [],
 						status: AssetStatus::PENDING
 					);

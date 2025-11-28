@@ -16,16 +16,16 @@ use misc\Image;
 class CreatorIndexerShareTextures extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::SHARETEXTURES;
+	protected Creator $creator = Creator::SHARETEXTURES;
 
-	private static string $listUrl = "https://www.sharetextures.com/tex1-list.php";
-	private static int $maxAssets = 5;
+	private string $listUrl = "https://www.sharetextures.com/tex1-list.php";
+	private int $maxAssets = 5;
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		// Get list of URLs
-		$urlArray = Fetch::fetchRemoteCommaSeparatedList(self::$listUrl);
+		$urlArray = Fetch::fetchRemoteCommaSeparatedList($this->listUrl);
 
 		$tmpCollection = new AssetCollection();
 
@@ -51,7 +51,7 @@ class CreatorIndexerShareTextures extends CreatorIndexer
 				$tmpCollection->assets[] = $tmpAsset;
 				$countAssets++;
 			}
-			if ($countAssets >= self::$maxAssets) {
+			if ($countAssets >= $this->maxAssets) {
 				break;
 			}
 		}
@@ -59,7 +59,7 @@ class CreatorIndexerShareTextures extends CreatorIndexer
 		return $tmpCollection;
 	}
 
-	public static function fetchThumbnailImage(string $url): string
+	public function fetchThumbnailImage(string $url): string
 	{
 		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 25, 25, 0.015);
 	}

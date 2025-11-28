@@ -19,17 +19,17 @@ class CreatorIndexerThreeDScans extends CreatorIndexer
 
 	
 
-	protected static Creator $creator = Creator::THREE_D_SCANS;
-	private static string $indexingBaseUrl = "https://threedscans.com/page/";
+	protected Creator $creator = Creator::THREE_D_SCANS;
+	private string $indexingBaseUrl = "https://threedscans.com/page/";
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
 		$page = 1;
 
 		do {
-			$rawHtml = Fetch::fetchRemoteData(self::$indexingBaseUrl . $page);
+			$rawHtml = Fetch::fetchRemoteData($this->indexingBaseUrl . $page);
 			if ($rawHtml != "") {
 				$dom = Html::domObjectFromHtmlString($rawHtml);
 				$domQuery = new DomQuery($dom);
@@ -55,7 +55,7 @@ class CreatorIndexerThreeDScans extends CreatorIndexer
 							tags: array_merge(array_filter(preg_split('/[^A-Za-z0-9]/', $assetLinkElement->attr('title'))), ['statue', 'sculpture']),
 							type: Type::MODEL_3D,
 							license: License::CC0,
-							creator: self::$creator,
+							creator: $this->creator,
 							quirks: [],
 							status: AssetStatus::PENDING
 						);

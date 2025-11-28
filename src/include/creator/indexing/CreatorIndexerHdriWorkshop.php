@@ -14,14 +14,14 @@ use indexing\CreatorIndexer;
 
 class CreatorIndexerHdriWorkshop extends CreatorIndexer
 {
-	protected static Creator $creator = Creator::HDRIWORKSHOP;
+	protected Creator $creator = Creator::HDRIWORKSHOP;
 
-	private static string $apiUrl = "https://hdri-workshop.com/api";
+	private string $apiUrl = "https://hdri-workshop.com/api";
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
-		$apiOutput = Fetch::fetchRemoteJson(self::$apiUrl);
+		$apiOutput = Fetch::fetchRemoteJson($this->apiUrl);
 
 		$tmpCollection = new AssetCollection();
 		foreach ($apiOutput as $hdriWorkshopAsset) {

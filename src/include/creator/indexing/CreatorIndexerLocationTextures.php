@@ -17,11 +17,11 @@ use Rct567\DomQuery\DomQuery;
 class CreatorIndexerLocationTextures extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::LOCATION_TEXTURES;
-	private static string $indexingBaseUrl = "https://locationtextures.com/panoramas/free-panoramas/?page=";
-	private static int $maxAssetsPerRound = 5;
+	protected Creator $creator = Creator::LOCATION_TEXTURES;
+	private string $indexingBaseUrl = "https://locationtextures.com/panoramas/free-panoramas/?page=";
+	private int $maxAssetsPerRound = 5;
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
@@ -30,7 +30,7 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 		$processedAssets = 0;
 
 		do {
-			$rawHtml = Fetch::fetchRemoteData(self::$indexingBaseUrl . $page);
+			$rawHtml = Fetch::fetchRemoteData($this->indexingBaseUrl . $page);
 			if ($rawHtml != "") {
 				$dom = Html::domObjectFromHtmlString($rawHtml);
 				$domQuery = new DomQuery($dom);
@@ -73,7 +73,7 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 							),
 							type: Type::HDRI,
 							license: License::CUSTOM,
-							creator: self::$creator,
+							creator: $this->creator,
 							quirks: [],
 							status: AssetStatus::PENDING
 						);
@@ -81,7 +81,7 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 						$processedAssets += 1;
 					}
 
-					if ($processedAssets >= self::$maxAssetsPerRound) {
+					if ($processedAssets >= $this->maxAssetsPerRound) {
 						break;
 					}
 				}
@@ -90,7 +90,7 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 			}
 
 			$page += 1;
-		} while ($assetsFoundThisIteration > 0 && $processedAssets < self::$maxAssetsPerRound);
+		} while ($assetsFoundThisIteration > 0 && $processedAssets < $this->maxAssetsPerRound);
 		return $tmpCollection;
 	}
 }

@@ -15,10 +15,10 @@ use misc\Log;
 class CreatorIndexerAmbientCg extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::AMBIENTCG;
-	private static string $apiUrl = "https://ambientcg.com/api/v2/full_json";
+	protected Creator $creator = Creator::AMBIENTCG;
+	private string $apiUrl = "https://ambientcg.com/api/v2/full_json";
 
-	private static array $typeMapping = [
+	private array $typeMapping = [
 		"Material" => Type::PBR_MATERIAL,
 		"Decal" => Type::PBR_MATERIAL,
 		"Atlas" => Type::PBR_MATERIAL,
@@ -33,7 +33,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 		"HDRIElement" => Type::HDRI
 	];
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 		Log::stepIn(__FUNCTION__);
 		Log::write("Start looking for new assets");
@@ -47,7 +47,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 
 		$existingUrls = array_map(fn($u) => strtolower($u), $existingUrls);
 
-		$targetUrl = self::$apiUrl . "?" . http_build_query($initialParameters);
+		$targetUrl = $this->apiUrl . "?" . http_build_query($initialParameters);
 
 		// Prepare asset collection
 		$tmpCollection = new AssetCollection();
@@ -66,7 +66,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 						date: $acgAsset['releaseDate'],
 						name: $acgAsset['displayName'],
 						tags: $acgAsset['tags'],
-						type: Type::from(self::$typeMapping[$acgAsset['dataType']]),
+						type: Type::from($this->typeMapping[$acgAsset['dataType']]),
 						license: License::CC0,
 						creator: Creator::AMBIENTCG,
 						id: NULL,

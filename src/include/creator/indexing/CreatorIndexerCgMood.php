@@ -20,16 +20,16 @@ use Rct567\DomQuery\DomQuery;
 class CreatorIndexerCgMood extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::CGMOOD;
+	protected Creator $creator = Creator::CGMOOD;
 
-	private static string $indexingBaseUrl = "https://cgmood.com/free?page=";
-	private static int $maxPagesPerIteration = 3;
-	private static array $urlTypeRegex = [
+	private string $indexingBaseUrl = "https://cgmood.com/free?page=";
+	private int $maxPagesPerIteration = 3;
+	private array $urlTypeRegex = [
 		"#/3d-model/#" => Type::MODEL_3D,
 		"#/material/#" => Type::PBR_MATERIAL
 	];
 
-	public static function validateAsset(Asset $asset): bool
+	public function validateAsset(Asset $asset): bool
 	{
 		$rawHtml = Fetch::fetchRemoteData($asset->url);
 
@@ -46,12 +46,12 @@ class CreatorIndexerCgMood extends CreatorIndexer
 		}
 	}
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
 
-		$page = self::getFetchingState("page") ?? 1;
+		$page = $this->getFetchingState("page") ?? 1;
 		$pagesProcessed = 0;
 
 		do {
@@ -59,7 +59,7 @@ class CreatorIndexerCgMood extends CreatorIndexer
 			$rawHtml = "";
 			while (!$rawHtml) {
 				try {
-					$rawHtml = Fetch::fetchRemoteData(self::$indexingBaseUrl . $page);
+					$rawHtml = Fetch::fetchRemoteData($this->indexingBaseUrl . $page);
 				} catch (\Throwable $th) {
 					Log::write("Failed to load site. Attempt: $attempts", "WARN");
 					sleep($attempts * 2);
@@ -81,7 +81,7 @@ class CreatorIndexerCgMood extends CreatorIndexer
 
 				$type = NULL;
 
-				foreach (self::$urlTypeRegex as $regex => $currentType) {
+				foreach ($this->urlTypeRegex as $regex => $currentType) {
 					if (preg_match($regex, $assetImageElement->attr('data-product-url'))) {
 						$type = $currentType;
 					}
@@ -112,9 +112,9 @@ class CreatorIndexerCgMood extends CreatorIndexer
 			if ($assetsFoundThisIteration < 1) {
 				$page = 1;
 			}
-		} while ($pagesProcessed < self::$maxPagesPerIteration);
+		} while ($pagesProcessed < $this->maxPagesPerIteration);
 
-		self::saveFetchingState("page", $page);
+		$this->saveFetchingState("page", $page);
 
 		return $tmpCollection;
 	}

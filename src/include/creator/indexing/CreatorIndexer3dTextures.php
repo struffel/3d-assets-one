@@ -17,12 +17,12 @@ use Throwable;
 class CreatorIndexer3dTextures extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::THREE_D_TEXTURES;
+	protected Creator $creator = Creator::THREE_D_TEXTURES;
 
-	private static string $apiUrl = "https://3dtextures.me/wp-json/wp/v2/";
-	private static int $maxAssets = 500;
+	private string $apiUrl = "https://3dtextures.me/wp-json/wp/v2/";
+	private int $maxAssets = 500;
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
@@ -34,7 +34,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 
 		$continue = true;
 		do {
-			$wpLink = self::$apiUrl . "posts?_embed&per_page=100&page=$page&orderby=date";
+			$wpLink = $this->apiUrl . "posts?_embed&per_page=100&page=$page&orderby=date";
 			$wpOutput = Fetch::fetchRemoteJson($wpLink);
 
 			if ($wpOutput) {
@@ -107,7 +107,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 
 						$processedAssets++;
 					}
-					if ($processedAssets >= self::$maxAssets) {
+					if ($processedAssets >= $this->maxAssets) {
 						$continue = false;
 						break;
 					}
@@ -120,7 +120,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 
 		return $tmpCollection;
 	}
-	public static function fetchThumbnailImage(string $url): string
+	public function fetch(string $url): string
 	{
 		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 3, 3, 0.015);
 	}

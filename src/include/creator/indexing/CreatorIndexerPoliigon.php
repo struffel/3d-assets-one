@@ -20,35 +20,35 @@ use Rct567\DomQuery\DomQuery;
 class CreatorIndexerPoliigon extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::POLIIGON;
+	protected Creator $creator = Creator::POLIIGON;
 
-	private static string $baseUrl = "https://www.poliigon.com";
-	private static string $searchBaseUrl = "https://www.poliigon.com/search/free?page=";
-	private static array $urlTypeRegex = [
+	private string $baseUrl = "https://www.poliigon.com";
+	private string $searchBaseUrl = "https://www.poliigon.com/search/free?page=";
+	private array $urlTypeRegex = [
 		'/\/texture\//i' => Type::PBR_MATERIAL,
 		'/\/model\//i' => Type::MODEL_3D,
 		'/\/hdri\//i' => Type::HDRI,
 	];
 
-	private static function extractId($url)
+	private function extractId($url)
 	{
 		return end(explode('/', rtrim($url, '/')));
 	}
 
-	private static function isInExistingUrls($url, $existingUrls)
+	private function isInExistingUrls($url, $existingUrls)
 	{
 		// Extracting ID from the input link
 
-		$id = self::extractId($url);
+		$id = $this->extractId($url);
 		$existingIds = [];
 		foreach ($existingUrls as $eU) {
-			$existingIds[] = self::extractId($eU);
+			$existingIds[] = $this->extractId($eU);
 		}
 
 		return in_array($id, $existingIds);
 	}
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		$tmpCollection = new AssetCollection();
@@ -56,7 +56,7 @@ class CreatorIndexerPoliigon extends CreatorIndexer
 		$page = 1;
 
 		do {
-			$rawHtml = Fetch::fetchRemoteData(self::$searchBaseUrl . $page);
+			$rawHtml = Fetch::fetchRemoteData($this->searchBaseUrl . $page);
 			$dom = Html::domObjectFromHtmlString($rawHtml);
 			$domQuery = new DomQuery($dom);
 
@@ -65,14 +65,14 @@ class CreatorIndexerPoliigon extends CreatorIndexer
 			foreach ($assetBoxDomElements as $assetBox) {
 
 				$urlPath = $assetBox->attr('href');
-				$url = self::$baseUrl . $urlPath;
-				if (!self::isInExistingUrls($url, $existingUrls)) {
+				$url = $this->baseUrl . $urlPath;
+				if (!$this->isInExistingUrls($url, $existingUrls)) {
 
 					$name = $assetBox->find('img')->attr('alt');
 
 					$type = NULL;
 
-					foreach (self::$urlTypeRegex as $regex => $typeId) {
+					foreach ($this->urlTypeRegex as $regex => $typeId) {
 						if (preg_match($regex, $urlPath)) {
 							$type = Type::from($typeId);
 						}

@@ -19,19 +19,19 @@ use misc\Log;
 class CreatorIndexerLightbeans extends CreatorIndexer
 {
 
-	protected static Creator $creator = Creator::LIGHTBEANS;
+	protected Creator $creator = Creator::LIGHTBEANS;
 
-	private static string $sitemapUrl = "https://lightbeans.com/sitemap.xml";
-	private static string $sitemapUrlMustContain = "lightbeans.com/en/texture/";
-	private static int $maxPerIteration = 10;
-	private static array $bannedTags = [
+	private string $sitemapUrl = "https://lightbeans.com/sitemap.xml";
+	private string $sitemapUrlMustContain = "lightbeans.com/en/texture/";
+	private int $maxPerIteration = 10;
+	private array $bannedTags = [
 		"Lightbeans",
 		"|",
 		"-",
 		"from"
 	];
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
 		// Collect assets
@@ -39,7 +39,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 		$tmpCollection = new AssetCollection();
 
 		$rawSitemapXml = Fetch::fetchRemoteData(
-			url: self::$sitemapUrl
+			url: $this->sitemapUrl
 		);
 
 		if ($rawSitemapXml) {
@@ -48,10 +48,10 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 			$newUrls = [];
 
 			foreach ($sitemap->url as $url) {
-				if (!in_array($url->loc, $existingUrls) && str_contains($url->loc, self::$sitemapUrlMustContain)) {
+				if (!in_array($url->loc, $existingUrls) && str_contains($url->loc, $this->sitemapUrlMustContain)) {
 					$newUrls[] = (string) $url->loc;
 				}
-				if (sizeof($newUrls) >= self::$maxPerIteration) {
+				if (sizeof($newUrls) >= $this->maxPerIteration) {
 					break;
 				}
 			}
@@ -68,7 +68,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 				$title = str_replace("| Lightbeans", "", $title);
 
 				$tags = explode(' ', $title);
-				$tags = array_filter($tags, fn($tag) => !in_array($tag, self::$bannedTags));
+				$tags = array_filter($tags, fn($tag) => !in_array($tag, $this->bannedTags));
 				Log::write("Resolved tags: " . implode(',', $tags));
 
 				// Type
@@ -87,7 +87,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 					tags: $tags,
 					type: $type,
 					license: License::CUSTOM,
-					creator: self::$creator,
+					creator: $this->creator,
 					quirks: [
 						Quirk::SIGNUP_REQUIRED
 					],
@@ -99,7 +99,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 		return $tmpCollection;
 	}
 
-	public static function fetchThumbnailImage(string $url): string
+	public function fetchThumbnailImage(string $url): string
 	{
 
 		// Load the image

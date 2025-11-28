@@ -19,14 +19,14 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 {
 
 
-	protected static Creator $creator = Creator::CGBOOKCASE;
-	private static string $baseUrl = "https://www.cgbookcase.com/textures/";
-	private static int $maxAssets = 5;
+	protected Creator $creator = Creator::CGBOOKCASE;
+	private string $baseUrl = "https://www.cgbookcase.com/textures/";
+	private int $maxAssets = 5;
 
-	public static function findNewAssets(array $existingUrls): AssetCollection
+	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
-		$rawHtml = Fetch::fetchRemoteData(self::$baseUrl);
+		$rawHtml = Fetch::fetchRemoteData($this->baseUrl);
 
 		$dom = Html::domObjectFromHtmlString($rawHtml);
 		$domQuery = new DomQuery($dom);
@@ -63,7 +63,7 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 				$tmpCollection->assets[] = $tmpAsset;
 
 				$countAssets++;
-				if ($countAssets >= self::$maxAssets) {
+				if ($countAssets >= $this->maxAssets) {
 					break;
 				}
 			}
@@ -74,7 +74,7 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 		return $tmpCollection;
 	}
 
-	public static function fetchThumbnailImage(string $url): string
+	public function fetchThumbnailImage(string $url): string
 	{
 		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 2, 2, 0.015);
 	}
