@@ -1,6 +1,6 @@
 <?php
 
-namespace creator;
+namespace asset;
 
 enum Quirk: int
 {
@@ -31,12 +31,13 @@ enum Quirk: int
 		};
 	}
 
-	public static function fromSlug(string $slug): QUIRK
+	public static function fromSlug(string $slug): ?self
 	{
-		foreach (QUIRK::cases() as $c) {
+		foreach (Quirk::cases() as $c) {
 			if ($c->slug() === $slug) {
 				return $c;
 			}
 		}
+		return null;
 	}
 }

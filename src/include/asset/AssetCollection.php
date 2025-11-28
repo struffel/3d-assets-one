@@ -1,5 +1,7 @@
 <?php
 
+namespace asset;
+
 /**
  * A collection of `Asset`s.
  * It is used for pagination.

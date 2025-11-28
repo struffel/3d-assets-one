@@ -2,6 +2,8 @@
 
 namespace asset;
 
+use creator\Creator;
+use asset\Quirk;
 
 class AssetQuery
 {
@@ -9,7 +11,7 @@ class AssetQuery
 		// Basics
 		public ?int $offset = NULL,						// ?offset
 		public ?int $limit = NULL,								// ?limit
-		public ?SORTING $sort = SORTING::LATEST,		// ?sort
+		public ?Sorting $sort = Sorting::LATEST,		// ?sort
 
 		// Filters
 		public ?array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
@@ -71,35 +73,35 @@ class AssetQuery
 		// creator filter
 		$filterCreator = [];
 		foreach ($_GET['creator'] ?? [] as $creatorSlug) {
-			$filterCreator[] = CREATOR::fromSlug($creatorSlug);
+			$filterCreator[] = Creator::fromSlug($creatorSlug);
 		}
 		$filterCreator = array_filter($filterCreator);
 
 		// type filter
 		$filterType = [];
 		foreach ($_GET['type'] ?? [] as $typeSlug) {
-			$filterType[] = TYPE::fromSlug($typeSlug);
+			$filterType[] = Type::fromSlug($typeSlug);
 		}
 		$filterType = array_filter($filterType);
 
 		// license filter
 		$filterLicense = [];
 		foreach ($_GET['license'] ?? [] as $licenseSlug) {
-			$filterLicense[] = LICENSE::fromSlug($licenseSlug);
+			$filterLicense[] = License::fromSlug($licenseSlug);
 		}
 		$filterLicense = array_filter($filterLicense);
 
 		// quirk filter
 		$filterAvoidQuirk = [];
 		foreach ($_GET['avoid'] ?? [] as $quirkSlug) {
-			$filterAvoidQuirk[] = QUIRK::fromSlug($quirkSlug);
+			$filterAvoidQuirk[] = Quirk::fromSlug($quirkSlug);
 		}
 		$filterAvoidQuirk = array_filter($filterAvoidQuirk);
 
 		return new AssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
 			limit: min(intval($_GET['limit'] ?? 150), 500),
-			sort: SORTING::fromAnyString($_GET['sort'] ?? "latest"),
+			sort: Sorting::fromAnyString($_GET['sort'] ?? "latest"),
 			filterAssetId: $filterAssetId,
 			filterTag: array_map('trim', array_filter(preg_split('/\s|,/', $_GET['q'] ?? ""))),
 			filterCreator: $filterCreator,

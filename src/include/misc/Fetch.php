@@ -1,5 +1,7 @@
 <?php
 
+use misc\Log;
+
 class Fetch
 {
 
@@ -79,7 +81,7 @@ class Fetch
 		if ($jsonContentTypeHeader) {
 			$headers['Content-Type'] = "application/json";
 		}
-		$result = json_decode(FetchLogic::fetchRemoteData(url: $url, headers: $headers, method: $method, body: $body), true);
+		$result = json_decode(self::fetchRemoteData(url: $url, headers: $headers, method: $method, body: $body), true);
 		Log::write("Received and parsed JSON.");
 		Log::stepOut(__FUNCTION__);
 		return $result;
@@ -88,7 +90,7 @@ class Fetch
 	public static function fetchRemoteCommaSeparatedList(string $url, array $headers = [], string $method = 'GET', $body = NULL): array
 	{
 		Log::stepIn(__FUNCTION__);
-		$content = FetchLogic::fetchRemoteData($url, $headers, $method, body: $body);
+		$content = self::fetchRemoteData($url, $headers, $method, body: $body);
 		$content = str_replace("\n", "", $content);
 
 		$contentArray = explode(",", $content);

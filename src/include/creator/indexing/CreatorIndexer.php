@@ -1,11 +1,11 @@
 <?php
 
-namespace indexing;
+namespace creator\indexing;
 
 use asset\Asset;
+use asset\AssetCollection;
 use asset\AssetLogic;
 use asset\AssetQuery;
-use AssetCollection;
 use creator\Creator;
 use Fetch;
 use misc\Database;

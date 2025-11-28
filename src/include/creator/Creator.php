@@ -2,7 +2,7 @@
 
 namespace creator;
 
-use indexing\CreatorIndexer;
+use creator\indexing\CreatorIndexer;
 
 enum Creator: int
 {

@@ -53,7 +53,7 @@ class Image
 	{
 		Log::stepIn(__FUNCTION__);
 		Log::write("Building variation: $size/$extension/$backgroundColor ");
-		$originalImageData = ImageLogic::parseImageIntoPng($originalImageData);
+		$originalImageData = self::parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing
 		$tmpImage = new Imagick();

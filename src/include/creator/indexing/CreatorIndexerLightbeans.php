@@ -6,11 +6,11 @@ use asset\Asset;
 use asset\AssetStatus;
 use asset\License;
 use asset\Type;
-use AssetCollection;
+use asset\AssetCollection;
 use creator\Creator;
-use creator\Quirk;
+use asset\Quirk;
 use Fetch;
-use indexing\CreatorIndexer;
+use creator\indexing\CreatorIndexer;
 use misc\Html;
 use misc\Log;
 

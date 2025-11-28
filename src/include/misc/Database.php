@@ -2,6 +2,9 @@
 
 namespace misc;
 
+use mysqli;
+use mysqli_result;
+
 class Database
 {
 
@@ -14,18 +17,18 @@ class Database
 
 
 		// Create connection
-		if (!isset(DatabaseLogic::$connection)) {
-			DatabaseLogic::$connection = new mysqli(getenv("3D1_DB_SERVER"), getenv("3D1_DB_USERNAME"), getenv("3D1_DB_PASSWORD"));
+		if (!isset(self::$connection)) {
+			self::$connection = new mysqli(getenv("3D1_DB_SERVER"), getenv("3D1_DB_USERNAME"), getenv("3D1_DB_PASSWORD"));
 			Log::write("Initialized DB connection to: " . getenv("3D1_DB_SERVER"));
 		}
 
 		// Check connection
-		if (DatabaseLogic::$connection->connect_error) {
-			Log::write("Connection failed: " . DatabaseLogic::$connection->connect_error, "SQL-ERROR");
+		if (self::$connection->connect_error) {
+			Log::write("Connection failed: " . self::$connection->connect_error, "SQL-ERROR");
 		}
 
 		$query = "use " . getenv("3D1_DB_NAME") . ";";
-		DatabaseLogic::$connection->query($query);
+		self::$connection->query($query);
 		Log::write("Selected DB: " . getenv("3D1_DB_NAME"));
 		Log::stepOut(__FUNCTION__);
 	}
@@ -41,13 +44,13 @@ class Database
 
 	public static function startTransaction()
 	{
-		if (!isset(DatabaseLogic::$connection)) {
-			DatabaseLogic::initializeConnection();
+		if (!isset(self::$connection)) {
+			self::initializeConnection();
 		}
 		Log::write("Start transaction...");
-		DatabaseLogic::$connection->query("START TRANSACTION;");
-		if (DatabaseLogic::$connection->error) {
-			Log::write("SQL execution ERROR: " . DatabaseLogic::$connection->error, "SQL-ERROR");
+		self::$connection->query("START TRANSACTION;");
+		if (self::$connection->error) {
+			Log::write("SQL execution ERROR: " . self::$connection->error, "SQL-ERROR");
 		} else {
 			Log::write("SQL OK");
 		}
@@ -55,13 +58,13 @@ class Database
 
 	public static function commitTransaction()
 	{
-		if (!isset(DatabaseLogic::$connection)) {
-			DatabaseLogic::initializeConnection();
+		if (!isset(self::$connection)) {
+			self::initializeConnection();
 		}
 		Log::write("Commit transaction...");
-		DatabaseLogic::$connection->query("COMMIT;");
-		if (DatabaseLogic::$connection->error) {
-			Log::write("SQL execution ERROR: " . DatabaseLogic::$connection->error, "SQL-ERROR");
+		self::$connection->query("COMMIT;");
+		if (self::$connection->error) {
+			Log::write("SQL execution ERROR: " . self::$connection->error, "SQL-ERROR");
 		} else {
 			Log::write("SQL OK");
 		}
@@ -72,8 +75,8 @@ class Database
 		Log::stepIn(__FUNCTION__);
 		Log::write("Received SQL query to run: " . $sql . " (" . print_r($parameters, true) . ")");
 
-		if (!isset(DatabaseLogic::$connection)) {
-			DatabaseLogic::initializeConnection();
+		if (!isset(self::$connection)) {
+			self::initializeConnection();
 		}
 
 		if (sizeof($parameters) > 0) {
@@ -91,16 +94,16 @@ class Database
 			}
 
 
-			$result = DatabaseLogic::$connection->execute_query($sql, $parameters);
-			if (DatabaseLogic::$connection->error) {
-				Log::write("SQL execution ERROR: " . DatabaseLogic::$connection->error, "SQL-ERROR");
+			$result = self::$connection->execute_query($sql, $parameters);
+			if (self::$connection->error) {
+				Log::write("SQL execution ERROR: " . self::$connection->error, "SQL-ERROR");
 			} else {
 				Log::write("SQL OK");
 			}
 		} else {
-			$result = DatabaseLogic::$connection->query($sql);
-			if (DatabaseLogic::$connection->error) {
-				Log::write("Query ERROR: " . DatabaseLogic::$connection->error, "SQL-ERROR");
+			$result = self::$connection->query($sql);
+			if (self::$connection->error) {
+				Log::write("Query ERROR: " . self::$connection->error, "SQL-ERROR");
 			} else {
 				Log::write("Query OK");
 			}

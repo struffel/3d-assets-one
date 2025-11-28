@@ -5,7 +5,7 @@ header("content-type: application/json");
 
 $licenses = [];
 
-foreach (LICENSE::cases() as $l) {
+foreach (License::cases() as $l) {
 	$licenses []= [
 		"id" => $l->value,
 		"slug" => $l->slug(),

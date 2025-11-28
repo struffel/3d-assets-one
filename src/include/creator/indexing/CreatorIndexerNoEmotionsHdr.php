@@ -6,9 +6,9 @@ namespace creator\indexing;
 use asset\Asset;
 use asset\License;
 use asset\Type;
-use AssetCollection;
+use asset\AssetCollection;
 use creator\Creator;
-use indexing\CreatorIndexer;
+use creator\indexing\CreatorIndexer;
 
 class CreatorIndexerNoEmotionsHdr extends CreatorIndexer
 {

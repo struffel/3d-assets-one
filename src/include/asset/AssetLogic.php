@@ -3,8 +3,10 @@
 namespace asset;
 
 use creator\Creator;
-use indexing\CreatorIndexer;
+use asset\Quirk;
+use DateTime;
 use misc\Database;
+use misc\Log;
 
 class AssetLogic
 {
@@ -47,13 +49,13 @@ class AssetLogic
 		$creator = Creator::from($row['creatorId']);
 		$creatorFetcher = $creator->getIndexer();
 
-		return $creatorFetcherprocessUrl($row['assetUrl']);
+		return $creatorFetcher->processUrl($row['assetUrl']);
 	}
 
 	public static function addAssetClickById(int $assetId)
 	{
 		$sql = "INSERT INTO Asset(AssetId,assetClicks) VALUES (?,1) ON DUPLICATE KEY UPDATE assetClicks = assetClicks+1;";
-		DatabaseLogic::runQuery($sql, [intval($assetId)]);
+		Database::runQuery($sql, [intval($assetId)]);
 	}
 
 	public static function saveAssetToDatabase(Asset $asset)
@@ -67,23 +69,23 @@ class AssetLogic
 			// Base Asset
 			$sql = "UPDATE Asset SET assetName=?,assetActive=?,assetUrl=?,assetThumbnailUrl=?,assetDate=?,licenseId=?,typeId=?,creatorId=?,lastSuccessfulValidation=? WHERE assetId = ?";
 			$parameters = [$asset->name, $asset->status->value, $asset->url, $asset->thumbnailUrl, $asset->date, $asset->license->value, $asset->type->value, $asset->creator->value, $asset->lastSuccessfulValidation, $asset->id];
-			DatabaseLogic::runQuery($sql, $parameters);
+			Database::runQuery($sql, $parameters);
 
 			// Tags
-			DatabaseLogic::runQuery("DELETE FROM Tag WHERE assetId = ?", [$asset->id]);
+			Database::runQuery("DELETE FROM Tag WHERE assetId = ?", [$asset->id]);
 			foreach ($asset->tags as $tag) {
 				$sql = "INSERT INTO Tag (assetId,tagName) VALUES (?,?);";
 				$parameters = [$asset->id, $tag];
-				DatabaseLogic::runQuery($sql, $parameters);
+				Database::runQuery($sql, $parameters);
 			}
 
 			// Quirks
 
-			DatabaseLogic::runQuery("DELETE FROM Quirk WHERE assetId = ?", [$asset->id]);
+			Database::runQuery("DELETE FROM Quirk WHERE assetId = ?", [$asset->id]);
 			foreach ($asset->quirks as $quirk) {
 				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES (?,?);";
 				$parameters = [$asset->id, $quirk->value];
-				DatabaseLogic::runQuery($sql, $parameters);
+				Database::runQuery($sql, $parameters);
 			}
 		} else {
 			Log::write("Inserting new asset with url:" . $asset->url);
@@ -91,20 +93,20 @@ class AssetLogic
 			// Base Asset
 			$sql = "INSERT INTO Asset (assetId, assetActive,assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			$parameters = [$asset->status->value, $asset->name, $asset->url, $asset->thumbnailUrl, $asset->date, 0, $asset->license->value, $asset->type->value, $asset->creator->value];
-			DatabaseLogic::runQuery($sql, $parameters);
+			Database::runQuery($sql, $parameters);
 
 			// Tags
 			foreach ($asset->tags as $tag) {
 				$sql = "INSERT INTO Tag (assetId,tagName) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
 				$parameters = [$asset->url, $tag];
-				DatabaseLogic::runQuery($sql, $parameters);
+				Database::runQuery($sql, $parameters);
 			}
 
 			// Quirks
 			foreach ($asset->quirks as $quirk) {
 				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
 				$parameters = [$asset->url, $quirk->value];
-				DatabaseLogic::runQuery($sql, $parameters);
+				Database::runQuery($sql, $parameters);
 			}
 		}
 
@@ -143,25 +145,25 @@ class AssetLogic
 
 
 		if (sizeof($query->filterAssetId) > 0) {
-			$ph = DatabaseLogic::generatePlaceholder($query->filterAssetId);
+			$ph = Database::generatePlaceholder($query->filterAssetId);
 			$sqlCommand .= " AND assetId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $query->filterAssetId);
 		}
 
 		if (sizeof($query->filterType) > 0) {
-			$ph = DatabaseLogic::generatePlaceholder($query->filterType);
+			$ph = Database::generatePlaceholder($query->filterType);
 			$sqlCommand .= " AND typeId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $query->filterType);
 		}
 
 		if (sizeof($query->filterLicense) > 0) {
-			$ph = DatabaseLogic::generatePlaceholder($query->filterLicense);
+			$ph = Database::generatePlaceholder($query->filterLicense);
 			$sqlCommand .= " AND licenseId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $query->filterLicense);
 		}
 
 		if (sizeof($query->filterCreator) > 0) {
-			$ph = DatabaseLogic::generatePlaceholder($query->filterCreator);
+			$ph = Database::generatePlaceholder($query->filterCreator);
 			$sqlCommand .= " AND creatorId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $query->filterCreator);
 		}
@@ -175,18 +177,18 @@ class AssetLogic
 		$sqlCommand .= match ($query->sort) {
 
 			// Options for public display
-			SORTING::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
-			SORTING::OLDEST => " ORDER BY assetDate ASC, assetId ASC ",
-			SORTING::RANDOM => " ORDER BY RAND() ",
-			SORTING::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC ",
+			Sorting::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
+			Sorting::OLDEST => " ORDER BY assetDate ASC, assetId ASC ",
+			Sorting::RANDOM => " ORDER BY RAND() ",
+			Sorting::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC ",
 
 			// Options for internal editor (potentially less optimized)
-			SORTING::LEAST_CLICKED => " ORDER BY assetClicks ASC ",
-			SORTING::MOST_CLICKED => " ORDER BY assetClicks DESC ",
-			SORTING::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) ASC ",
-			SORTING::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) DESC ",
-			SORTING::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RAND() ",
-			SORTING::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RAND() "
+			Sorting::LEAST_CLICKED => " ORDER BY assetClicks ASC ",
+			Sorting::MOST_CLICKED => " ORDER BY assetClicks DESC ",
+			Sorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) ASC ",
+			Sorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) DESC ",
+			Sorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RAND() ",
+			Sorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RAND() "
 		};
 
 		// Offset and Limit
@@ -202,8 +204,8 @@ class AssetLogic
 
 
 		// Fetch data from DB
-		$databaseOutput = DatabaseLogic::runQuery($sqlCommand, $sqlValues);
-		$databaseOutputFoundRows = DatabaseLogic::runQuery("SELECT FOUND_ROWS() as RowCount;");
+		$databaseOutput = Database::runQuery($sqlCommand, $sqlValues);
+		$databaseOutputFoundRows = Database::runQuery("SELECT FOUND_ROWS() as RowCount;");
 
 		// Prepare the final asset collection
 		$output = new AssetCollection(
@@ -223,7 +225,7 @@ class AssetLogic
 
 			$quirks = [];
 			foreach (array_filter(explode(",", $row['quirkIds'] ?? "")) as $q) {
-				$quirks[] = QUIRK::from(intval($q));
+				$quirks[] = Quirk::from(intval($q));
 			}
 
 			$tags = array_filter(explode(',', $row['assetTags'] ?? ""));
@@ -236,9 +238,9 @@ class AssetLogic
 				url: $row['assetUrl'],
 				date: $row['assetDate'],
 				tags: $tags,
-				type: TYPE::from($row['typeId']),
-				license: LICENSE::from($row['licenseId']),
-				creator: CREATOR::from($row['creatorId']),
+				type: Type::from($row['typeId']),
+				license: License::from($row['licenseId']),
+				creator: Creator::from($row['creatorId']),
 				quirks: $quirks,
 				lastSuccessfulValidation: new DateTime($row['lastSuccessfulValidation'])
 			);

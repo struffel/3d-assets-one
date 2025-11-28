@@ -7,10 +7,10 @@ use asset\Asset;
 use asset\AssetStatus;
 use asset\License;
 use asset\Type;
-use AssetCollection;
+use asset\AssetCollection;
 use creator\Creator;
 use Fetch;
-use indexing\CreatorIndexer;
+use creator\indexing\CreatorIndexer;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;
 

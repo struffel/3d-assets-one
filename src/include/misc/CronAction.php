@@ -1,6 +1,6 @@
 <?php
 
-namespace asset;
+namespace misc;
 
 enum CronAction: string
 {

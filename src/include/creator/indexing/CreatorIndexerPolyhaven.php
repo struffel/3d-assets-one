@@ -5,11 +5,11 @@ namespace creator\indexing;
 use asset\Asset;
 use asset\License;
 use asset\Type;
-use AssetCollection;
+use asset\AssetCollection;
 use creator\Creator;
-use creator\Quirk;
+use asset\Quirk;
 use Fetch;
-use indexing\CreatorIndexer;
+use creator\indexing\CreatorIndexer;
 use misc\Log;
 
 class CreatorIndexerPolyhaven extends CreatorIndexer
@@ -47,7 +47,7 @@ class CreatorIndexerPolyhaven extends CreatorIndexer
 					name: $phAsset['name'],
 					tags: $phAsset['tags'],
 					thumbnailUrl: $this->thumbnailUrlPrefix . $key . $this->thumbnailUrlSuffix,
-					type: TYPE::from($this->typeMapping[$phAsset['type']]),
+					type: Type::from($this->typeMapping[$phAsset['type']]),
 					license: License::CC0,
 					creator: Creator::POLYHAVEN,
 					quirks: [Quirk::ADS]

@@ -17,14 +17,14 @@ enum Sorting: string
 
 	/**
 	 * Returns the enum value for the string. 
-	 * Every other/invalid string gets turned into SORTING::LATEST.
+	 * Every other/invalid string gets turned into Sorting::LATEST.
 	 */
-	public static function fromAnyString(string $string): SORTING
+	public static function fromAnyString(string $string): Sorting
 	{
-		if (in_array($string, array_column(SORTING::cases(), 'value'))) {
-			return SORTING::from($string);
+		if (in_array($string, array_column(Sorting::cases(), 'value'))) {
+			return Sorting::from($string);
 		} else {
-			return SORTING::LATEST;
+			return Sorting::LATEST;
 		}
 	}
 }

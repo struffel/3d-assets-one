@@ -37,13 +37,13 @@ $assets = AssetLogic::getAssets($query);
 		</select>
 
 		<select  name="type">
-			<?php foreach(TYPE::cases() as $c){ ?>
+			<?php foreach(Type::cases() as $c){ ?>
 				<option <?= $a->type == $c ? 'selected' : '' ?> class="form-option" value="<?=$c->value?>"><?=$c->name?></option>
 			<?php } ?>
 		</select>
 	
 		<select  name="license">
-			<?php foreach(LICENSE::cases() as $c){ ?>
+			<?php foreach(License::cases() as $c){ ?>
 				<option <?= $a->license == $c ? 'selected' : '' ?> class="form-option" value="<?=$c->value?>"><?=$c->name?></option>
 			<?php } ?>
 		</select>

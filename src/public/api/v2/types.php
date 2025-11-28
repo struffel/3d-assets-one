@@ -5,7 +5,7 @@ header("content-type: application/json");
 
 $types = [];
 
-foreach (TYPE::cases() as $t) {
+foreach (Type::cases() as $t) {
 	$types []= [
 		"id" => $t->value,
 		"slug" => $t->slug(),

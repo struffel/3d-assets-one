@@ -2,12 +2,15 @@
 
 namespace misc;
 
+use DOMDocument;
+use DOMXPath;
+
 class Html
 {
 	public static function readMetatagsFromHtmlString(string $htmlString): array
 	{
 		$output = [];
-		$document = HtmlLogic::domObjectFromHtmlString($htmlString);
+		$document = self::domObjectFromHtmlString($htmlString);
 
 		$metaTags = $document->getElementsByTagName('meta');
 		foreach ($metaTags as $tag) {
@@ -30,7 +33,7 @@ class Html
 	public static function getElementsByClassName($dom, $className, $startAtNode = NULL,)
 	{
 		// https://stackoverflow.com/a/6366390
-		$finder = new DomXPath($dom);
+		$finder = new DOMXPath($dom);
 		$nodes = $finder->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' $className ')]", $startAtNode);
 		return $nodes;
 	}

@@ -13,32 +13,33 @@ enum Type: int
 	public function slug(): string
 	{
 		return match ($this) {
-			TYPE::OTHER => 'other',
-			TYPE::PBR_MATERIAL => 'pbr-material',
-			TYPE::MODEL_3D => '3d-model',
-			TYPE::SUBSTANCE_MATERIAL => 'sbsar',
-			TYPE::HDRI => 'hdri',
+			Type::OTHER => 'other',
+			Type::PBR_MATERIAL => 'pbr-material',
+			Type::MODEL_3D => '3d-model',
+			Type::SUBSTANCE_MATERIAL => 'sbsar',
+			Type::HDRI => 'hdri',
 		};
 	}
 
 	public function name(): string
 	{
 		return match ($this) {
-			TYPE::OTHER => 'Other',
-			TYPE::PBR_MATERIAL => 'PBR material',
-			TYPE::MODEL_3D => '3D model',
-			TYPE::SUBSTANCE_MATERIAL => 'Substance material',
-			TYPE::HDRI => 'HDRI',
+			Type::OTHER => 'Other',
+			Type::PBR_MATERIAL => 'PBR material',
+			Type::MODEL_3D => '3D model',
+			Type::SUBSTANCE_MATERIAL => 'Substance material',
+			Type::HDRI => 'HDRI',
 		};
 	}
 
 	public static function fromSlug(string $slug): Type
 	{
-		foreach (TYPE::cases() as $c) {
+		foreach (Type::cases() as $c) {
 			if ($c->slug() === $slug) {
 				return $c;
 			}
 		}
+		return Type::OTHER;
 	}
 
 	public static function fromTex1Tag(string $tex1Tag): Type

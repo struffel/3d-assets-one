@@ -4,7 +4,7 @@ use asset\License;
 use asset\Sorting;
 use asset\Type;
 use creator\Creator;
-use creator\Quirk;
+use asset\Quirk;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 ?>
