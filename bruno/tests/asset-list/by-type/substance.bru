@@ -1,0 +1,20 @@
+meta {
+  name: substance
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://dev.3dassets.one/render/asset-list.php?type[]=sbsar
+  body: none
+  auth: inherit
+}
+
+params:query {
+  type[]: sbsar
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

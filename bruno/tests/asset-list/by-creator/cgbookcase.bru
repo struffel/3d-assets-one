@@ -1,0 +1,20 @@
+meta {
+  name: cgbookcase
+  type: http
+  seq: 6
+}
+
+get {
+  url: https://dev.3dassets.one/render/asset-list.php?creator[]=cgbookcase
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creator[]: cgbookcase
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: hdri-workshop
+  type: http
+  seq: 11
+}
+
+get {
+  url: https://dev.3dassets.one/render/asset-list.php?creator[]=hdri-workshop
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creator[]: hdri-workshop
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
