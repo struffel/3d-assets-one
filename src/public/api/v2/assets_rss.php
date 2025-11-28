@@ -1,6 +1,5 @@
 <?php
 
-use asset\AssetLogic;
 use asset\AssetQuery;
 use asset\Sorting;
 

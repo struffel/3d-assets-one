@@ -1,7 +1,7 @@
 <?php
 
-use asset\AssetLogic;
 use asset\AssetQuery;
+use misc\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
@@ -22,4 +22,4 @@ if ($url) {
 	http_response_code(404);
 	die("3Dassets.one\nURL could not be resolved.");
 }
-AssetLogic::addAssetClickById($assetId);
+Database::addAssetClickById($assetId);

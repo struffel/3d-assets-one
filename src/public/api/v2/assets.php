@@ -1,6 +1,5 @@
 <?php
 
-use asset\AssetLogic;
 use asset\AssetQuery;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';

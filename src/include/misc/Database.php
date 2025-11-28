@@ -2,6 +2,7 @@
 
 namespace misc;
 
+use asset\Asset;
 use mysqli;
 use mysqli_result;
 
@@ -111,5 +112,67 @@ class Database
 
 		Log::stepOut(__FUNCTION__);
 		return $result;
+	}
+
+	public static function saveAssetToDatabase(Asset $asset)
+	{
+
+		Log::stepIn(__FUNCTION__);
+
+		if ($asset->id) {
+			Log::write("Updating Asset with id: " . $asset->id);
+
+			// Base Asset
+			$sql = "UPDATE Asset SET assetName=?,assetActive=?,assetUrl=?,assetThumbnailUrl=?,assetDate=?,licenseId=?,typeId=?,creatorId=?,lastSuccessfulValidation=? WHERE assetId = ?";
+			$parameters = [$asset->name, $asset->status->value, $asset->url, $asset->thumbnailUrl, $asset->date, $asset->license->value, $asset->type->value, $asset->creator->value, $asset->lastSuccessfulValidation, $asset->id];
+			Database::runQuery($sql, $parameters);
+
+			// Tags
+			Database::runQuery("DELETE FROM Tag WHERE assetId = ?", [$asset->id]);
+			foreach ($asset->tags as $tag) {
+				$sql = "INSERT INTO Tag (assetId,tagName) VALUES (?,?);";
+				$parameters = [$asset->id, $tag];
+				Database::runQuery($sql, $parameters);
+			}
+
+			// Quirks
+
+			Database::runQuery("DELETE FROM Quirk WHERE assetId = ?", [$asset->id]);
+			foreach ($asset->quirks as $quirk) {
+				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES (?,?);";
+				$parameters = [$asset->id, $quirk->value];
+				Database::runQuery($sql, $parameters);
+			}
+		} else {
+			Log::write("Inserting new asset with url:" . $asset->url);
+
+			// Base Asset
+			$sql = "INSERT INTO Asset (assetId, assetActive,assetName, assetUrl, assetThumbnailUrl, assetDate, assetClicks, licenseId, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$parameters = [$asset->status->value, $asset->name, $asset->url, $asset->thumbnailUrl, $asset->date, 0, $asset->license->value, $asset->type->value, $asset->creator->value];
+			Database::runQuery($sql, $parameters);
+
+			// Tags
+			foreach ($asset->tags as $tag) {
+				$sql = "INSERT INTO Tag (assetId,tagName) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
+				$parameters = [$asset->url, $tag];
+				Database::runQuery($sql, $parameters);
+			}
+
+			// Quirks
+			foreach ($asset->quirks as $quirk) {
+				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
+				$parameters = [$asset->url, $quirk->value];
+				Database::runQuery($sql, $parameters);
+			}
+		}
+
+		Log::stepOut(__FUNCTION__);
+		return $asset;
+	}
+
+	public static function addAssetClickById(int $assetId)
+	{
+		$sql = "INSERT INTO Asset(AssetId,assetClicks) VALUES (?,1) ON DUPLICATE KEY UPDATE assetClicks = assetClicks+1;";
+		Database::runQuery($sql, [intval($assetId)]);
 	}
 }

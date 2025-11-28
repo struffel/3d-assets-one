@@ -1,8 +1,5 @@
 <?php
 
-
-
-use asset\AssetLogic;
 use asset\AssetQuery;
 use asset\AssetStatus;
 use misc\CronAction;
@@ -55,7 +52,7 @@ try {
 
 			Image::buildAndUploadThumbnailsToBackblazeB2($a, $imageData);
 			$a->status = AssetStatus::ACTIVE;
-			AssetLogic::saveAssetToDatabase($a);
+			Database::saveAssetToDatabase($a);
 
 			Database::commitTransaction();
 		}
@@ -86,7 +83,7 @@ try {
 			foreach ($result->assets as $a) {
 				Database::startTransaction();
 				$a->status = AssetStatus::PENDING;	// Failsave in case the creator fetching function does not set it properly.
-				AssetLogic::saveAssetToDatabase($a);
+				Database::saveAssetToDatabase($a);
 				Database::commitTransaction();
 			}
 			Log::write("Wrote " . sizeof($result->assets) . " new assets.");
@@ -159,7 +156,7 @@ try {
 					Log::write("Validation Failed (Permanently)", "WARN");
 				}
 			}
-			AssetLogic::saveAssetToDatabase($asset);
+			Database::saveAssetToDatabase($asset);
 
 			Database::commitTransaction();
 		}

@@ -4,6 +4,33 @@ namespace misc;
 
 class Strings
 {
+	public static function filterTagArray(array $inputArray)
+	{
+		// Initialize an empty result array
+		$resultArray = array();
+
+		// Loop through each element in the input array
+		foreach ($inputArray as $element) {
+			// Trim the element and convert it to lowercase
+			$filteredElement = strtolower(trim($element));
+
+			// Split the element into multiple elements by space
+			$splitElements = preg_split('/\s+/', $filteredElement);
+
+			// Loop through the split elements and remove non-alphanumeric characters
+			foreach ($splitElements as $splitElement) {
+				// Remove non-alphanumeric characters using a regular expression
+				$filteredSplitElement = preg_replace('/[^a-z0-9]/', '', $splitElement);
+
+				// Check if the filtered element is not empty and add it to the result array
+				if (!empty($filteredSplitElement)) {
+					$resultArray[] = $filteredSplitElement;
+				}
+			}
+		}
+
+		return array_unique($resultArray);
+	}
 	public static function onlySmallLetters(string $input)
 	{
 		$output = strtolower($input);

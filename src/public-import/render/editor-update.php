@@ -1,6 +1,5 @@
 <?php
 
-use asset\AssetLogic;
 use asset\AssetQuery;
 use asset\AssetStatus;
 use asset\License;
@@ -71,7 +70,7 @@ if ($_POST['id'] ?? false) {
 		$a->quirks = $quirks;
 	}
 
-	AssetLogic::saveAssetToDatabase($a);
+	Database::saveAssetToDatabase($a);
 	Database::commitTransaction();
 	echo "<div remove-me='1s'>OK</div>";
 } else {
