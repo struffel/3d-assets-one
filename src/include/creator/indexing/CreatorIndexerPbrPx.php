@@ -10,6 +10,7 @@ use asset\AssetCollection;
 use creator\Creator;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
+use misc\Log;
 use Throwable;
 
 // PBR PX
@@ -56,7 +57,12 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 		do {
 			$assetsFoundThisIteration = 0;
 			$assetListBody = ['page_number' => $page];
-			$assetListRaw = Fetch::fetchRemoteJson(url: $this->indexingBaseUrl, method: 'POST', body: json_encode($assetListBody), jsonContentTypeHeader: true);
+			$assetListRaw = Fetch::fetchRemoteJson(
+				url: $this->indexingBaseUrl,
+				method: 'POST',
+				body: json_encode($assetListBody),
+				jsonContentTypeHeader: true
+			);
 
 			$assetList = $assetListRaw['data']['data'];
 
@@ -69,14 +75,20 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 				if (!in_array($assetUrl, $existingUrls)) {
 					// Fetch asset details
 					$assetDetailsBody = ['asset' => $pbrPxAsset['id']];
-					$pbrPxAssetDetailsRaw = Fetch::fetchRemoteJson(url: $this->assetBaseUrl, method: 'POST', body: json_encode($assetDetailsBody), jsonContentTypeHeader: true);
+					$pbrPxAssetDetailsRaw = Fetch::fetchRemoteJson(
+						url: $this->assetBaseUrl,
+						method: 'POST',
+						body: json_encode($assetDetailsBody),
+						jsonContentTypeHeader: true
+					);
 
+					//Log::write("PBR PX Asset Details:");
 					//Log::write(print_r($pbrPxAssetDetailsRaw));
 
 					$pbrPxAssetDetails = $pbrPxAssetDetailsRaw['data'][0];
 
 					// Extract information from response
-					$tags = array_filter(preg_split('/[^A-Za-z0-9]/', $pbrPxAssetDetails['tag']));
+					$tags = array_filter(preg_split('/[^A-Za-z0-9]/', $pbrPxAssetDetails['ename']));
 
 					$type = Type::OTHER;
 					if (str_starts_with($pbrPxAssetDetails['zips'], "HDRI")) {
@@ -96,10 +108,12 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 						}
 					}
 
+					Log::write("PBR PX Asset found: " . $pbrPxAssetDetails['ename'] . " | Type: " . $type->name() . " | URL: " . $assetUrl);
+
 					// Build asset
 					$tmpCollection->assets[] = new Asset(
 						id: NULL,
-						name: $pbrPxAsset['ename'],
+						name: $pbrPxAssetDetails['ename'],
 						url: $assetUrl,
 						thumbnailUrl: $thumbnailUrl,
 						date: $pbrPxAsset['create_time'],

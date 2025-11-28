@@ -52,16 +52,14 @@ class Fetch
 	public static function fetchRemoteData(string $url, array $headers = [], string $method = 'GET', $body = NULL): string
 	{
 		Log::stepIn(__FUNCTION__);
-		Log::write("Fetching URL: $url using $method with body '$body'");
 
-		if (!isset($headers['User-Agent'])) {
-			$headers = self::$defaultHeaders;
-		}
+		$combinedHeaders = array_merge(self::$defaultHeaders, $headers);
 
 		$client = new Client();
+		Log::write("Fetching URL: $url using $method with body '$body' and headers: " . print_r($combinedHeaders, true));
 		try {
 			$options = [
-				'headers' => $headers,
+				'headers' => $combinedHeaders,
 				'body' => $body
 			];
 			$result = $client->request($method, $url, $options);
@@ -86,7 +84,7 @@ class Fetch
 		if ($jsonContentTypeHeader) {
 			$headers['Content-Type'] = "application/json";
 		}
-		$result = json_decode(self::fetchRemoteData(url: $url, headers: $headers, method: $method, body: $body), true);
+		$result = json_decode(self::fetchRemoteData(url: $url, headers: $headers, method: $method, body: $body), associative: true);
 		Log::write("Received and parsed JSON.");
 		Log::stepOut(__FUNCTION__);
 		return $result;
