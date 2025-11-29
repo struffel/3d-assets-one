@@ -30,7 +30,7 @@ foreach ($assets->assets as $a) { ?>
 				<?php } ?>
 				<span title="<?= $a->license->name() ?>"><img src="/svg/license/<?= $a->license->value ?>.svg" width="32" height="32"></span>
 			</span>
-			<img class="asset-image" alt="<?= $a->name ?>" src="<?= getenv("3D1_CDN") ?>/thumbnail/256-JPG-FFFFFF/<?= $a->id ?>.jpg">
+			<img class="asset-image" alt="<?= $a->name ?>" src="<?= $_ENV["3D1_CDN"] ?>/thumbnail/256-JPG-FFFFFF/<?= $a->id ?>.jpg">
 		</a>
 	</div>
 

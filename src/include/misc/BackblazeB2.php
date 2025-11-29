@@ -25,11 +25,11 @@ class BackblazeB2
 		if (!BackblazeB2::$initialized) {
 			Log::write("Initializing connection to Backblaze B2");
 
-			BackblazeB2::$client = new Client(getenv("3D1_B2_ACCOUNTID"), [
-				'keyId' => getenv("3D1_B2_KEYID"), // optional if you want to use master key (account Id)
-				'applicationKey' => getenv("3D1_B2_APPKEY"),
+			BackblazeB2::$client = new Client($_ENV["3D1_B2_ACCOUNTID"], [
+				'keyId' => $_ENV["3D1_B2_KEYID"], // optional if you want to use master key (account Id)
+				'applicationKey' => $_ENV["3D1_B2_APPKEY"],
 			]);
-			BackblazeB2::$bucketName = getenv("3D1_B2_BUCKETNAME");
+			BackblazeB2::$bucketName = $_ENV["3D1_B2_BUCKETNAME"];
 			BackblazeB2::$version = 2;
 		} else {
 			Log::write("Already initialized.");

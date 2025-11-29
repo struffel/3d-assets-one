@@ -41,3 +41,28 @@ But in that case it may be better to just create a pull request to let other peo
 ### How does 3Dassets.one get the assets from all these different sites?
 **In many different ways**. Due to the lack of an industry standard for communicating asset metadata (OpenAssetIO is still in the earliest stages) 3Dassets.one has individual implementations for every vendor it indexes.
 This includes using existing APIs, working with website owners to create an API specifically for 3Dassets.one or working directly with the HTML and its \<meta> tags to get the required information for the index.
+
+
+## `.env` template
+
+The `.env` file must be placed in the `src/include` subdirectory.
+
+```
+# Database
+3D1_DB_SERVER=
+3D1_DB_USERNAME=
+3D1_DB_PASSWORD=
+3D1_DB_NAME=
+
+# Backblaze B2
+3D1_B2_ACCOUNTID=
+3D1_B2_KEYID=
+3D1_B2_KEYNAME=
+3D1_B2_APPKEY=
+3D1_B2_BUCKETID=
+3D1_B2_BUCKETNAME=
+
+# CDN URLs
+3D1_CDN=
+3D1_UNCACHED=
+```

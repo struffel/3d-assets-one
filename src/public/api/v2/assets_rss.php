@@ -25,7 +25,7 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
 		<?php foreach ($assetCollection->assets as $a) { ?>
 			<item>
 				<title><?= htmlspecialchars($a->name) ?></title>
-				<media:thumbnail url="<?= getenv("3D1_CDN") ?>/thumbnail/256-JPG-FFFFFF/<?= $a->id ?>.jpg" height="256" width="256" />
+				<media:thumbnail url="<?= $_ENV["3D1_CDN"] ?>/thumbnail/256-JPG-FFFFFF/<?= $a->id ?>.jpg" height="256" width="256" />
 				<description><?= htmlspecialchars($a->name) ?> by <?= $a->creator->name() ?> / Type: <?= $a->type->name() ?> / License: <?= $a->license->name() ?> / Tags: <?= implode(",", $a->tags) ?></description>
 				<link>https://<?= $_SERVER['HTTP_HOST'] ?>/go?id=<?= $a->id ?></link>
 				<guid isPermaLink="false">3D1-<?= $a->id ?></guid>

@@ -19,8 +19,8 @@ class Database
 
 		// Create connection
 		if (!isset(self::$connection)) {
-			self::$connection = new mysqli(getenv("3D1_DB_SERVER"), getenv("3D1_DB_USERNAME"), getenv("3D1_DB_PASSWORD"));
-			Log::write("Initialized DB connection to: " . getenv("3D1_DB_SERVER"));
+			self::$connection = new mysqli($_ENV["3D1_DB_SERVER"], $_ENV["3D1_DB_USERNAME"], $_ENV["3D1_DB_PASSWORD"]);
+			Log::write("Initialized DB connection to: " . $_ENV["3D1_DB_SERVER"]);
 		}
 
 		// Check connection
@@ -28,9 +28,9 @@ class Database
 			Log::write("Connection failed: " . self::$connection->connect_error, "SQL-ERROR");
 		}
 
-		$query = "use " . getenv("3D1_DB_NAME") . ";";
+		$query = "use " . $_ENV["3D1_DB_NAME"] . ";";
 		self::$connection->query($query);
-		Log::write("Selected DB: " . getenv("3D1_DB_NAME"));
+		Log::write("Selected DB: " . $_ENV["3D1_DB_NAME"]);
 		Log::stepOut(__FUNCTION__);
 	}
 

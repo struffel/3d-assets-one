@@ -20,7 +20,7 @@ $assets = $query->execute();
 		style="display: grid;grid-template-columns: 128px 256px 256px 256px 256px 128px 256px">
 		<div>
 			<a href="https://<?= implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2)); ?>/go?id=<?= $a->id ?>">
-				<img class="asset-image" alt="<?= $a->name ?>" src="<?= getenv("3D1_UNCACHED") ?>/thumbnail/128-JPG-FFFFFF/<?= $a->id ?>.jpg">
+				<img class="asset-image" alt="<?= $a->name ?>" src="<?= $_ENV["3D1_UNCACHED"] ?>/thumbnail/128-JPG-FFFFFF/<?= $a->id ?>.jpg">
 			</a>
 		</div>
 		<div>

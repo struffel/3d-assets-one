@@ -6,3 +6,4 @@ src/_gsdata_/*
 src/vendor/
 
 remote_logs/*
+**.env
