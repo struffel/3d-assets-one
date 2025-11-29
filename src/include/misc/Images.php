@@ -29,12 +29,12 @@ class Image
 
 	public static function buildAndUploadThumbnailsToBackblazeB2(Asset $asset, string $originalImageData)
 	{
-		Log::stepIn(__FUNCTION__);
+		
 		foreach (Image::$thumbnailTemplate as $t) {
 			$tmpThumbnail = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
 			BackblazeB2::uploadData($tmpThumbnail, Image::getBackblazeB2ThumbnailPath($t[2], $t[0], $t[1], $asset));
 		}
-		Log::stepOut(__FUNCTION__);
+		
 	}
 
 	public static function parseImageIntoPng(string $imageBlob): string
@@ -51,7 +51,7 @@ class Image
 
 	public static function createThumbnailFromImageData(string $originalImageData, int $size, string $extension, string $backgroundColor): string
 	{
-		Log::stepIn(__FUNCTION__);
+		
 		Log::write("Building variation: $size/$extension/$backgroundColor ");
 		$originalImageData = self::parseImageIntoPng($originalImageData);
 
@@ -77,7 +77,7 @@ class Image
 			$outputImage = $outputImage->flattenImages();
 		}
 
-		Log::stepOut(__FUNCTION__);
+		
 		return $outputImage->getImageBlob();
 	}
 

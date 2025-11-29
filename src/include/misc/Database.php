@@ -3,6 +3,7 @@
 namespace misc;
 
 use asset\Asset;
+use log\LogLevel;
 use mysqli;
 use mysqli_result;
 
@@ -13,7 +14,7 @@ class Database
 
 	public static function initializeConnection()
 	{
-		Log::stepIn(__FUNCTION__);
+
 		Log::write("Initializing DB Connection");
 
 
@@ -25,13 +26,12 @@ class Database
 
 		// Check connection
 		if (self::$connection->connect_error) {
-			Log::write("Connection failed: " . self::$connection->connect_error, "SQL-ERROR");
+			Log::write("Connection failed: " . self::$connection->connect_error, LogLevel::ERROR);
 		}
 
 		$query = "use " . $_ENV["3D1_DB_NAME"] . ";";
 		self::$connection->query($query);
 		Log::write("Selected DB: " . $_ENV["3D1_DB_NAME"]);
-		Log::stepOut(__FUNCTION__);
 	}
 
 	public static function generatePlaceholder(array $array)
@@ -51,7 +51,7 @@ class Database
 		Log::write("Start transaction...");
 		self::$connection->query("START TRANSACTION;");
 		if (self::$connection->error) {
-			Log::write("SQL execution ERROR: " . self::$connection->error, "SQL-ERROR");
+			Log::write("SQL execution ERROR: " . self::$connection->error, LogLevel::ERROR);
 		} else {
 			Log::write("SQL OK");
 		}
@@ -65,7 +65,7 @@ class Database
 		Log::write("Commit transaction...");
 		self::$connection->query("COMMIT;");
 		if (self::$connection->error) {
-			Log::write("SQL execution ERROR: " . self::$connection->error, "SQL-ERROR");
+			Log::write("SQL execution ERROR: " . self::$connection->error, LogLevel::ERROR);
 		} else {
 			Log::write("SQL OK");
 		}
@@ -73,7 +73,7 @@ class Database
 
 	public static function runQuery(string $sql, array $parameters = []): mysqli_result|bool
 	{
-		Log::stepIn(__FUNCTION__);
+
 		Log::write("Received SQL query to run: " . $sql . " (" . print_r($parameters, true) . ")");
 
 		if (!isset(self::$connection)) {
@@ -97,27 +97,27 @@ class Database
 
 			$result = self::$connection->execute_query($sql, $parameters);
 			if (self::$connection->error) {
-				Log::write("SQL execution ERROR: " . self::$connection->error, "SQL-ERROR");
+				Log::write("SQL execution ERROR: " . self::$connection->error, LogLevel::ERROR);
 			} else {
 				Log::write("SQL OK");
 			}
 		} else {
 			$result = self::$connection->query($sql);
 			if (self::$connection->error) {
-				Log::write("Query ERROR: " . self::$connection->error, "SQL-ERROR");
+				Log::write("Query ERROR: " . self::$connection->error, LogLevel::ERROR);
 			} else {
 				Log::write("Query OK");
 			}
 		}
 
-		Log::stepOut(__FUNCTION__);
+
 		return $result;
 	}
 
 	public static function saveAssetToDatabase(Asset $asset)
 	{
 
-		Log::stepIn(__FUNCTION__);
+
 
 		if ($asset->id) {
 			Log::write("Updating Asset with id: " . $asset->id);
@@ -166,7 +166,7 @@ class Database
 			}
 		}
 
-		Log::stepOut(__FUNCTION__);
+
 		return $asset;
 	}
 

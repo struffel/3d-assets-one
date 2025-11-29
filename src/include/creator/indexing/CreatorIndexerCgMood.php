@@ -13,6 +13,7 @@ use asset\Quirk;
 use Exception;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
+use log\LogLevel;
 use misc\Html;
 use misc\Log;
 use Rct567\DomQuery\DomQuery;
@@ -61,7 +62,7 @@ class CreatorIndexerCgMood extends CreatorIndexer
 				try {
 					$rawHtml = Fetch::fetchRemoteData($this->indexingBaseUrl . $page);
 				} catch (\Throwable $th) {
-					Log::write("Failed to load site. Attempt: $attempts", "WARN");
+					Log::write("Failed to load site. Attempt: $attempts", LogLevel::WARNING);
 					sleep($attempts * 2);
 					$attempts = $attempts + 1;
 

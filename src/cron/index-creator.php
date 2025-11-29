@@ -2,11 +2,11 @@
 
 use asset\AssetStatus;
 use creator\Creator;
+use log\LogLevel;
 use misc\Database;
 use misc\Log;
 
 require_once __DIR__ . '/../include/init.php';
-Log::initialize("cron");
 
 // Pick a target creator
 if (isset($argv[1])) {
@@ -17,12 +17,10 @@ if (isset($argv[1])) {
 	$creator = $randomTargets[$randomIndex];
 }
 
-Log::write("Refreshing Creator: " . $creator->slug());
+Log::start(logName: "index-creator/" . $creator->slug(), level: LogLevel::INFO, writeToStdout: true);
 
 $creatorFetcher = $creator->getIndexer();
-Log::write("Created creator object.");
 $result = $creatorFetcher->runUpdate();
-
 Log::write("Found " . sizeof($result->assets) . " new assets");
 if (sizeof($result->assets) > 0) {
 	Log::write("Writing new assets to DB:");

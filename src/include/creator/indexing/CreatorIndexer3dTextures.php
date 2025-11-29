@@ -10,6 +10,7 @@ use creator\Creator;
 use asset\Quirk;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
+use log\LogLevel;
 use misc\Image;
 use misc\Log;
 use Throwable;
@@ -60,7 +61,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 						try {
 							$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['square']['source_url'];
 						} catch (Throwable $e) {
-							Log::write($e->getMessage() . " / 1st attempt failed... / " . $wpPost['link'], "IMG-ERROR");
+							Log::write($e->getMessage() . " / 1st attempt failed... / " . $wpPost['link'], LogLevel::WARNING);
 						}
 
 						// 2nd attempt
@@ -68,7 +69,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 							try {
 								$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'];
 							} catch (Throwable $e) {
-								Log::write($e->getMessage() . " / 2nd attempt failed... / " . $wpPost['link'], "IMG-ERROR");
+								Log::write($e->getMessage() . " / 2nd attempt failed... / " . $wpPost['link'], LogLevel::WARNING);
 							}
 						}
 
@@ -77,7 +78,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 							try {
 								$tmpThumbnail = $wpPost['jetpack_featured_media_url'];
 							} catch (Throwable $e) {
-								Log::write($e->getMessage() . " / 3rd attempt failed... / " . $wpPost['link'], "IMG-ERROR");
+								Log::write($e->getMessage() . " / 3rd attempt failed... / " . $wpPost['link'], LogLevel::WARNING);
 							}
 						}
 
@@ -85,7 +86,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 
 						// Test if any attempt worked
 						if (!isset($tmpThumbnail)) {
-							Log::write("All attempts failed. Thumbnail could not be resolved. Skipping... / " . $wpPost['link'], "IMG-ERROR");
+							Log::write("All attempts failed. Thumbnail could not be resolved. Skipping... / " . $wpPost['link'], LogLevel::ERROR);
 							continue;
 						}
 

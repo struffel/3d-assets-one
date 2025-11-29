@@ -35,7 +35,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 
 	public function findNewAssets(array $existingUrls): AssetCollection
 	{
-		Log::stepIn(__FUNCTION__);
+		
 		Log::write("Start looking for new assets");
 
 		// Contact API and get new assets
@@ -80,7 +80,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 
 			$targetUrl = $result['nextPageHttp'] ?? "";
 		}
-		Log::stepOut(__FUNCTION__);
+		
 		return $tmpCollection;
 	}
 }

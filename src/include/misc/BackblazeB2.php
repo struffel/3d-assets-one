@@ -2,6 +2,7 @@
 
 namespace indexing;
 
+use log\LogLevel;
 use misc\Log;
 use obregonco\B2\Client;
 use obregonco\B2\Bucket;
@@ -21,7 +22,7 @@ class BackblazeB2
 
 	public static function initialize()
 	{
-		Log::stepIn(__FUNCTION__);
+
 		if (!BackblazeB2::$initialized) {
 			Log::write("Initializing connection to Backblaze B2");
 
@@ -34,12 +35,11 @@ class BackblazeB2
 		} else {
 			Log::write("Already initialized.");
 		}
-		Log::stepOut(__FUNCTION__);
 	}
 
 	public static function uploadData(string $fileData, string $remotePath): void
 	{
-		Log::stepIn(__FUNCTION__);
+
 		Log::write("Uploading data to '$remotePath'");
 		BackblazeB2::initialize();
 		// Upload a file to a bucket. Returns a File object.
@@ -58,7 +58,7 @@ class BackblazeB2
 				$successfulUpload = true;
 				Log::write("Upload OK");
 			} catch (\Throwable $th) {
-				Log::write("Upload FAILED: " . $th->getMessage(), "B2-ERROR");
+				Log::write("Upload FAILED: " . $th->getMessage(), LogLevel::ERROR);
 				$successfulUpload = false;
 				sleep(1);
 				Log::write("Trying upload again...");
@@ -66,7 +66,7 @@ class BackblazeB2
 		}
 
 		//var_dump($file);
-		Log::stepOut(__FUNCTION__);
+
 	}
 
 	public static function uploadFile(string $localPath, string $remotePath): void
@@ -76,7 +76,7 @@ class BackblazeB2
 
 	public static function testForFile(string $remotePath): bool
 	{
-		Log::stepIn(__FUNCTION__);
+
 		Log::write("Testing for file '$remotePath'");
 		BackblazeB2::initialize();
 		// Retrieve an array of file objects from a bucket.
@@ -85,7 +85,7 @@ class BackblazeB2
 			'FileName' => $remotePath
 		]);
 		Log::write("Result: " . isset($fileList[0]));
-		Log::stepOut(__FUNCTION__);
+
 		return isset($fileList[0]);
 	}
 }

@@ -10,6 +10,7 @@ use asset\AssetCollection;
 use creator\Creator;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
+use log\LogLevel;
 use misc\Log;
 use Throwable;
 
@@ -82,8 +83,8 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 						jsonContentTypeHeader: true
 					);
 
-					//Log::write("PBR PX Asset Details:");
-					//Log::write(print_r($pbrPxAssetDetailsRaw));
+					Log::write("PBR PX Asset Details:", LogLevel::DEBUG);
+					Log::write(print_r($pbrPxAssetDetailsRaw, true), LogLevel::DEBUG);
 
 					$pbrPxAssetDetails = $pbrPxAssetDetailsRaw['data'][0];
 

@@ -117,7 +117,7 @@ class AssetQuery
 
 	public function execute(): AssetCollection
 	{
-		Log::stepIn(__FUNCTION__);
+
 		Log::write("Loading assets based on query: " . var_export($this, true));
 
 
@@ -247,7 +247,7 @@ class AssetQuery
 			);
 		}
 
-		Log::stepOut(__FUNCTION__);
+
 		return $output;
 	}
 }

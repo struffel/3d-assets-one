@@ -6,6 +6,7 @@ use asset\AssetQuery;
 use asset\AssetStatus;
 use asset\Sorting;
 use creator\Creator;
+use log\LogLevel;
 use misc\Database;
 use misc\Log;
 
@@ -49,7 +50,7 @@ foreach ($assetsToCheck as $asset) {
 	try {
 		$testResult = $creatorFetcher->validateAsset($asset);
 	} catch (\Throwable $th) {
-		Log::write("Skipping this asset because validation function threw exception.", "ERROR");
+		Log::write("Skipping this asset due to exception: " . $th->getMessage(), LogLevel::ERROR);
 		continue;
 	}
 
@@ -63,10 +64,10 @@ foreach ($assetsToCheck as $asset) {
 		// In that case it is considered failed permanently and will not be added to the validation rotation again.
 		if ($asset->status == AssetStatus::ACTIVE | $currentDateTime->diff($asset->lastSuccessfulValidation)->d < 2) {
 			$asset->status = AssetStatus::VALIDATION_FAILED_RECENTLY;
-			Log::write("Validation Failed (Recently)", "WARN");
+			Log::write("Validation Failed (Recently)", LogLevel::WARNING);
 		} else {
 			$asset->status = AssetStatus::VALIDATION_FAILED_PERMANENTLY;
-			Log::write("Validation Failed (Permanently)", "WARN");
+			Log::write("Validation Failed (Permanently)", LogLevel::WARNING);
 		}
 	}
 	Database::saveAssetToDatabase($asset);

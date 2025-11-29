@@ -13,6 +13,7 @@ use creator\Creator;
 use asset\Quirk;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
+use log\LogLevel;
 use misc\Log;
 use misc\StringUtil;
 
@@ -134,7 +135,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 					}
 
 					if (!$thumbnailUrl) {
-						Log::write("Skipping because faulty thumbnail", "WARN");
+						Log::write("Skipping because faulty thumbnail", LogLevel::ERROR);
 						continue;
 					}
 
