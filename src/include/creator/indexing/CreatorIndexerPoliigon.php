@@ -10,8 +10,9 @@ use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
 use Exception;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;
 
@@ -56,8 +57,7 @@ class CreatorIndexerPoliigon extends CreatorIndexer
 		$page = 1;
 
 		do {
-			$rawHtml = Fetch::fetchRemoteData($this->searchBaseUrl . $page);
-			$dom = Html::domObjectFromHtmlString($rawHtml);
+			$dom = (new WebItemReference($this->searchBaseUrl . $page))->fetch()->parseAsDomDocument();
 			$domQuery = new DomQuery($dom);
 
 			$assetBoxDomElements = $domQuery->find('a.asset-box');

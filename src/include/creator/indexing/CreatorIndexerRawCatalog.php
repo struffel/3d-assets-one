@@ -8,8 +8,9 @@ use asset\License;
 use asset\Type;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use SimpleXMLElement;
 
 // rawcatalog
@@ -35,7 +36,7 @@ class CreatorIndexerRawCatalog extends CreatorIndexer
 
 		// Parse XML
 
-		$sourceData = new SimpleXMLElement(Fetch::fetchRemoteData($targetUrl));
+		$sourceData = new WebItemReference($targetUrl)->fetch()->parseAsSimpleXmlElement();
 
 		$countAssets = 0;
 		foreach ($this->typeMatching as $xPathPrefix => $type) {

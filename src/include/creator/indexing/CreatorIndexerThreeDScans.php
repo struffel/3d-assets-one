@@ -9,15 +9,16 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;
 
 class CreatorIndexerThreeDScans extends CreatorIndexer
 {
 
-	
+
 
 	protected Creator $creator = Creator::THREE_D_SCANS;
 	private string $indexingBaseUrl = "https://threedscans.com/page/";
@@ -29,9 +30,8 @@ class CreatorIndexerThreeDScans extends CreatorIndexer
 		$page = 1;
 
 		do {
-			$rawHtml = Fetch::fetchRemoteData($this->indexingBaseUrl . $page);
-			if ($rawHtml != "") {
-				$dom = Html::domObjectFromHtmlString($rawHtml);
+			$dom = new WebItemReference($this->indexingBaseUrl . $page)->fetch()->parseAsDomDocument();
+			if ($dom != null) {
 				$domQuery = new DomQuery($dom);
 
 				$assetLinkElements = $domQuery->find('article a');

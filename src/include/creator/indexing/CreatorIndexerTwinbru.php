@@ -11,8 +11,9 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use log\LogLevel;
 use log\Log;
 use misc\StringUtil;
@@ -65,9 +66,8 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 
 		// Open a session
 
-		$odsToken = Fetch::fetchRemoteCookie(
-			targetCookieName: "ods-token",
-			url: $this->sessionCookieUrl
+		$odsToken = new WebItemReference($this->sessionCookieUrl)->fetchCookie(
+			targetCookieName: "ods-token"
 		);
 
 
@@ -79,15 +79,14 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 		$requestBody = $this->indexingBaseParameters;
 		$requestBody["page"] = $page;
 
-		$headers = array_merge(Fetch::$defaultHeaders, ["Cookie" => "ods-token=$odsToken"]);
 
-		$rawData = Fetch::fetchRemoteJson(
-			headers: $headers,
+
+		$rawData = new WebItemReference(
 			url: $this->indexingBaseUrl . "?" . http_build_query($requestBody),
-			method: 'GET'
-		);
+			headers: ["Cookie" => "ods-token=$odsToken"]
+		)->fetch()->parseAsJson();
 
-		if ($rawData == "") {
+		if ($rawData == null) {
 			Log::write("Reset page counter because of an error.");
 			$page = 0;
 		}
@@ -123,10 +122,11 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 					foreach (['BL_20', 'BL_20_CU'] as $viewType) {
 						// Get the thumbnail URL
 						$thumbnailQueryResponse = NULL;
-						$thumbnailQueryResponse = Fetch::fetchRemoteJson(
-							headers: $headers,
+
+						$thumbnailQueryResponse = new WebItemReference(
+							headers: ["Cookie" => "ods-token=$odsToken"],
 							url: $this->thumbnailQueryBaseUrl . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.$viewType/stockId.eq." . $twinbruAsset['itemId']])
-						);
+						)->fetch()->parseAsJson();
 
 						if (sizeof($thumbnailQueryResponse['results']) > 0) {
 							$thumbnailUrl = $this->thumbnailBaseUrl . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";

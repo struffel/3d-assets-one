@@ -8,8 +8,9 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use misc\Fetch;
+use fetch\Fetch;
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use log\LogLevel;
 use log\Log;
 use Throwable;
@@ -37,7 +38,14 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 		$assetDetailsBody = ['asset' => end(explode("=", strtok($asset->url, '_')))];
 
 		try {
-			$response = Fetch::fetchRemoteJson(url: $this->assetBaseUrl, method: 'POST', body: json_encode($assetDetailsBody), jsonContentTypeHeader: true);
+			$response = new WebItemReference(
+				url: $this->assetBaseUrl,
+				method: 'POST',
+				requestBody: json_encode($assetDetailsBody),
+				headers: [
+					'Content-Type' => 'application/json'
+				]
+			);
 
 			// Test if there is an errno and if it is 0
 			return isset($response['errno']) && $response['errno'] == 0;
@@ -57,11 +65,14 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 
 		do {
 			$assetsFoundThisIteration = 0;
-			$assetListRaw = Fetch::fetchRemoteJson(
-				url: $this->indexingBaseUrl . "?page_number=$page",
-				method: 'GET',
-				jsonContentTypeHeader: true
-			);
+			$assetListRaw = new WebItemReference(
+				url: $this->indexingBaseUrl,
+				method: 'POST',
+				requestBody: json_encode(['page_number' => $page]),
+				headers: [
+					'Content-Type' => 'application/json'
+				]
+			)->fetch()->parseAsJson();
 
 			$assetList = $assetListRaw['data']['data'];
 
@@ -74,12 +85,14 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 				if (!in_array($assetUrl, $existingUrls)) {
 					// Fetch asset details
 					$assetDetailsBody = ['asset' => $pbrPxAsset['id']];
-					$pbrPxAssetDetailsRaw = Fetch::fetchRemoteJson(
+					$pbrPxAssetDetailsRaw = new WebItemReference(
 						url: $this->assetBaseUrl,
 						method: 'POST',
-						body: json_encode($assetDetailsBody),
-						jsonContentTypeHeader: true
-					);
+						requestBody: json_encode($assetDetailsBody),
+						headers: [
+							'Content-Type' => 'application/json'
+						]
+					)->fetch()->parseAsJson();
 
 					Log::write("PBR PX Asset Details:", LogLevel::DEBUG);
 					Log::write(print_r($pbrPxAssetDetailsRaw, true), LogLevel::DEBUG);

@@ -9,8 +9,9 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;
 
@@ -30,9 +31,9 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 		$processedAssets = 0;
 
 		do {
-			$rawHtml = Fetch::fetchRemoteData($this->indexingBaseUrl . $page);
-			if ($rawHtml != "") {
-				$dom = Html::domObjectFromHtmlString($rawHtml);
+			$dom = (new WebItemReference($this->indexingBaseUrl . $page))->fetch()->parseAsDomDocument();
+			if ($dom != null) {
+
 				$domQuery = new DomQuery($dom);
 
 				$assetLinkElements = $domQuery->find("#product-category a.pack-link");
@@ -47,8 +48,7 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 
 					if (!in_array($assetLinkElement->attr('href'), $existingUrls)) {
 
-						$detailPageRawHtml = Fetch::fetchRemoteData($assetLinkElement->attr('href'));
-						$detailPageDom = Html::domObjectFromHtmlString($detailPageRawHtml);
+						$detailPageDom = (new WebItemReference($assetLinkElement->attr('href')))->fetch()->parseAsDomDocument();
 						$detailPageDomQuery = new DomQuery($detailPageDom);
 
 						// Find tags on detail page

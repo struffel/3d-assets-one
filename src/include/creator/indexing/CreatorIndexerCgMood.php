@@ -11,8 +11,9 @@ use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
 use Exception;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use log\LogLevel;
 use misc\Html;
 use log\Log;
@@ -32,9 +33,7 @@ class CreatorIndexerCgMood extends CreatorIndexer
 
 	public function validateAsset(Asset $asset): bool
 	{
-		$rawHtml = Fetch::fetchRemoteData($asset->url);
-
-		$dom = Html::domObjectFromHtmlString($rawHtml);
+		$dom = (new WebItemReference($asset->url))->fetch()->parseAsDomDocument();
 		$domQuery = new DomQuery($dom);
 
 		$downloadButtonCandidates = $domQuery->find('.download-button');
@@ -56,23 +55,8 @@ class CreatorIndexerCgMood extends CreatorIndexer
 		$pagesProcessed = 0;
 
 		do {
-			$attempts = 0;
-			$rawHtml = "";
-			while (!$rawHtml) {
-				try {
-					$rawHtml = Fetch::fetchRemoteData($this->indexingBaseUrl . $page);
-				} catch (\Throwable $th) {
-					Log::write("Failed to load site. Attempt: $attempts", LogLevel::WARNING);
-					sleep($attempts * 2);
-					$attempts = $attempts + 1;
 
-					if ($attempts > 4) {
-						throw new Exception("Failed to load site, even after multiple attempts.");
-					}
-				}
-			}
-
-			$dom = Html::domObjectFromHtmlString($rawHtml);
+			$dom = (new WebItemReference($this->indexingBaseUrl . $page))->fetch()->parseAsDomDocument();
 			$domQuery = new DomQuery($dom);
 
 			$assetImageElements = $domQuery->find('.product img');

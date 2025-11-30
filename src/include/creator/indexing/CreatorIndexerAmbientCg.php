@@ -8,8 +8,9 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use log\Log;
 
 class CreatorIndexerAmbientCg extends CreatorIndexer
@@ -53,7 +54,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 		$tmpCollection = new AssetCollection();
 
 		while ($targetUrl != "") {
-			$result = Fetch::fetchRemoteJson($targetUrl);
+			$result = new WebItemReference($targetUrl)->fetch()->parseAsJson();
 
 			// Iterate through result
 			foreach ($result['foundAssets'] as $acgAsset) {

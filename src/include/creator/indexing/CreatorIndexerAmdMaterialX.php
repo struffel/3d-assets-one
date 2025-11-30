@@ -7,8 +7,9 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use misc\Image;
 
 // amd materialx
@@ -33,7 +34,7 @@ class CreatorIndexerAmdMaterialX extends CreatorIndexer
 		// Limit number of assets to avoid excessive calls to the tag API
 		$countAssets = 0;
 		do {
-			$apiJson = Fetch::fetchRemoteJson($targetUrl);
+			$apiJson = new WebItemReference($targetUrl)->fetch()->parseAsJson();
 			foreach ($apiJson['results'] as $amdAsset) {
 				if ($countAssets < $this->maxAssetsPerRound && !preg_match($this->excludeTitleRegex, $amdAsset['title'])) {
 
@@ -43,7 +44,7 @@ class CreatorIndexerAmdMaterialX extends CreatorIndexer
 						$tags = [];
 
 						foreach ($amdAsset['tags'] as $t) {
-							$tags[] = Fetch::fetchRemoteJson($this->tagApiUrl . $t)['title'];
+							$tags[] = new WebItemReference($this->tagApiUrl . $t)->fetch()->parseAsJson()['title'];
 						}
 
 						$tmpAsset = new Asset(
@@ -75,6 +76,6 @@ class CreatorIndexerAmdMaterialX extends CreatorIndexer
 
 	public function fetchThumbnailImage(string $url): string
 	{
-		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 10, 10, 0.015);
+		return Image::removeUniformBackground(new WebItemReference($url)->fetch()->content, 10, 10, 0.015);
 	}
 }

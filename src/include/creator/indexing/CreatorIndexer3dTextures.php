@@ -8,8 +8,9 @@ use asset\License;
 use asset\Type;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use log\LogLevel;
 use misc\Image;
 use log\Log;
@@ -36,7 +37,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 		$continue = true;
 		do {
 			$wpLink = $this->apiUrl . "posts?_embed&per_page=100&page=$page&orderby=date";
-			$wpOutput = Fetch::fetchRemoteJson($wpLink);
+			$wpOutput = new WebItemReference($wpLink)->fetch()->parseAsJson();
 
 			if ($wpOutput) {
 
@@ -123,6 +124,6 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 	}
 	public function fetch(string $url): string
 	{
-		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 3, 3, 0.015);
+		return Image::removeUniformBackground(new WebItemReference($url)->fetch()->content, 3, 3, 0.015);
 	}
 }

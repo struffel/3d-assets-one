@@ -9,8 +9,9 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 
 // textures.com
 
@@ -42,7 +43,7 @@ class CreatorIndexerTexturesCom extends CreatorIndexer
 		$page = 1;
 
 		do {
-			$apiData = Fetch::fetchRemoteJson($this->apiBaseUrl . $page);
+			$apiData = new WebItemReference($this->apiBaseUrl . $page)->fetch()->parseAsJson();
 
 			$assetsFoundThisIteration = sizeof($apiData['data']);
 			foreach ($apiData['data'] as $texComAsset) {

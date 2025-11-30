@@ -8,8 +8,9 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use log\Log;
 
 class CreatorIndexerPolyhaven extends CreatorIndexer
@@ -31,7 +32,7 @@ class CreatorIndexerPolyhaven extends CreatorIndexer
 
 		// Prepare asset collection
 		$tmpCollection = new AssetCollection();
-		$result = Fetch::fetchRemoteJson($this->apiUrl);
+		$result = new WebItemReference($this->apiUrl)->fetch()->parseAsJson();
 
 		// Iterate through result
 		foreach ($result as $key => $phAsset) {

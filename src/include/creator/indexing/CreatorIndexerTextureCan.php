@@ -8,8 +8,9 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use misc\Html;
 use misc\Image;
 use misc\StringUtil;
@@ -25,14 +26,14 @@ class CreatorIndexerTextureCan extends CreatorIndexer
 	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
-		$urlArray = Fetch::fetchRemoteCommaSeparatedList($this->urlList);
+		$urlArray = new WebItemReference($this->urlList)->fetch()->parseAsCommaSeparatedList();
 
 		$tmpCollection = new AssetCollection();
 
 		$countAssets = 0;
 		foreach ($urlArray as $url) {
 			if (!in_array($url, $existingUrls)) {
-				$metaTags = Html::readMetatagsFromHtmlString(Fetch::fetchRemoteData($url));
+				$metaTags = new WebItemReference($url)->fetch()->parseHtmlMetaTags();
 
 				$tmpAsset = new Asset(
 					id: NULL,
@@ -61,6 +62,6 @@ class CreatorIndexerTextureCan extends CreatorIndexer
 
 	public function fetchThumbnailImage(string $url): string
 	{
-		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 2, 2, 0.015);
+		return Image::removeUniformBackground(new WebItemReference($url)->fetch()->content, 2, 2, 0.015);
 	}
 }

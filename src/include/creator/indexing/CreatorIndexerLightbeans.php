@@ -9,8 +9,9 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use asset\Quirk;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use misc\Html;
 use log\Log;
 
@@ -38,9 +39,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 
 		$tmpCollection = new AssetCollection();
 
-		$rawSitemapXml = Fetch::fetchRemoteData(
-			url: $this->sitemapUrl
-		);
+		$rawSitemapXml = (new WebItemReference($this->sitemapUrl))->fetch()->content;
 
 		if ($rawSitemapXml) {
 
@@ -58,9 +57,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 
 			foreach ($newUrls as $newUrl) {
 
-				$html = Fetch::fetchRemoteData($newUrl);
-				$dom = Html::domObjectFromHtmlString($html);
-				$metatags = Html::readMetatagsFromHtmlString($html);
+				$metatags = (new WebItemReference($newUrl))->fetch()->parseHtmlMetaTags();
 
 				$thumbnailUrl = str_replace("dynamic-rectangle-image", "dynamic-square-image", $metatags['og:image'] ?? "");
 
@@ -103,7 +100,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 	{
 
 		// Load the image
-		$image = Fetch::fetchRemoteData($url);
+		$image = (new WebItemReference($url))->fetch()->content;
 		$imagick = new \Imagick();
 		$imagick->readImageBlob($image);
 

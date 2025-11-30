@@ -7,7 +7,8 @@ use asset\AssetCollection;
 use asset\AssetQuery;
 use creator\Creator;
 use Exception;
-use misc\Fetch;
+
+use fetch\WebItemReference;
 use misc\Database;
 use log\Log;
 use misc\StringUtil;
@@ -72,7 +73,7 @@ abstract class CreatorIndexer
 
 	public function fetchThumbnailImage(string $url): string
 	{
-		return Fetch::fetchRemoteData($url);
+		return new WebItemReference(url: $url)->fetch()->content;
 	}
 
 	public function processUrl(string $url): string
@@ -83,8 +84,8 @@ abstract class CreatorIndexer
 	public function validateAsset(Asset $asset): bool
 	{
 		try {
-			Fetch::fetchRemoteData($asset->url);
-			return true;
+			$result = new WebItemReference(url: $asset->url)->fetch();
+			return $result->httpStatusCode === 200 && $result->content !== null;
 		} catch (Throwable $e) {
 			return false;
 		}

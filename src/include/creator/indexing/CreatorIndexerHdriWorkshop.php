@@ -7,8 +7,9 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 
 // hdri workshop
 
@@ -21,7 +22,7 @@ class CreatorIndexerHdriWorkshop extends CreatorIndexer
 	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
-		$apiOutput = Fetch::fetchRemoteJson($this->apiUrl);
+		$apiOutput = (new WebItemReference($this->apiUrl))->fetch()->parseAsJson();
 
 		$tmpCollection = new AssetCollection();
 		foreach ($apiOutput as $hdriWorkshopAsset) {

@@ -7,8 +7,9 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use misc\Fetch;
+
 use creator\indexing\CreatorIndexer;
+use fetch\WebItemReference;
 use misc\Html;
 use misc\Image;
 use misc\StringUtil;
@@ -26,9 +27,7 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 	public function findNewAssets(array $existingUrls): AssetCollection
 	{
 
-		$rawHtml = Fetch::fetchRemoteData($this->baseUrl);
-
-		$dom = Html::domObjectFromHtmlString($rawHtml);
+		$dom = (new WebItemReference($this->baseUrl))->fetch()->parseAsDomDocument();
 		$domQuery = new DomQuery($dom);
 
 		$assetLinks = $domQuery->find('a[href*="/textures/"]');
@@ -45,8 +44,7 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 		foreach ($urlArray as $url) {
 			if (!in_array($url, $existingUrls)) {
 
-				$siteContent = Fetch::fetchRemoteData($url);
-				$metaTags = Html::readMetatagsFromHtmlString($siteContent);
+				$metaTags = (new WebItemReference($url))->fetch()->parseHtmlMetaTags();
 
 				$tmpAsset = new Asset(
 					id: NULL,
@@ -76,6 +74,6 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 
 	public function fetchThumbnailImage(string $url): string
 	{
-		return Image::removeUniformBackground(Fetch::fetchRemoteData($url), 2, 2, 0.015);
+		return Image::removeUniformBackground((new WebItemReference($url))->fetch()->content, 2, 2, 0.015);
 	}
 }
