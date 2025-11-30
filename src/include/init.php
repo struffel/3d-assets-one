@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Register autoloader
 spl_autoload_register(function ($class) {

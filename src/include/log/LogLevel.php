@@ -10,7 +10,7 @@ enum LogLevel: int
 	case ERROR = 4;
 	case EXCEPTION = 5;
 
-	public function __toString(): string
+	public function displayName(): string
 	{
 		return match ($this) {
 			LogLevel::DEBUG => "DEBUG",

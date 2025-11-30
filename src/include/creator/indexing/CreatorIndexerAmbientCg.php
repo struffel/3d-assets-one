@@ -10,7 +10,7 @@ use creator\Creator;
 use asset\Quirk;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
-use misc\Log;
+use log\Log;
 
 class CreatorIndexerAmbientCg extends CreatorIndexer
 {
@@ -35,7 +35,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 
 	public function findNewAssets(array $existingUrls): AssetCollection
 	{
-		
+
 		Log::write("Start looking for new assets");
 
 		// Contact API and get new assets
@@ -66,7 +66,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 						date: $acgAsset['releaseDate'],
 						name: $acgAsset['displayName'],
 						tags: $acgAsset['tags'],
-						type: Type::from($this->typeMapping[$acgAsset['dataType']]),
+						type: $this->typeMapping[$acgAsset['dataType']] ?? Type::OTHER,
 						license: License::CC0,
 						creator: Creator::AMBIENTCG,
 						id: NULL,
@@ -80,7 +80,7 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 
 			$targetUrl = $result['nextPageHttp'] ?? "";
 		}
-		
+
 		return $tmpCollection;
 	}
 }

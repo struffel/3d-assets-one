@@ -6,14 +6,15 @@ use asset\Sorting;
 use creator\Creator;
 use misc\Database;
 use misc\Image;
-use misc\Log;
+use log\Log;
 
 require_once __DIR__ . '/../include/init.php';
 
-$maxNumberOfAssets = max(1, intval($_GET['number'] ?? 0));
+// Read parameters
+$maxNumberOfAssets = $argv[1] ?? 5;
 
-if (isset($_GET['creatorId'])) {
-	$creators = [Creator::from(intval($_GET['creatorId']))];
+if (isset($argv[2])) {
+	$creators = [Creator::from(intval($argv[2]))];
 } else {
 	$creators = [];
 }

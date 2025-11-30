@@ -9,7 +9,7 @@ use creator\Creator;
 use Exception;
 use misc\Fetch;
 use misc\Database;
-use misc\Log;
+use log\Log;
 use misc\StringUtil;
 use Throwable;
 

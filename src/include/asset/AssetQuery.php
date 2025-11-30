@@ -6,7 +6,7 @@ use creator\Creator;
 use asset\Quirk;
 use DateTime;
 use misc\Database;
-use misc\Log;
+use log\Log;
 
 class AssetQuery
 {

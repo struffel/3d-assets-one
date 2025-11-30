@@ -8,17 +8,18 @@ use asset\Sorting;
 use creator\Creator;
 use log\LogLevel;
 use misc\Database;
-use misc\Log;
+use log\Log;
 
-$maxNumberOfAssets = max(2, intval($_GET['number'] ?? 6));
-$assetsToCheck = [];
+// Read parameters
+$maxNumberOfAssets = $argv[1] ?? 5;
 
-// Select creator
-if (isset($_GET['creatorId'])) {
-	$filterCreator = [Creator::from(intval($_GET['creatorId']))];
+if (isset($argv[2])) {
+	$filterCreators = [Creator::from(intval($argv[2]))];
 } else {
-	$filterCreator = [];
+	$filterCreators = [];
 }
+
+$assetsToCheck = [];
 
 // Get active assets to check
 $assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(

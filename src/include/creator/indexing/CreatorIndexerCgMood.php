@@ -15,7 +15,7 @@ use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use log\LogLevel;
 use misc\Html;
-use misc\Log;
+use log\Log;
 use Rct567\DomQuery\DomQuery;
 
 class CreatorIndexerCgMood extends CreatorIndexer

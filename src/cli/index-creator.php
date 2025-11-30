@@ -4,7 +4,7 @@ use asset\AssetStatus;
 use creator\Creator;
 use log\LogLevel;
 use misc\Database;
-use misc\Log;
+use log\Log;
 
 require_once __DIR__ . '/../include/init.php';
 

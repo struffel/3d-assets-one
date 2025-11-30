@@ -12,7 +12,7 @@ use asset\Quirk;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use misc\Html;
-use misc\Log;
+use log\Log;
 
 // lightbeans
 

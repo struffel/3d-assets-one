@@ -14,7 +14,7 @@ use asset\Quirk;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use log\LogLevel;
-use misc\Log;
+use log\Log;
 use misc\StringUtil;
 
 class CreatorIndexerTwinbru extends CreatorIndexer

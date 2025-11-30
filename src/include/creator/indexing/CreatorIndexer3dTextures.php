@@ -12,7 +12,7 @@ use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use log\LogLevel;
 use misc\Image;
-use misc\Log;
+use log\Log;
 use Throwable;
 
 class CreatorIndexer3dTextures extends CreatorIndexer

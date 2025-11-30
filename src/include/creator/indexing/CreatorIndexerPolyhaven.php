@@ -10,7 +10,7 @@ use creator\Creator;
 use asset\Quirk;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
-use misc\Log;
+use log\Log;
 
 class CreatorIndexerPolyhaven extends CreatorIndexer
 {

@@ -6,7 +6,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use log\LogLevel;
-use misc\Log;
+use log\Log;
 
 class Fetch
 {

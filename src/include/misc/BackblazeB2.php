@@ -3,7 +3,7 @@
 namespace indexing;
 
 use log\LogLevel;
-use misc\Log;
+use log\Log;
 use obregonco\B2\Client;
 use obregonco\B2\Bucket;
 

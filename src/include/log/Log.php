@@ -1,9 +1,10 @@
 <?php
 
-namespace misc;
+namespace log;
 
 use Exception;
 use log\LogLevel;
+use misc\StringUtil;
 use Throwable;
 
 class Log
@@ -35,7 +36,7 @@ class Log
 
 	public static function write(string $message, LogLevel $level = LogLevel::INFO)
 	{
-		// Return early if logging is disabled or level is too low
+		// Return early if loging is disabled or level is too low
 		if (!self::$enabled || $level->value < self::$level->value) {
 			return;
 		}
@@ -48,17 +49,18 @@ class Log
 			},
 			array_slice(debug_backtrace(), 1)
 		);
+		$functionTrace = array_reverse($functionTrace);
 
-		$message = "> " . date('Y-m-d|H:i:s', time());
-		$message .=  "\t" . str_pad($level, 10);
-		$message .=  "\t" . implode("->", $functionTrace);
-		$message .=  "\t"  . $message;
-		$message .= "\n";
+		$output = "> " . date('Y-m-d|H:i:s', time());
+		$output .=  "\t" . $level->displayName();
+		$output .=  "\t" . implode("->", $functionTrace);
+		$output .=  "\t"  . $message;
+		$output .= "\n";
 
 		Log::createFileIfNotPresent($logFilePath);
-		error_log(StringUtil::removeNewline($message), 3, $logFilePath);
+		error_log(StringUtil::removeNewline($output), 3, $logFilePath);
 		if (self::$writeToStdout) {
-			echo StringUtil::removeNewline($message) . "\n";
+			echo StringUtil::removeNewline($output) . PHP_EOL;
 		}
 	}
 

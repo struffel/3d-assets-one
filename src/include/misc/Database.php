@@ -3,6 +3,7 @@
 namespace misc;
 
 use asset\Asset;
+use log\Log;
 use log\LogLevel;
 use mysqli;
 use mysqli_result;

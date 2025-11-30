@@ -4,6 +4,7 @@ namespace misc;
 
 use DOMDocument;
 use DOMXPath;
+use log\Log;
 
 class Html
 {

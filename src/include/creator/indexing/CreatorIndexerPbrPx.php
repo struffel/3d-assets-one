@@ -11,7 +11,7 @@ use creator\Creator;
 use misc\Fetch;
 use creator\indexing\CreatorIndexer;
 use log\LogLevel;
-use misc\Log;
+use log\Log;
 use Throwable;
 
 // PBR PX
@@ -57,11 +57,9 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 
 		do {
 			$assetsFoundThisIteration = 0;
-			$assetListBody = ['page_number' => $page];
 			$assetListRaw = Fetch::fetchRemoteJson(
-				url: $this->indexingBaseUrl,
-				method: 'POST',
-				body: json_encode($assetListBody),
+				url: $this->indexingBaseUrl . "?page_number=$page",
+				method: 'GET',
 				jsonContentTypeHeader: true
 			);
 
@@ -134,6 +132,7 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 			}
 
 			$page += 1;
+			Log::write("Processed page $page, found $assetsFoundThisIteration assets this iteration.", LogLevel::INFO);
 		} while ($assetsFoundThisIteration > 0 && $processedAssets < $maxAssets);
 
 		return $tmpCollection;
