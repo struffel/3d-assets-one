@@ -24,7 +24,7 @@ class WebItemReference
 	public function __construct(
 		public string $url,
 		public string $method = 'GET',
-		public array $headers = self::$defaultHeaders,
+		public array $headers = [],
 		public string $requestBody = "",
 		public array $queryParameters = []
 	) {
@@ -39,14 +39,7 @@ class WebItemReference
 
 	public function fetchCookie(string $targetCookieName): ?string
 	{
-		Log::write(sprintf(
-			"Fetching URL for cookie '%s' : %s using %s with body '%s' and parameters '%s'",
-			$targetCookieName,
-			$this->url,
-			$this->method,
-			$this->requestBody,
-			$this->queryParameters
-		));
+		Log::write("Fetching cookie: '$targetCookieName' for request: " . $this);
 
 		$client = new Client(['cookies' => true]);
 		try {
@@ -69,17 +62,22 @@ class WebItemReference
 		return $cookie; // Return null if the target cookie was not found
 	}
 
+	public function __toString(): string
+	{
+		return sprintf(
+			"URL: %s, Method: %s, Headers: %s, Body: %s, Parameters: %s",
+			$this->url,
+			$this->method,
+			print_r($this->headers, true),
+			$this->requestBody,
+			print_r($this->queryParameters, true)
+		);
+	}
+
 	public function fetch(): FetchedWebItem
 	{
 		$client = new Client();
-		Log::write(sprintf(
-			"Fetching URL: %s using %s with body '%s', parameters '%s', and headers: %s",
-			$this->url,
-			$this->method,
-			$this->requestBody,
-			$this->queryParameters,
-			print_r($this->headers, true)
-		));
+		Log::write(message: "Fetching: " . $this);
 		try {
 			$result = $client->request($this->method, $this->url, $this->options);
 			$content = $result->getBody();
