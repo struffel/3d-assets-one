@@ -20,6 +20,10 @@ if (isset($argv[1])) {
 Log::start(logName: "index-creator/" . $creator->slug(), level: LogLevel::INFO, writeToStdout: true);
 
 $creatorFetcher = $creator->getIndexer();
+if ($creatorFetcher === null) {
+	Log::write("No indexer available for creator: " . $creator->name(), LogLevel::ERROR);
+	exit(1);
+}
 $result = $creatorFetcher->runUpdate();
 Log::write("Found " . sizeof($result->assets) . " new assets");
 if (sizeof($result->assets) > 0) {
