@@ -1,6 +1,6 @@
 <?php
 
-namespace indexing;
+namespace misc;
 
 use log\LogLevel;
 use log\Log;
