@@ -37,7 +37,6 @@ enum Creator: int
 			self::TEXTURECAN,
 			self::GPUOPENMATLIB,
 			self::RAWCATALOG,
-			self::PBRMATERIALS,
 			self::POLIIGON,
 			self::TEXTURES_COM,
 			self::CGMOOD,
@@ -168,7 +167,7 @@ enum Creator: int
 		return null;
 	}
 
-	public function getIndexer(): CreatorIndexer
+	public function getIndexer(): ?CreatorIndexer
 	{
 		return match ($this) {
 			self::AMBIENTCG => new \creator\indexing\CreatorIndexerAmbientCg(),
@@ -189,6 +188,7 @@ enum Creator: int
 			self::PBR_PX => new \creator\indexing\CreatorIndexerPbrPx(),
 			self::TWINBRU => new \creator\indexing\CreatorIndexerTwinbru(),
 			self::LIGHTBEANS => new \creator\indexing\CreatorIndexerLightbeans(),
+			default => null
 		};
 	}
 }
