@@ -3,8 +3,10 @@
 namespace misc;
 
 use asset\Asset;
-use indexing\BackblazeB2;
+use misc\BackblazeB2;
 use log\Log;
+
+use Imagick;
 
 class Image
 {
@@ -56,19 +58,19 @@ class Image
 		$originalImageData = self::parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing
-		$tmpImage = new \Imagick();
+		$tmpImage = new Imagick();
 		$tmpImage->readImageBlob($originalImageData);
 		$tmpImage->setbackgroundcolor('transparent');
-		$tmpImage->setGravity(imagick::GRAVITY_CENTER);
-		$tmpImage->setImageAlphaChannel(imagick::ALPHACHANNEL_ACTIVATE);
+		$tmpImage->setGravity(Imagick::GRAVITY_CENTER);
+		$tmpImage->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
 
 		$tmpImage->thumbnailImage($size, $size, true);
 		$offsetX = ($size - $tmpImage->getImageWidth()) / 2;
 		$offsetY = ($size - $tmpImage->getImageHeight()) / 2;
 
-		$outputImage = new \Imagick();
+		$outputImage = new Imagick();
 		$outputImage->newImage($size, $size, 'transparent', 'png');
-		$outputImage->compositeImage($tmpImage, \Imagick::COMPOSITE_DEFAULT, $offsetX, $offsetY);
+		$outputImage->compositeImage($tmpImage, Imagick::COMPOSITE_DEFAULT, $offsetX, $offsetY);
 
 		$outputImage->setImageFormat(strtolower($extension));
 
@@ -83,8 +85,8 @@ class Image
 
 	public static function removeUniformBackground(string $imageBlob, int $targetX, int $targetY, int $fuzz): string
 	{
-		$imageBlob = ImageLogic::parseImageIntoPng($imageBlob);
-		$tmpImage = new \Imagick();
+		$imageBlob = Image::parseImageIntoPng($imageBlob);
+		$tmpImage = new Imagick();
 		$tmpImage->readImageBlob($imageBlob);
 		$targetColor = $tmpImage->getImagePixelColor($targetX, $targetY);
 		$tmpImage->transparentPaintImage($targetColor, 0, Imagick::getQuantum() * $fuzz, false);
