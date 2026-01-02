@@ -151,19 +151,19 @@ class AssetQuery
 			$sqlValues = array_merge($sqlValues, $this->filterAssetId);
 		}
 
-		if (sizeof($this->filterType) > 0) {
+		if (sizeof($this->filterType ?? []) > 0) {
 			$ph = Database::generatePlaceholder($this->filterType);
 			$sqlCommand .= " AND typeId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $this->filterType);
 		}
 
-		if (sizeof($this->filterLicense) > 0) {
+		if (sizeof($this->filterLicense ?? []) > 0) {
 			$ph = Database::generatePlaceholder($this->filterLicense);
 			$sqlCommand .= " AND licenseId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $this->filterLicense);
 		}
 
-		if (sizeof($this->filterCreator) > 0) {
+		if (sizeof($this->filterCreator ?? []) > 0) {
 			$ph = Database::generatePlaceholder($this->filterCreator);
 			$sqlCommand .= " AND creatorId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $this->filterCreator);

@@ -33,7 +33,12 @@ class CreatorIndexerCgMood extends CreatorIndexer
 
 	public function validateAsset(Asset $asset): bool
 	{
-		$dom = (new WebItemReference($asset->url))->fetch()->parseAsDomDocument();
+
+		$response = (new WebItemReference($asset->url))->fetch();
+		if ($response->httpStatusCode != 200) {
+			return false;
+		}
+		$dom = $response->parseAsDomDocument();
 		$domQuery = new DomQuery($dom);
 
 		$downloadButtonCandidates = $domQuery->find('.download-button');

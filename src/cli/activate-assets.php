@@ -7,8 +7,11 @@ use creator\Creator;
 use misc\Database;
 use misc\Image;
 use log\Log;
+use log\LogLevel;
 
 require_once __DIR__ . '/../include/init.php';
+
+Log::start(logName: "activate-assets", level: LogLevel::INFO, writeToStdout: true);
 
 // Read parameters
 $maxNumberOfAssets = $argv[1] ?? 5;

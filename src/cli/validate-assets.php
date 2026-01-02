@@ -10,14 +10,18 @@ use log\LogLevel;
 use misc\Database;
 use log\Log;
 
+Log::start(logName: "validate-assets", level: LogLevel::INFO, writeToStdout: true);
+
 // Read parameters
 $maxNumberOfAssets = $argv[1] ?? 5;
 
 if (isset($argv[2])) {
-	$filterCreators = [Creator::from(intval($argv[2]))];
+	$filterCreator = [Creator::from(intval($argv[2]))];
 } else {
-	$filterCreators = [];
+	$filterCreator = [];
 }
+
+Log::write("Validating up to " . $maxNumberOfAssets . " assets.");
 
 $assetsToCheck = [];
 
@@ -28,6 +32,8 @@ $assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(
 	sort: Sorting::OLDEST_VALIDATION_SUCCESS,
 	filterCreator: $filterCreator
 ))->execute()->assets);
+
+Log::write("Found " . sizeof($assetsToCheck) . " assets to validate.");
 
 // Get assets that failed their validation
 $assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(
