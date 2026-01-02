@@ -25,4 +25,12 @@ class Asset
 		public AssetStatus $status = AssetStatus::PENDING,
 		public ?DateTime $lastSuccessfulValidation = NULL
 	) {}
+
+	public function getThumbnailUrl(int $size, string $extension, ?string $backgroundColor): string
+	{
+		$variation = strtoupper(implode("-", array_filter([$size, $extension, $backgroundColor])));
+		$extension = strtolower($extension);
+		$id = $this->id;
+		return "/media/thumbnail/$variation/$id.$extension";
+	}
 }

@@ -1,6 +1,7 @@
 <?php
 
 use asset\AssetQuery;
+use asset\Asset;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
@@ -18,6 +19,8 @@ header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 <?php } ?>
 
 <?php $i = 0;
+/**
+ * @var \asset\Asset $a */
 foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
@@ -30,7 +33,7 @@ foreach ($assets->assets as $a) { ?>
 				<?php } ?>
 				<span title="<?= $a->license->name() ?>"><img src="/svg/license/<?= $a->license->value ?>.svg" width="32" height="32"></span>
 			</span>
-			<img class="asset-image" alt="<?= $a->name ?>" src="<?= $_ENV["3D1_CDN"] ?>/thumbnail/256-JPG-FFFFFF/<?= $a->id ?>.jpg">
+			<img class="asset-image" alt="<?= $a->name ?>" src="<?= $a->getThumbnailUrl(256, "JPG", "FFFFFF") ?>">
 		</a>
 	</div>
 

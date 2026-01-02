@@ -39,7 +39,7 @@ foreach ($assetsToActivate->assets as $a) {
 	$creatorFetcher = $a->creator->getIndexer();
 	$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
 
-	Image::buildAndUploadThumbnailsToBackblazeB2($a, $imageData);
+	Image::persistThumbnail($a->id, $imageData);
 	$a->status = AssetStatus::ACTIVE;
 	Database::saveAssetToDatabase($a);
 

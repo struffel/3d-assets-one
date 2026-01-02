@@ -3,13 +3,13 @@
 namespace misc;
 
 use asset\Asset;
-use misc\BackblazeB2;
 use log\Log;
 
 use Imagick;
 
 class Image
 {
+
 	private static array $thumbnailTemplate = [
 		["JPG", "FFFFFF", 32],
 		["JPG", "FFFFFF", 64],
@@ -21,21 +21,21 @@ class Image
 		["PNG", NULL, 256]
 	];
 
-	public static function getBackblazeB2ThumbnailPath(int $size, string $extension, ?string $backgroundColor, Asset $asset)
+	public static function persistThumbnail(int $assetId, string $originalImageData)
 	{
-		$variation = strtoupper(implode("-", array_filter([$size, $extension, $backgroundColor])));
-		$extension = strtolower($extension);
-		$id = $asset->id;
-		return "thumbnail/$variation/$id.$extension";
-	}
-
-
-	public static function buildAndUploadThumbnailsToBackblazeB2(Asset $asset, string $originalImageData)
-	{
-
 		foreach (Image::$thumbnailTemplate as $t) {
 			$tmpThumbnail = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
-			BackblazeB2::uploadData($tmpThumbnail, Image::getBackblazeB2ThumbnailPath($t[2], $t[0], $t[1], $asset));
+			file_put_contents(
+				filename: getenv("3D1_MEDIA_DIRECTORY") .
+					"/thumbnail/" .
+					strtoupper(
+						implode(
+							"-",
+							array_filter([$t[2], $t[0], $t[1]])
+						)
+					) . "/$assetId." . strtolower($t[0]),
+				data: $tmpThumbnail
+			);
 		}
 	}
 

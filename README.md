@@ -45,7 +45,7 @@ This includes using existing APIs, working with website owners to create an API 
 
 ## `.env` template
 
-The `.env` file must be placed in the `src/include` subdirectory.
+The `.env` file must be placed in the `src/` subdirectory.
 
 ```
 # Database
@@ -54,15 +54,9 @@ The `.env` file must be placed in the `src/include` subdirectory.
 3D1_DB_PASSWORD=
 3D1_DB_NAME=
 
-# Backblaze B2
-3D1_B2_ACCOUNTID=
-3D1_B2_KEYID=
-3D1_B2_KEYNAME=
-3D1_B2_APPKEY=
-3D1_B2_BUCKETID=
-3D1_B2_BUCKETNAME=
-
 # CDN URLs
-3D1_CDN=
-3D1_UNCACHED=
+3D1_MEDIA_CDN_PREFIX=
+
+# Logging
+3D1_LOG_DIRECTORY=
 ```
