@@ -21,7 +21,7 @@ class Image
 		["PNG", NULL, 256]
 	];
 
-	public static function persistThumbnail(int $assetId, string $originalImageData)
+	public static function saveThumbnail(int $assetId, string $originalImageData)
 	{
 		foreach (Image::$thumbnailTemplate as $t) {
 			$tmpThumbnail = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
