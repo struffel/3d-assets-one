@@ -1,0 +1,20 @@
+meta {
+  name: three-d-scans
+  type: http
+  seq: 16
+}
+
+get {
+  url: https://dev.3dassets.one/render/asset-list.php?creator[]=three-d-scans
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creator[]: three-d-scans
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

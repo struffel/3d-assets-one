@@ -1,0 +1,20 @@
+meta {
+  name: 3d-textures
+  type: http
+  seq: 5
+}
+
+get {
+  url: https://dev.3dassets.one/render/asset-list.php?creator[]=3d-textures
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creator[]: 3d-textures
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

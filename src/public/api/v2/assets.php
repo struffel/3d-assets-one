@@ -1,10 +1,12 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/../include/init.php';
+use asset\AssetQuery;
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-type: application/json");
 
 $query = AssetQuery::fromHttpGet();
-$assets = AssetLogic::getAssets($query);
+$assets = $query->execute();
 
 $thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {
 	"256-JPG-FFFFFF" => "256-JPG-FFFFFF",
@@ -14,9 +16,9 @@ $thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {
 	default => "256-JPG-FFFFFF",
 };
 
-for ($i=0; $i < sizeof($assets->assets); $i++) { 
+for ($i = 0; $i < sizeof($assets->assets); $i++) {
 	$id = $assets->assets[$i]->id;
-	$assets->assets[$i]->thumbnailUrl = getenv("3D1_CDN")."/thumbnail/$thumbnailFormat/$id.jpg";
+	$assets->assets[$i]->thumbnailUrl = $_ENV["3D1_CDN"] . "/thumbnail/$thumbnailFormat/$id.jpg";
 	unset($assets->assets[$i]->status);
 	unset($assets->assets[$i]->lastSuccessfulValidation);
 }

@@ -1,0 +1,36 @@
+meta {
+  name: PBR_PX Test
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://api.pbrpx.com/home/api_product/getasset?asset=1114
+  body: json
+  auth: inherit
+}
+
+params:query {
+  asset: 1114
+}
+
+headers {
+  : 
+}
+
+body:json {
+  {
+    "asset":1114
+  }
+}
+
+body:text {
+  {
+    "asset":1114
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

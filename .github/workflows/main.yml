@@ -30,3 +30,4 @@ jobs:
           **/node_modules/**
           .htaccess
           src/.htaccess
+          **/.env

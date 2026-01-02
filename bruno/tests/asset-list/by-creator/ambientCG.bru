@@ -1,0 +1,20 @@
+meta {
+  name: ambientCG
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://dev.3dassets.one/render/asset-list.php?creator[]=ambientcg
+  body: none
+  auth: inherit
+}
+
+params:query {
+  creator[]: ambientcg
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
