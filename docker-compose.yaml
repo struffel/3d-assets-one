@@ -1,0 +1,55 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 3d1-web
+    ports:
+      - "5000:80"
+    volumes:
+      - ./main.htpasswd:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/main.htpasswd:ro
+      - ./src:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/public
+    restart: unless-stopped
+
+  web-import:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 3d1-web-import
+    ports:
+      - "5001:80"
+    volumes:
+      - ./main.htpasswd:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/main.htpasswd:ro
+      - ./src:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/public-import
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    tmpfs:
+      - /var/lib/mysql
+    container_name: 3d1-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: 3d1
+    volumes:
+      - ./dev.sql:/docker-entrypoint-initdb.d/dev.sql:ro
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    command: --sql-mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: 3d1-pma
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "5002:80"
+    depends_on:
+      - db
+    restart: unless-stopped
