@@ -25,7 +25,7 @@ foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
 		<a target="_blank" href="/go?id=<?= $a->id ?>">
-			<img class="asset-creator-image only-hover" title="<?= $a->creator->name() ?>" width="32" height="32" src="/img/creator/<?= $a->creator->value ?>.png">
+			<img class="asset-creator-image only-hover" title="<?= $a->creator->name() ?>" width="32" height="32" src="/img/static/creator/<?= $a->creator->value ?>.png">
 			<span class="asset-name only-hover"><?= $a->name ?></span>
 			<span class="asset-icons only-hover">
 				<?php foreach ($a->quirks as $q) { ?>

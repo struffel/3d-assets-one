@@ -10,6 +10,8 @@ use Imagick;
 class Image
 {
 
+	private static string $thumbnailDirectory =  __DIR__ . "/../public/img/thumbnail/";
+
 	private static array $thumbnailTemplate = [
 		["JPG", "FFFFFF", 32],
 		["JPG", "FFFFFF", 64],
@@ -26,8 +28,7 @@ class Image
 		foreach (Image::$thumbnailTemplate as $t) {
 			$tmpThumbnail = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
 			file_put_contents(
-				filename: getenv("3D1_MEDIA_DIRECTORY") .
-					"/thumbnail/" .
+				filename: Image::$thumbnailDirectory .
 					strtoupper(
 						implode(
 							"-",

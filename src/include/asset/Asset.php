@@ -31,6 +31,6 @@ class Asset
 		$variation = strtoupper(implode("-", array_filter([$size, $extension, $backgroundColor])));
 		$extension = strtolower($extension);
 		$id = $this->id;
-		return "/media/thumbnail/$variation/$id.$extension";
+		return "/img/thumbnail/$variation/$id.$extension";
 	}
 }
