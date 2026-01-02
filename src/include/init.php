@@ -7,5 +7,5 @@ spl_autoload_register(function ($class) {
 });
 
 // Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();

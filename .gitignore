@@ -8,3 +8,4 @@ src/vendor/
 remote_logs/*
 **.env
 dev.sql
+main.htpasswd

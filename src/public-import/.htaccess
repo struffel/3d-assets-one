@@ -1,4 +1,4 @@
 AuthType Basic
 AuthName "Import Area"
-AuthUserFile /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/.htpasswd
+AuthUserFile /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/main.htpasswd
 Require valid-user
