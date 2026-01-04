@@ -11,6 +11,7 @@ use creator\Creator;
 use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use misc\Html;
 use log\Log;
@@ -66,13 +67,10 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 
 				$tags = explode(' ', $title);
 				$tags = array_filter($tags, fn($tag) => !in_array($tag, $this->bannedTags));
-				Log::write("Resolved tags: " . implode(',', $tags));
+				Log::write("Resolved tags ",  $tags);
 
 				// Type
 				$type = Type::PBR_MATERIAL;
-
-				// Date
-				$date = date("Y-m-d");
 
 				// Build asset
 				$tmpCollection->assets[] = new Asset(
@@ -80,7 +78,7 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 					name: $title,
 					url: $newUrl,
 					thumbnailUrl: $thumbnailUrl,
-					date: $date,
+					date: new DateTime(),
 					tags: $tags,
 					type: $type,
 					license: License::CUSTOM,

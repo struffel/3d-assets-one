@@ -9,6 +9,7 @@ services:
     volumes:
       - ./main.htpasswd:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/main.htpasswd:ro
       - ./src:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/
+      - ./log:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/log
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/public
     restart: unless-stopped
@@ -23,6 +24,7 @@ services:
     volumes:
       - ./main.htpasswd:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/main.htpasswd:ro
       - ./src:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/
+      - ./log:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/log
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/public-import
     restart: unless-stopped

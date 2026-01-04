@@ -13,7 +13,7 @@ class AssetQuery
 	public function __construct(
 		// Basics
 		public ?int $offset = NULL,						// ?offset
-		public ?int $limit = NULL,								// ?limit
+		public ?int $limit = NULL,						// ?limit
 		public ?Sorting $sort = Sorting::LATEST,		// ?sort
 
 		// Filters
@@ -118,9 +118,7 @@ class AssetQuery
 	public function execute(): AssetCollection
 	{
 
-		Log::write("Loading assets based on query: " . var_export($this, true));
-
-
+		Log::write("Loading assets based on this query", $this);
 
 		// Begin defining SQL string and parameters for prepared statement
 		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,lastSuccessfulValidation,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
@@ -203,7 +201,6 @@ class AssetQuery
 			$sqlValues[] = $this->offset;
 		}
 
-
 		// Fetch data from DB
 		$databaseOutput = Database::runQuery($sqlCommand, $sqlValues);
 		$databaseOutputFoundRows = Database::runQuery("SELECT FOUND_ROWS() as RowCount;");
@@ -219,7 +216,6 @@ class AssetQuery
 			$nextCollectionQuery->offset += $nextCollectionQuery->limit;
 			$output->nextCollection = $nextCollectionQuery;
 		}
-
 
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
@@ -237,7 +233,7 @@ class AssetQuery
 				id: $row['assetId'],
 				name: $row['assetName'],
 				url: $row['assetUrl'],
-				date: $row['assetDate'],
+				date: new DateTime($row['assetDate']),
 				tags: $tags,
 				type: Type::from($row['typeId']),
 				license: License::from($row['licenseId']),

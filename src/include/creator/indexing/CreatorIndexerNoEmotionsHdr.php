@@ -9,6 +9,7 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 use creator\indexing\CreatorIndexer;
+use DateTime;
 
 class CreatorIndexerNoEmotionsHdr extends CreatorIndexer
 {
@@ -30,7 +31,7 @@ class CreatorIndexerNoEmotionsHdr extends CreatorIndexer
 				$tmpAsset = new Asset(
 					id: NULL,
 					name: $name,
-					date: "2010-" . preg_split('/=|_/', $url)[1],
+					date: new DateTime("2010-" . preg_split('/=|_/', $url)[1]),
 					thumbnailUrl: "http://noemotionhdrs.net/Previews/772x386/$category/$name.jpg",
 					url: $url,
 					tags: ['Sky', $category],

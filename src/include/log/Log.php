@@ -18,6 +18,11 @@ class Log
 
 	public static function start(string $logName, LogLevel $level = LogLevel::INFO, bool $writeToStdout = false)
 	{
+
+		if (self::$enabled) {
+			throw new Exception("Logging has already been started.");
+		}
+
 		self::$logName = preg_replace('#[^a-zA-Z0-9/-]#', '', $logName);
 		self::$level = $level;
 		self::$enabled = true;
@@ -25,23 +30,32 @@ class Log
 
 		set_exception_handler([self::class, 'exceptionHandler']);
 
-		self::cleanUpLogDirectory(14); // Delete logs older than 14 days
+		self::cleanUpLogDirectory(30); // Delete logs older than 30 days
+
+		Log::writeRaw("\n==============================\n");
+		Log::write("Started logging", ["Name" => $logName, "Level" => $level]);
 	}
 
-	public static function exceptionHandler(Throwable $e)
+	public static function exceptionHandler(Throwable $th)
 	{
-		Log::write("Uncaught exception: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine(), LogLevel::EXCEPTION);
-		throw $e;
+		$exceptionDetails = [
+			'message' => $th->getMessage(),
+			'code' => $th->getCode(),
+			'file' => $th->getFile(),
+			'line' => $th->getLine(),
+			'trace' => explode("\n", $th->getTraceAsString()),
+		];
+
+		Log::write("Uncaught exception", $exceptionDetails, LogLevel::EXCEPTION);
+		throw $th;
 	}
 
-	public static function write(string $message, LogLevel $level = LogLevel::INFO)
+	public static function write(string $message, mixed $data = null, LogLevel $level = LogLevel::INFO)
 	{
 		// Return early if loging is disabled or level is too low
 		if (!self::$enabled || $level->value < self::$level->value) {
 			return;
 		}
-
-		$logFilePath = self::getLogFilePath();
 
 		$functionTrace = array_map(
 			function ($trace) {
@@ -51,16 +65,32 @@ class Log
 		);
 		$functionTrace = array_reverse($functionTrace);
 
-		$output = "> " . date('Y-m-d|H:i:s', time());
-		$output .=  "\t" . $level->displayName();
-		$output .=  "\t" . implode("->", $functionTrace);
-		$output .=  "\t"  . $message;
-		$output .= "\n";
+		$output = ">" . date('Y-m-d H:i:s', time());
+		$output .=  " " . $level->displayName();
+		$output .=  " ->" . implode("->", $functionTrace);
 
+		$outputPrefixLength = strlen($output);
+
+		$output .=  " | "  . $message;
+		$output .= PHP_EOL;
+
+		if ($data) {
+			$dataJson = json_encode($data, JSON_PRETTY_PRINT) . PHP_EOL;
+			foreach (explode(PHP_EOL, $dataJson) as $line) {
+				$output .= str_repeat(" ", $outputPrefixLength) . " " . $line . PHP_EOL;
+			}
+		}
+
+		self::writeRaw($output);
+	}
+
+	private static function writeRaw(string $rawMessage)
+	{
+		$logFilePath = self::getLogFilePath();
 		Log::createFileIfNotPresent($logFilePath);
-		error_log(StringUtil::removeNewline($output), 3, $logFilePath);
+		error_log($rawMessage, 3, $logFilePath);
 		if (self::$writeToStdout) {
-			echo StringUtil::removeNewline($output) . PHP_EOL;
+			echo $rawMessage;
 		}
 	}
 

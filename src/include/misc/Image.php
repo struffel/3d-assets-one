@@ -55,7 +55,7 @@ class Image
 	public static function createThumbnailFromImageData(string $originalImageData, int $size, string $extension, string $backgroundColor): string
 	{
 
-		Log::write("Building variation: $size/$extension/$backgroundColor ");
+		Log::write("Building variation", ["size" => $size, "extension" => $extension, "backgroundColor" => $backgroundColor]);
 		$originalImageData = self::parseImageIntoPng($originalImageData);
 
 		// Read image using Imagick for further processing

@@ -20,14 +20,20 @@ if (isset($argv[1])) {
 Log::start(logName: "index-creator/" . $creator->slug(), level: LogLevel::INFO, writeToStdout: true);
 
 $creatorFetcher = $creator->getIndexer();
+
 if ($creatorFetcher === null) {
-	Log::write("No indexer available for creator: " . $creator->name(), LogLevel::ERROR);
+	Log::write("No indexer available for creator", $creator, LogLevel::ERROR);
 	exit(1);
 }
+
+Log::write("Running update for creator");
+
 $result = $creatorFetcher->runUpdate();
-Log::write("Found " . sizeof($result->assets) . " new assets");
+
+Log::write("Found " . sizeof($result->assets) . " new assets", $result);
+
 if (sizeof($result->assets) > 0) {
-	Log::write("Writing new assets to DB:");
+	Log::write("Writing new assets to DB");
 	foreach ($result->assets as $a) {
 		Database::startTransaction();
 		$a->status = AssetStatus::PENDING;	// Failsave in case the creator fetching function does not set it properly.
@@ -35,4 +41,6 @@ if (sizeof($result->assets) > 0) {
 		Database::commitTransaction();
 	}
 	Log::write("Wrote " . sizeof($result->assets) . " new assets.");
+} else {
+	Log::write("No new updates to write to DB.");
 }

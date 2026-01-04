@@ -23,6 +23,8 @@ if (isset($argv[2])) {
 
 Log::write("Validating up to " . $maxNumberOfAssets . " assets.");
 
+Log::write("Looking for assets to validate.");
+
 $assetsToCheck = [];
 
 // Get active assets to check
@@ -33,8 +35,6 @@ $assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(
 	filterCreator: $filterCreator
 ))->execute()->assets);
 
-Log::write("Found " . sizeof($assetsToCheck) . " assets to validate.");
-
 // Get assets that failed their validation
 $assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(
 	limit: $maxNumberOfAssets / 2,
@@ -43,12 +43,14 @@ $assetsToCheck = array_merge($assetsToCheck, (new AssetQuery(
 	filterCreator: $filterCreator
 ))->execute()->assets);
 
+
+Log::write("Found " . sizeof($assetsToCheck) . " assets to validate.");
+
 foreach ($assetsToCheck as $asset) {
 
 	Database::startTransaction();
 
-	Log::write("Testing asset " . $asset->id);
-	Log::write("Asset made by " . $asset->creator->slug());
+	Log::write("Testing asset", $asset);
 
 	$creatorFetcher = $asset->creator->getIndexer();
 	$currentDateTime = new DateTime();
@@ -57,7 +59,7 @@ foreach ($assetsToCheck as $asset) {
 	try {
 		$testResult = $creatorFetcher->validateAsset($asset);
 	} catch (\Throwable $th) {
-		Log::write("Skipping this asset due to exception: " . $th->getMessage(), LogLevel::ERROR);
+		Log::write("Skipping this asset due to exception", $th, LogLevel::ERROR);
 		continue;
 	}
 
@@ -77,6 +79,7 @@ foreach ($assetsToCheck as $asset) {
 			Log::write("Validation Failed (Permanently)", LogLevel::WARNING);
 		}
 	}
+
 	Database::saveAssetToDatabase($asset);
 
 	Database::commitTransaction();

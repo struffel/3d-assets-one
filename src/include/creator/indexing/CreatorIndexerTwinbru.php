@@ -13,6 +13,7 @@ use creator\Creator;
 use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use log\LogLevel;
 use log\Log;
@@ -87,7 +88,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 		)->fetch()->parseAsJson();
 
 		if ($rawData == null) {
-			Log::write("Reset page counter because of an error.");
+			Log::write("Reset page counter because of an error.", null, LogLevel::WARNING);
 			$page = 0;
 		}
 
@@ -99,7 +100,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 				Log::write("Reset page counter because end has been reached.");
 				$page = 0;
 			} else {
-				Log::write("Current page is $page, end page is " . ($rawData['totalPageCount'] ?? 0));
+				Log::write("Page overview", ["current" => $page, "end" => ($rawData['totalPageCount'] ?? 0)], LogLevel::INFO);
 			}
 
 			foreach ($assetList as $twinbruAsset) {
@@ -164,7 +165,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 						)
 					);
 
-					Log::write("Resolved tags: " . implode(',', $tags));
+					Log::write("Resolved tags", $tags, LogLevel::INFO);
 
 					// Type
 					$type = ($twinbruAsset['has3dTexture'] ?? true) ? Type::PBR_MATERIAL : Type::OTHER;
@@ -188,7 +189,7 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 						name: $name,
 						url: $assetUrl,
 						thumbnailUrl: $thumbnailUrl,
-						date: $date,
+						date: new DateTime($date),
 						tags: $tags,
 						type: $type,
 						license: License::CUSTOM,
@@ -203,7 +204,6 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 		}
 
 		// Increase page counter
-		Log::write("Increasing page counter.");
 		$page += 1;
 		$this->saveFetchingState("page", $page);
 

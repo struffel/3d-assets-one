@@ -34,14 +34,18 @@ foreach ($assetsToActivate->assets as $a) {
 
 	Database::startTransaction();
 
-	Log::write("Getting thumbnail for asset " . $a->id . " from url " . $a->thumbnailUrl);
+	Log::write("Getting thumbnail for asset.", $a);
 
 	$creatorFetcher = $a->creator->getIndexer();
 	$imageData = $creatorFetcher->fetchThumbnailImage($a->thumbnailUrl);
 
+	Log::write("Completed fetching thumbnail.", ["length" => strlen($imageData)]);
+
 	Image::saveThumbnail($a->id, $imageData);
 	$a->status = AssetStatus::ACTIVE;
 	Database::saveAssetToDatabase($a);
+
+	Log::write("Saved new asset to database.", $a);
 
 	Database::commitTransaction();
 }

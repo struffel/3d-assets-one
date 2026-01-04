@@ -16,7 +16,7 @@ class Asset
 		public string $name,
 		public string $url,
 		public string $thumbnailUrl,
-		public string $date,
+		public DateTime $date,
 		public Type $type,
 		public License $license,
 		public Creator $creator,

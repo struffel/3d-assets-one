@@ -13,6 +13,7 @@ use asset\Quirk;
 use Exception;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use log\LogLevel;
 use misc\Html;
@@ -65,7 +66,6 @@ class CreatorIndexerCgMood extends CreatorIndexer
 			$domQuery = new DomQuery($dom);
 
 			$assetImageElements = $domQuery->find('.product img');
-			$assetsFoundThisIteration = sizeof($assetImageElements);
 
 			foreach ($assetImageElements as $assetImageElement) {
 
@@ -77,7 +77,7 @@ class CreatorIndexerCgMood extends CreatorIndexer
 					}
 				}
 				if (!$type) {
-					Log::write("Skipping " . $assetImageElement->attr('data-product-url') . " because it does not match the URL schema.");
+					Log::write("Skipping URL because it does not match the URL schema.", $assetImageElement->attr('data-product-url'), LogLevel::WARNING);
 				} elseif (!in_array($assetImageElement->attr('data-product-url'), $existingUrls)) {
 
 					$tmpCollection->assets[] = new Asset(
@@ -85,7 +85,7 @@ class CreatorIndexerCgMood extends CreatorIndexer
 						name: $assetImageElement->attr('data-product-title'),
 						url: $assetImageElement->attr('data-product-url'),
 						thumbnailUrl: "https://cgmood.com" . $assetImageElement->attr('src'),
-						date: date("Y-m-d"),
+						date: new DateTime(),
 						tags: array_filter(preg_split('/[^A-Za-z0-9]/', $assetImageElement->attr('data-product-title'))),
 						type: $type,
 						license: License::CUSTOM,
@@ -99,7 +99,7 @@ class CreatorIndexerCgMood extends CreatorIndexer
 			$page += 1;
 			$pagesProcessed += 1;
 
-			if ($assetsFoundThisIteration < 1) {
+			if (sizeof($assetImageElements) < 1) {
 				$page = 1;
 			}
 		} while ($pagesProcessed < $this->maxPagesPerIteration);

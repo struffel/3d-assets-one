@@ -9,6 +9,7 @@ use asset\AssetCollection;
 use creator\Creator;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 
 // hdri workshop
@@ -37,7 +38,7 @@ class CreatorIndexerHdriWorkshop extends CreatorIndexer
 					license: License::CUSTOM,
 					thumbnailUrl: $hdriWorkshopAsset['fullUrlThumb'],
 					quirks: [],
-					date: date("Y-m-d")
+					date: new DateTime()
 				);
 
 				$tmpCollection->assets[] = $tmpAsset;

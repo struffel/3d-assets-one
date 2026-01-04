@@ -10,6 +10,7 @@ use creator\Creator;
 use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use SimpleXMLElement;
 
@@ -56,7 +57,7 @@ class CreatorIndexerRawCatalog extends CreatorIndexer
 						id: NULL,
 						url: $rawCatalogAsset->url,
 						name: $rawCatalogAsset->name,
-						date: $rawCatalogAsset->updated,
+						date: new DateTime($rawCatalogAsset->updated),
 						tags: $tags,
 						type: $type,
 						creator: Creator::RAWCATALOG,

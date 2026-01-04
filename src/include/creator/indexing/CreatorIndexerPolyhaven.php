@@ -10,6 +10,7 @@ use creator\Creator;
 use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use log\Log;
 
@@ -44,7 +45,7 @@ class CreatorIndexerPolyhaven extends CreatorIndexer
 				$tmpAsset = new Asset(
 					id: NULL,
 					url: $url,
-					date: date('Y-m-d', $phAsset['date_published']),
+					date: new DateTime($phAsset['date_published']),
 					name: $phAsset['name'],
 					tags: $phAsset['tags'],
 					thumbnailUrl: $this->thumbnailUrlPrefix . $key . $this->thumbnailUrlSuffix,
@@ -55,7 +56,6 @@ class CreatorIndexerPolyhaven extends CreatorIndexer
 				);
 
 				$tmpCollection->assets[] = $tmpAsset;
-				Log::write("Found new asset: " . $tmpAsset->url);
 			}
 		}
 

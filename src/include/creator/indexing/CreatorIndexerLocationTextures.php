@@ -11,6 +11,7 @@ use asset\AssetCollection;
 use creator\Creator;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;
@@ -43,8 +44,6 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 
 					$assetImageElement = $assetLinkElement->find('img.pack-link-img');
 
-					// use current date as a fallback
-					$date =  date("Y-m-d");
 
 					if (!in_array($assetLinkElement->attr('href'), $existingUrls)) {
 
@@ -64,7 +63,7 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 							name: $assetImageElement->attr('title'),
 							url: $assetLinkElement->attr('href'),
 							thumbnailUrl: $assetImageElement->attr('data-src'),
-							date: $date,
+							date: new DateTime(),
 							tags: array_merge(
 								array_filter(
 									preg_split('/[^A-Za-z0-9]/', $assetImageElement->attr('title'))

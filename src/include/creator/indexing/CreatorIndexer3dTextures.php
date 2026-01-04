@@ -10,6 +10,7 @@ use creator\Creator;
 use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use log\LogLevel;
 use misc\Image;
@@ -62,7 +63,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 						try {
 							$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['square']['source_url'];
 						} catch (Throwable $e) {
-							Log::write($e->getMessage() . " / 1st attempt failed... / " . $wpPost['link'], LogLevel::WARNING);
+							Log::write("1st attempt failed", [$wpPost['link'], $e], LogLevel::WARNING);
 						}
 
 						// 2nd attempt
@@ -70,7 +71,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 							try {
 								$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'];
 							} catch (Throwable $e) {
-								Log::write($e->getMessage() . " / 2nd attempt failed... / " . $wpPost['link'], LogLevel::WARNING);
+								Log::write("2nd attempt failed", [$wpPost['link'], $e], LogLevel::WARNING);
 							}
 						}
 
@@ -79,7 +80,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 							try {
 								$tmpThumbnail = $wpPost['jetpack_featured_media_url'];
 							} catch (Throwable $e) {
-								Log::write($e->getMessage() . " / 3rd attempt failed... / " . $wpPost['link'], LogLevel::WARNING);
+								Log::write("3rd attempt failed", [$wpPost['link'], $e], LogLevel::WARNING);
 							}
 						}
 
@@ -87,7 +88,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 
 						// Test if any attempt worked
 						if (!isset($tmpThumbnail)) {
-							Log::write("All attempts failed. Thumbnail could not be resolved. Skipping... / " . $wpPost['link'], LogLevel::ERROR);
+							Log::write("All attempts failed. Thumbnail could not be resolved. Skipping... ", $wpPost['link'], LogLevel::ERROR);
 							continue;
 						}
 
@@ -96,7 +97,7 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 							id: NULL,
 							name: $wpPost['title']['rendered'],
 							url: $wpPost['link'],
-							date: $wpPost['date'],
+							date: new DateTime($wpPost['date']),
 							tags: $tmpTags,
 							thumbnailUrl: $tmpThumbnail,
 							type: Type::PBR_MATERIAL,

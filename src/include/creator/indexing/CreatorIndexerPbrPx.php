@@ -10,6 +10,7 @@ use asset\AssetCollection;
 use creator\Creator;
 use fetch\Fetch;
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use log\LogLevel;
 use log\Log;
@@ -94,8 +95,7 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 						]
 					)->fetch()->parseAsJson();
 
-					Log::write("PBR PX Asset Details:", LogLevel::DEBUG);
-					Log::write(print_r($pbrPxAssetDetailsRaw, true), LogLevel::DEBUG);
+					Log::write("PBR PX Asset Details:", $pbrPxAssetDetailsRaw, LogLevel::INFO);
 
 					$pbrPxAssetDetails = $pbrPxAssetDetailsRaw['data'][0];
 
@@ -120,7 +120,7 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 						}
 					}
 
-					Log::write("PBR PX Asset found: " . $pbrPxAssetDetails['ename'] . " | Type: " . $type->name() . " | URL: " . $assetUrl);
+					Log::write("PBR PX Asset found", ["details" => $pbrPxAssetDetails, "type" => $type, "url" => $assetUrl], LogLevel::INFO);
 
 					// Build asset
 					$tmpCollection->assets[] = new Asset(
@@ -128,7 +128,7 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 						name: $pbrPxAssetDetails['ename'],
 						url: $assetUrl,
 						thumbnailUrl: $thumbnailUrl,
-						date: $pbrPxAsset['create_time'],
+						date: new DateTime($pbrPxAsset['create_time']),
 						tags: $tags,
 						type: $type,
 						license: License::CC0,

@@ -11,6 +11,7 @@ use asset\AssetCollection;
 use creator\Creator;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;
@@ -51,7 +52,7 @@ class CreatorIndexerThreeDScans extends CreatorIndexer
 							name: $assetLinkElement->attr('title'),
 							url: $assetLinkElement->attr('href'),
 							thumbnailUrl: $assetImageElement->attr('src'),
-							date: $date,
+							date: new DateTime($date),
 							tags: array_merge(array_filter(preg_split('/[^A-Za-z0-9]/', $assetLinkElement->attr('title'))), ['statue', 'sculpture']),
 							type: Type::MODEL_3D,
 							license: License::CC0,

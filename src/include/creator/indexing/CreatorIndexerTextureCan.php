@@ -10,6 +10,7 @@ use creator\Creator;
 use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use misc\Html;
 use misc\Image;
@@ -39,7 +40,7 @@ class CreatorIndexerTextureCan extends CreatorIndexer
 					id: NULL,
 					name: $metaTags['tex1:name'],
 					url: $url,
-					date: $metaTags['tex1:release-date'],
+					date: new DateTime($metaTags['tex1:release-date']),
 					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags']),
 					type: Type::fromTex1Tag($metaTags['tex1:type']),
 					license: License::CC0,

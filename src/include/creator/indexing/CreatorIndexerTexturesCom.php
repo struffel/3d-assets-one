@@ -11,6 +11,7 @@ use creator\Creator;
 use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 
 // textures.com
@@ -57,7 +58,7 @@ class CreatorIndexerTexturesCom extends CreatorIndexer
 						name: $texComAsset['defaultPhotoSet']['titleThumbnail'],
 						url: $url,
 						thumbnailUrl: "https://textures.com/" . $texComAsset['picture'],
-						date: $texComAsset['defaultPhotoSet']['createdAtUtc'],
+						date: new DateTime($texComAsset['defaultPhotoSet']['createdAtUtc']),
 						tags: array_filter(preg_split('/[^A-Za-z0-9]/', $texComAsset['defaultPhotoSet']['titleThumbnail'])),
 						type: $this->categoryMapping[$texComAsset['defaultCategoryId']] ?? Type::OTHER,
 						license: License::CUSTOM,

@@ -12,6 +12,7 @@ use asset\Quirk;
 use Exception;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use misc\Html;
 use Rct567\DomQuery\DomQuery;
@@ -86,7 +87,7 @@ class CreatorIndexerPoliigon extends CreatorIndexer
 						name: $name,
 						url: $url,
 						thumbnailUrl: $assetBox->find('img')->attr('src'),
-						date: date("Y-m-d"),
+						date: new DateTime(),
 						tags: preg_split('/\s|,/', $name),
 						type: $type,
 						license: License::CUSTOM,

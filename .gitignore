@@ -11,3 +11,4 @@ dev.sql
 main.htpasswd
 
 src/public/img/thumbnail/*
+log/*

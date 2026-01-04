@@ -9,6 +9,7 @@ use asset\AssetCollection;
 use creator\Creator;
 
 use creator\indexing\CreatorIndexer;
+use DateTime;
 use fetch\WebItemReference;
 use misc\Image;
 
@@ -51,7 +52,7 @@ class CreatorIndexerAmdMaterialX extends CreatorIndexer
 							id: NULL,
 							url: $url,
 							name: $amdAsset['title'],
-							date: $amdAsset['published_date'],
+							date: new DateTime($amdAsset['published_date']),
 							tags: $tags,
 							type: Type::PBR_MATERIAL,
 							license: License::APACHE_2_0,
