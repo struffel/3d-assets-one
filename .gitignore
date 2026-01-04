@@ -9,3 +9,5 @@ remote_logs/*
 **.env
 dev.sql
 main.htpasswd
+
+src/public/img/thumbnail/*

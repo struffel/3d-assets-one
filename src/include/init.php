@@ -6,6 +6,8 @@ spl_autoload_register(function ($class) {
 	require_once str_replace("\\", '/', __DIR__ . "/$class.php");
 });
 
+use Dotenv\Dotenv;
+
 // Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
+$dotenv = Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
