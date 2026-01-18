@@ -239,7 +239,7 @@ class AssetQuery
 				license: License::from($row['licenseId']),
 				creator: Creator::from($row['creatorId']),
 				quirks: $quirks,
-				lastSuccessfulValidation: new DateTime($row['lastSuccessfulValidation'])
+				lastSuccessfulValidation: new DateTime($row['lastSuccessfulValidation'] ?? '1970-01-01 00:00:00')
 			);
 		}
 
