@@ -8,7 +8,6 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use asset\Quirk;
 use Exception;
 
 use creator\indexing\CreatorIndexer;
@@ -92,7 +91,6 @@ class CreatorIndexerPoliigon extends CreatorIndexer
 						type: $type,
 						license: License::CUSTOM,
 						creator: Creator::POLIIGON,
-						quirks: [Quirk::SIGNUP_REQUIRED],
 						status: AssetStatus::ACTIVE,
 						rawThumbnailData: new WebItemReference(
 							url: $assetBox->find('img')->attr('src')

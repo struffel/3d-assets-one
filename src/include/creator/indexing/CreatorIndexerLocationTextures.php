@@ -73,7 +73,6 @@ class CreatorIndexerLocationTextures extends CreatorIndexer
 							type: Type::HDRI,
 							license: License::CUSTOM,
 							creator: $this->creator,
-							quirks: [],
 							status: AssetStatus::ACTIVE,
 							rawThumbnailData: new WebItemReference(
 								url: $assetImageElement->attr('data-src')

@@ -8,7 +8,6 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
 use DateTime;
@@ -83,9 +82,6 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 					type: $type,
 					license: License::CUSTOM,
 					creator: $this->creator,
-					quirks: [
-						Quirk::SIGNUP_REQUIRED
-					],
 					status: AssetStatus::ACTIVE,
 					rawThumbnailData: $this->fetchThumbnailImage($thumbnailUrl)
 				);

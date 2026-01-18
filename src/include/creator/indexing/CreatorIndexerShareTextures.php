@@ -7,7 +7,7 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use asset\Quirk;
+
 
 use creator\indexing\CreatorIndexer;
 use DateTime;
@@ -46,7 +46,7 @@ class CreatorIndexerShareTextures extends CreatorIndexer
 					license: License::CC0,
 					creator: Creator::SHARETEXTURES,
 					thumbnailUrl: $metaTags['tex1:preview-image'],
-					quirks: [Quirk::ADS],
+
 					rawThumbnailData: $this->fetchThumbnailImage($metaTags['tex1:preview-image'])
 				);
 

@@ -4,7 +4,7 @@ use asset\License;
 use asset\Sorting;
 use asset\Type;
 use creator\Creator;
-use asset\Quirk;
+
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 ?>
@@ -49,13 +49,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			<select size="<?= sizeof(License::cases()) ?>" class="multi-select" name="license[]" multiple>
 				<?php foreach (License::cases() as $c) { ?>
 					<option class="form-option" <?= in_array($c->slug(), $_GET['license'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
-				<?php } ?>
-			</select>
-
-			<label class="form-label" for="avoid[]">Exclude</label>
-			<select size="<?= sizeof(Quirk::cases()) ?>" class="multi-select" name="avoid[]" multiple>
-				<?php foreach (Quirk::cases() as $c) { ?>
-					<option class="form-option" <?= in_array($c->slug(), $_GET['avoid'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
 				<?php } ?>
 			</select>
 

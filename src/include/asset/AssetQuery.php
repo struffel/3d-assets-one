@@ -3,7 +3,7 @@
 namespace asset;
 
 use creator\Creator;
-use asset\Quirk;
+
 use DateTime;
 use misc\Database;
 use log\Log;
@@ -22,7 +22,6 @@ class AssetQuery
 		public ?array $filterCreator = [],		// ?creator, limits the search to certain creators.
 		public ?array $filterLicense = [],		// ?license, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
 		public ?array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
-		public ?array $filterAvoidQuirk = [],		// ?avoid, defines which quirks a site MUST NOT have to still be included. Empty array causes all quirks to be allowed.
 		public ?AssetStatus $filterStatus = AssetStatus::ACTIVE,				// NULL => Any status
 
 	) {}
@@ -44,7 +43,6 @@ class AssetQuery
 		$output['creator'] = array_map($enumToSlugConverter, $this->filterCreator);
 		$output['license'] = array_map($enumToSlugConverter, $this->filterLicense);
 		$output['type'] = array_map($enumToSlugConverter, $this->filterType);
-		$output['avoid'] = array_map($enumToSlugConverter, $this->filterAvoidQuirk);
 
 		if ($includeStatus) {
 			$output['status'] = $this->filterStatus->value ?? NULL;
@@ -94,13 +92,6 @@ class AssetQuery
 		}
 		$filterLicense = array_filter($filterLicense);
 
-		// quirk filter
-		$filterAvoidQuirk = [];
-		foreach ($_GET['avoid'] ?? [] as $quirkSlug) {
-			$filterAvoidQuirk[] = Quirk::fromSlug($quirkSlug);
-		}
-		$filterAvoidQuirk = array_filter($filterAvoidQuirk);
-
 		return new AssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
 			limit: min(intval($_GET['limit'] ?? 150), 500),
@@ -110,7 +101,6 @@ class AssetQuery
 			filterCreator: $filterCreator,
 			filterLicense: $filterLicense,
 			filterType: $filterType,
-			filterAvoidQuirk: $filterAvoidQuirk,
 			filterStatus: $filterStatus
 		);
 	}
@@ -121,13 +111,12 @@ class AssetQuery
 		Log::write("Loading assets based on this query", $this);
 
 		// Begin defining SQL string and parameters for prepared statement
-		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,lastSuccessfulValidation,licenseId,typeId,creatorId,assetTags,quirkIds FROM Asset ";
+		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,lastSuccessfulValidation,licenseId,typeId,creatorId,assetTags FROM Asset ";
 		$sqlValues = [];
 
 		// Joins
 
 		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ";
-		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(quirkId SEPARATOR ',') AS quirkIds FROM Quirk GROUP BY assetId ) AllQuirks USING (assetId) ";
 
 		$sqlCommand .= " WHERE TRUE ";
 
@@ -135,11 +124,6 @@ class AssetQuery
 		foreach ($this->filterTag as $tag) {
 			$sqlCommand .= " AND assetId IN (SELECT assetId FROM Tag WHERE tagName = ? ) ";
 			$sqlValues[] = $tag;
-		}
-
-		foreach ($this->filterAvoidQuirk as $quirk) {
-			$sqlCommand .= " AND assetId NOT IN (SELECT assetId FROM Quirk WHERE quirkId = ? ) ";
-			$sqlValues[] = $quirk->value;
 		}
 
 
@@ -220,11 +204,6 @@ class AssetQuery
 		// Assemble the asset objects
 		while ($row = $databaseOutput->fetch_assoc()) {
 
-			$quirks = [];
-			foreach (array_filter(explode(",", $row['quirkIds'] ?? "")) as $q) {
-				$quirks[] = Quirk::from(intval($q));
-			}
-
 			$tags = array_filter(explode(',', $row['assetTags'] ?? ""));
 
 			$output->assets[] = new Asset(
@@ -238,7 +217,6 @@ class AssetQuery
 				type: Type::from($row['typeId']),
 				license: License::from($row['licenseId']),
 				creator: Creator::from($row['creatorId']),
-				quirks: $quirks,
 				lastSuccessfulValidation: new DateTime($row['lastSuccessfulValidation'] ?? '1970-01-01 00:00:00')
 			);
 		}

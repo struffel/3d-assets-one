@@ -7,7 +7,6 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
 use DateTime;
@@ -70,7 +69,6 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 						license: License::CC0,
 						creator: Creator::AMBIENTCG,
 						id: NULL,
-						quirks: [Quirk::ADS],
 						rawThumbnailData: new WebItemReference(url: $acgAsset['previewImage']['512-PNG'])->fetch()->content
 					);
 

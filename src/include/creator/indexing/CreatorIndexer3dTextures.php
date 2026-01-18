@@ -7,7 +7,6 @@ use asset\AssetCollection;
 use asset\License;
 use asset\Type;
 use creator\Creator;
-use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
 use DateTime;
@@ -103,7 +102,6 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 							type: Type::PBR_MATERIAL,
 							license: License::CC0,
 							creator: Creator::THREE_D_TEXTURES,
-							quirks: [Quirk::ADS],
 							rawThumbnailData: new WebItemReference(url: $tmpThumbnail)->fetch()->content
 						);
 

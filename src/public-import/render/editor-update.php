@@ -5,7 +5,7 @@ use asset\AssetStatus;
 use asset\License;
 use asset\Type;
 use creator\Creator;
-use asset\Quirk;
+
 use misc\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
@@ -60,14 +60,6 @@ if ($_POST['id'] ?? false) {
 
 	if (isset($_POST['tagString'])) {
 		$a->tags =  array_filter(preg_split('/[^A-Za-z0-9]/', $_POST['tagString']));
-	}
-
-	if (isset($_POST['quirks'])) {
-		$quirks = [];
-		foreach ($_POST['quirks'] as $q) {
-			$quirks[] = Quirk::from(intval($q));
-		}
-		$a->quirks = $quirks;
 	}
 
 	Database::saveAssetToDatabase($a);

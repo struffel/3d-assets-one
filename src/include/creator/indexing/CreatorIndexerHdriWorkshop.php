@@ -37,7 +37,6 @@ class CreatorIndexerHdriWorkshop extends CreatorIndexer
 					creator: Creator::HDRIWORKSHOP,
 					license: License::CUSTOM,
 					thumbnailUrl: $hdriWorkshopAsset['fullUrlThumb'],
-					quirks: [],
 					date: new DateTime(),
 					rawThumbnailData: new WebItemReference(url: $hdriWorkshopAsset['fullUrlThumb'])->fetch()->content
 				);

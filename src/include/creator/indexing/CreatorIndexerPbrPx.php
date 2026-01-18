@@ -133,7 +133,6 @@ class CreatorIndexerPbrPx extends CreatorIndexer
 						type: $type,
 						license: License::CC0,
 						creator: $this->creator,
-						quirks: [],
 						status: AssetStatus::ACTIVE,
 						rawThumbnailData: new WebItemReference(
 							url: $thumbnailUrl

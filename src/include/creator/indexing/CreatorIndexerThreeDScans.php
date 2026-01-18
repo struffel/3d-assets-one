@@ -57,7 +57,6 @@ class CreatorIndexerThreeDScans extends CreatorIndexer
 							type: Type::MODEL_3D,
 							license: License::CC0,
 							creator: $this->creator,
-							quirks: [],
 							status: AssetStatus::ACTIVE,
 							rawThumbnailData: new WebItemReference(
 								url: $assetImageElement->attr('src')

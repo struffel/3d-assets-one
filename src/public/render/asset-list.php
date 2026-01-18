@@ -28,9 +28,6 @@ foreach ($assets->assets as $a) { ?>
 			<img class="asset-creator-image only-hover" title="<?= $a->creator->name() ?>" width="32" height="32" src="/img/static/creator/<?= $a->creator->value ?>.png">
 			<span class="asset-name only-hover"><?= $a->name ?></span>
 			<span class="asset-icons only-hover">
-				<?php foreach ($a->quirks as $q) { ?>
-					<span title="<?= $q->name() ?>"><img src="/svg/quirk/<?= $q->value ?>.svg" width="32" height="32"></span>
-				<?php } ?>
 				<span title="<?= $a->license->name() ?>"><img src="/svg/license/<?= $a->license->value ?>.svg" width="32" height="32"></span>
 			</span>
 			<img class="asset-image" alt="<?= $a->name ?>" src="<?= $a->getThumbnailUrl(256, "JPG", "FFFFFF") ?>">

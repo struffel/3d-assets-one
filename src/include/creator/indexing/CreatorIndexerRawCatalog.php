@@ -7,7 +7,7 @@ use asset\AssetCollection;
 use asset\License;
 use asset\Type;
 use creator\Creator;
-use asset\Quirk;
+
 
 use creator\indexing\CreatorIndexer;
 use DateTime;
@@ -63,7 +63,6 @@ class CreatorIndexerRawCatalog extends CreatorIndexer
 						creator: Creator::RAWCATALOG,
 						license: License::CUSTOM,
 						thumbnailUrl: $rawCatalogAsset->cover,
-						quirks: [Quirk::SIGNUP_REQUIRED],
 						rawThumbnailData: new WebItemReference(
 							url: $rawCatalogAsset->cover
 						)->fetch()->content

@@ -21,7 +21,6 @@ class Asset
 		public License $license,
 		public Creator $creator,
 		public array $tags = [],
-		public array $quirks = [],	// Array of QUIRK
 		public AssetStatus $status = AssetStatus::ACTIVE,
 		public ?DateTime $lastSuccessfulValidation = NULL,
 		public ?string $rawThumbnailData = NULL

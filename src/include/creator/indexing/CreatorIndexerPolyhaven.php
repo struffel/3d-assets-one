@@ -7,7 +7,6 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use asset\Quirk;
 
 use creator\indexing\CreatorIndexer;
 use DateTime;
@@ -55,7 +54,6 @@ class CreatorIndexerPolyhaven extends CreatorIndexer
 					type: Type::from($this->typeMapping[$phAsset['type']]),
 					license: License::CC0,
 					creator: Creator::POLYHAVEN,
-					quirks: [Quirk::ADS],
 					rawThumbnailData: new WebItemReference(
 						url: $this->thumbnailUrlPrefix . $key . $this->thumbnailUrlSuffix
 					)->fetch()->content

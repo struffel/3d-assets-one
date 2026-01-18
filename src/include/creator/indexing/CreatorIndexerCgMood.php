@@ -9,7 +9,6 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use asset\Quirk;
 use Exception;
 
 use creator\indexing\CreatorIndexer;
@@ -90,7 +89,6 @@ class CreatorIndexerCgMood extends CreatorIndexer
 						type: $type,
 						license: License::CUSTOM,
 						creator: Creator::CGMOOD,
-						quirks: [Quirk::SIGNUP_REQUIRED, Quirk::LIMITED_FREE_DOWNLOADS],
 						status: AssetStatus::ACTIVE,
 						rawThumbnailData: new WebItemReference(
 							url: "https://cgmood.com" . $assetImageElement->attr('src')

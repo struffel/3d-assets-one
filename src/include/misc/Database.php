@@ -134,15 +134,6 @@ class Database
 				$parameters = [$asset->id, $tag];
 				Database::runQuery($sql, $parameters);
 			}
-
-			// Quirks
-
-			Database::runQuery("DELETE FROM Quirk WHERE assetId = ?", [$asset->id]);
-			foreach ($asset->quirks as $quirk) {
-				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES (?,?);";
-				$parameters = [$asset->id, $quirk->value];
-				Database::runQuery($sql, $parameters);
-			}
 		} else {
 			Log::write("Inserting new asset", $asset);
 
@@ -155,13 +146,6 @@ class Database
 			foreach ($asset->tags as $tag) {
 				$sql = "INSERT INTO Tag (assetId,tagName) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
 				$parameters = [$asset->url, $tag];
-				Database::runQuery($sql, $parameters);
-			}
-
-			// Quirks
-			foreach ($asset->quirks as $quirk) {
-				$sql = "INSERT INTO Quirk (assetId,quirkId) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
-				$parameters = [$asset->url, $quirk->value];
 				Database::runQuery($sql, $parameters);
 			}
 		}

@@ -8,7 +8,7 @@ use asset\License;
 use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
-use asset\Quirk;
+
 
 use creator\indexing\CreatorIndexer;
 use DateTime;
@@ -63,7 +63,6 @@ class CreatorIndexerTexturesCom extends CreatorIndexer
 						type: $this->categoryMapping[$texComAsset['defaultCategoryId']] ?? Type::OTHER,
 						license: License::CUSTOM,
 						creator: Creator::TEXTURES_COM,
-						quirks: [Quirk::SIGNUP_REQUIRED],
 						status: AssetStatus::ACTIVE,
 						rawThumbnailData: new WebItemReference(
 							url: "https://textures.com/" . $texComAsset['picture']

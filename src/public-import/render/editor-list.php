@@ -3,7 +3,7 @@
 use asset\AssetQuery;
 use asset\AssetStatus;
 use asset\License;
-use asset\Quirk;
+
 use asset\Type;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
@@ -50,13 +50,6 @@ $assets = $query->execute();
 			<select name="license">
 				<?php foreach (License::cases() as $c) { ?>
 					<option <?= $a->license == $c ? 'selected' : '' ?> class="form-option" value="<?= $c->value ?>"><?= $c->name ?></option>
-				<?php } ?>
-			</select>
-		</div>
-		<div>
-			<select name="quirks[]" multiple>
-				<?php foreach (Quirk::cases() as $c) { ?>
-					<option <?= in_array($c, $a->quirks) ? 'selected' : '' ?> class="form-option" value="<?= $c->value ?>"><?= $c->name ?></option>
 				<?php } ?>
 			</select>
 		</div>
