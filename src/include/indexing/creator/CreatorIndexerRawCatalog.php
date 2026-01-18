@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\indexing;
+namespace indexing\creator;
 
 use asset\Asset;
 use asset\AssetCollection;
@@ -9,7 +9,7 @@ use asset\Type;
 use creator\Creator;
 
 
-use creator\indexing\CreatorIndexer;
+use indexing\CreatorIndexer;
 use DateTime;
 use fetch\WebItemReference;
 use SimpleXMLElement;

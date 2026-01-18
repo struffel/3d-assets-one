@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\indexing;
+namespace indexing\creator;
 
 use asset\Asset;
 use asset\AssetCollection;
@@ -8,9 +8,9 @@ use asset\License;
 use asset\Type;
 use creator\Creator;
 
-use creator\indexing\CreatorIndexer;
 use DateTime;
 use fetch\WebItemReference;
+use indexing\CreatorIndexer;
 use log\LogLevel;
 use misc\Image;
 use log\Log;

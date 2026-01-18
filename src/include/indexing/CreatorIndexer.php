@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\indexing;
+namespace indexing;
 
 use asset\Asset;
 use asset\AssetCollection;

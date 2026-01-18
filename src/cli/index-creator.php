@@ -10,6 +10,9 @@ use misc\Image;
 
 require_once __DIR__ . '/../include/init.php';
 
+Log::start(logName: "index-creator/" . $creator->slug(), level: LogLevel::INFO, writeToStdout: true);
+
+
 // Pick a target creator
 if (isset($argv[1])) {
 	$creator = Creator::from(intval($argv[1]));
@@ -26,7 +29,8 @@ if (isset($argv[1])) {
 	$maxAssets = null;
 }
 
-Log::start(logName: "index-creator/" . $creator->slug(), level: LogLevel::INFO, writeToStdout: true);
+Log::write("Selected creator:", $creator);
+Log::write("Selected max assets:", $maxAssets);
 
 $creatorFetcher = $creator->getIndexer();
 

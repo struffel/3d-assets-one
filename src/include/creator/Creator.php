@@ -2,7 +2,7 @@
 
 namespace creator;
 
-use creator\indexing\CreatorIndexer;
+use indexing\CreatorIndexer;
 
 enum Creator: int
 {
@@ -170,24 +170,24 @@ enum Creator: int
 	public function getIndexer(): ?CreatorIndexer
 	{
 		return match ($this) {
-			self::AMBIENTCG => new \creator\indexing\CreatorIndexerAmbientCg(),
-			self::POLYHAVEN => new \creator\indexing\CreatorIndexerPolyhaven(),
-			self::SHARETEXTURES => new \creator\indexing\CreatorIndexerShareTextures(),
-			self::THREE_D_TEXTURES => new \creator\indexing\CreatorIndexer3dTextures(),
-			self::CGBOOKCASE => new \creator\indexing\CreatorIndexerCgBookcase(),
-			self::TEXTURECAN => new \creator\indexing\CreatorIndexerTextureCan(),
-			self::NOEMOTIONHDRS => new \creator\indexing\CreatorIndexerNoEmotionsHdr(),
-			self::GPUOPENMATLIB => new \creator\indexing\CreatorIndexerAmdMaterialX(),
-			self::RAWCATALOG => new \creator\indexing\CreatorIndexerRawCatalog(),
-			self::HDRIWORKSHOP => new \creator\indexing\CreatorIndexerHdriWorkshop(),
-			self::POLIIGON => new \creator\indexing\CreatorIndexerPoliigon(),
-			self::TEXTURES_COM => new \creator\indexing\CreatorIndexerTexturesCom(),
-			self::CGMOOD => new \creator\indexing\CreatorIndexerCgMood(),
-			self::THREE_D_SCANS => new \creator\indexing\CreatorIndexerThreeDScans(),
-			self::LOCATION_TEXTURES => new \creator\indexing\CreatorIndexerLocationTextures(),
-			self::PBR_PX => new \creator\indexing\CreatorIndexerPbrPx(),
-			self::TWINBRU => new \creator\indexing\CreatorIndexerTwinbru(),
-			self::LIGHTBEANS => new \creator\indexing\CreatorIndexerLightbeans(),
+			self::AMBIENTCG => new \indexing\creator\CreatorIndexerAmbientCg(),
+			self::POLYHAVEN => new \indexing\creator\CreatorIndexerPolyhaven(),
+			self::SHARETEXTURES => new \indexing\creator\CreatorIndexerShareTextures(),
+			self::THREE_D_TEXTURES => new \indexing\creator\CreatorIndexer3dTextures(),
+			self::CGBOOKCASE => new \indexing\creator\CreatorIndexerCgBookcase(),
+			self::TEXTURECAN => new \indexing\creator\CreatorIndexerTextureCan(),
+			self::NOEMOTIONHDRS => new \indexing\creator\CreatorIndexerNoEmotionsHdr(),
+			self::GPUOPENMATLIB => new \indexing\creator\CreatorIndexerAmdMaterialX(),
+			self::RAWCATALOG => new \indexing\creator\CreatorIndexerRawCatalog(),
+			self::HDRIWORKSHOP => new \indexing\creator\CreatorIndexerHdriWorkshop(),
+			self::POLIIGON => new \indexing\creator\CreatorIndexerPoliigon(),
+			self::TEXTURES_COM => new \indexing\creator\CreatorIndexerTexturesCom(),
+			self::CGMOOD => new \indexing\creator\CreatorIndexerCgMood(),
+			self::THREE_D_SCANS => new \indexing\creator\CreatorIndexerThreeDScans(),
+			self::LOCATION_TEXTURES => new \indexing\creator\CreatorIndexerLocationTextures(),
+			self::PBR_PX => new \indexing\creator\CreatorIndexerPbrPx(),
+			self::TWINBRU => new \indexing\creator\CreatorIndexerTwinbru(),
+			self::LIGHTBEANS => new \indexing\creator\CreatorIndexerLightbeans(),
 			default => null
 		};
 	}

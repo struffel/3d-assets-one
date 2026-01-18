@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\indexing;
+namespace indexing\creator;
 // CGMood
 
 use asset\Asset;
@@ -11,7 +11,7 @@ use asset\AssetCollection;
 use creator\Creator;
 use Exception;
 
-use creator\indexing\CreatorIndexer;
+use indexing\CreatorIndexer;
 use DateTime;
 use fetch\WebItemReference;
 use log\LogLevel;

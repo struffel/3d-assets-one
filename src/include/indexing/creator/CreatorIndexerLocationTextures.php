@@ -1,6 +1,6 @@
 <?php
 
-namespace creator\indexing;
+namespace indexing\creator;
 // Location Textures
 
 use asset\Asset;
@@ -10,7 +10,7 @@ use asset\Type;
 use asset\AssetCollection;
 use creator\Creator;
 
-use creator\indexing\CreatorIndexer;
+use indexing\CreatorIndexer;
 use DateTime;
 use fetch\WebItemReference;
 use misc\Html;
