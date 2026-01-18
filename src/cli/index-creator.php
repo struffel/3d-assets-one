@@ -1,20 +1,29 @@
 <?php
 
 use asset\AssetStatus;
+use asset\Asset;
 use creator\Creator;
 use log\LogLevel;
 use misc\Database;
 use log\Log;
+use misc\Image;
 
 require_once __DIR__ . '/../include/init.php';
 
 // Pick a target creator
 if (isset($argv[1])) {
 	$creator = Creator::from(intval($argv[1]));
+
+	// Pick how many assets to fetch
+	if (isset($argv[2])) {
+		$maxAssets = intval($argv[2]);
+		Log::write("Limiting to " . $maxAssets . " assets.");
+	}
 } else {
 	$randomTargets = Creator::regularRefreshList();
 	$randomIndex = array_rand($randomTargets);
 	$creator = $randomTargets[$randomIndex];
+	$maxAssets = null;
 }
 
 Log::start(logName: "index-creator/" . $creator->slug(), level: LogLevel::INFO, writeToStdout: true);
@@ -33,11 +42,26 @@ $result = $creatorFetcher->runUpdate();
 Log::write("Found " . sizeof($result->assets) . " new assets", $result);
 
 if (sizeof($result->assets) > 0) {
-	Log::write("Writing new assets to DB");
+
+	/**
+	 * @var Asset $a
+	 */
 	foreach ($result->assets as $a) {
+		$a->status = AssetStatus::ACTIVE;
 		Database::startTransaction();
-		$a->status = AssetStatus::PENDING;	// Failsave in case the creator fetching function does not set it properly.
+
+		// Save asset to DB
 		Database::saveAssetToDatabase($a);
+
+		// Add the missing id to the asset object
+		$a->id = Database::runQuery("SELECT assetId FROM Asset WHERE assetUrl = ?;", [$a->url])->fetch_assoc()['assetId'];
+
+		if ($a->rawThumbnailData) {
+			Image::saveThumbnail($a->id, $a->rawThumbnailData);
+			Log::write("Saved thumbnail for asset ", $a->id);
+		} else {
+			throw new Exception("No thumbnail data present for asset " . $a->id);
+		}
 		Database::commitTransaction();
 	}
 	Log::write("Wrote " . sizeof($result->assets) . " new assets.");

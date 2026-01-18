@@ -56,7 +56,8 @@ class CreatorIndexerCgBookcase extends CreatorIndexer
 					type: Type::fromTex1Tag($metaTags['tex1:type']),
 					license: License::CC0,
 					creator: Creator::CGBOOKCASE,
-					thumbnailUrl: $metaTags['tex1:preview-image']
+					thumbnailUrl: $metaTags['tex1:preview-image'],
+					rawThumbnailData: new WebItemReference(url: $metaTags['tex1:preview-image'])->fetch()->content
 				);
 
 				$tmpCollection->assets[] = $tmpAsset;

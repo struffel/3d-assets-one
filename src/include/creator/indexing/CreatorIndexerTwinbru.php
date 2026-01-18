@@ -197,7 +197,10 @@ class CreatorIndexerTwinbru extends CreatorIndexer
 						quirks: [
 							Quirk::SIGNUP_REQUIRED
 						],
-						status: AssetStatus::PENDING
+						status: AssetStatus::ACTIVE,
+						rawThumbnailData: new WebItemReference(
+							url: $thumbnailUrl
+						)->fetch()->content
 					);
 				}
 			}

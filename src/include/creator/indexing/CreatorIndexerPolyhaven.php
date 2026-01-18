@@ -42,17 +42,23 @@ class CreatorIndexerPolyhaven extends CreatorIndexer
 
 			if (!in_array($url, $existingUrls)) {
 
+				$date = new DateTime();
+				$date->setTimestamp(($phAsset['date_added']));
+
 				$tmpAsset = new Asset(
 					id: NULL,
 					url: $url,
-					date: new DateTime($phAsset['date_published']),
+					date: $date,
 					name: $phAsset['name'],
 					tags: $phAsset['tags'],
 					thumbnailUrl: $this->thumbnailUrlPrefix . $key . $this->thumbnailUrlSuffix,
 					type: Type::from($this->typeMapping[$phAsset['type']]),
 					license: License::CC0,
 					creator: Creator::POLYHAVEN,
-					quirks: [Quirk::ADS]
+					quirks: [Quirk::ADS],
+					rawThumbnailData: new WebItemReference(
+						url: $this->thumbnailUrlPrefix . $key . $this->thumbnailUrlSuffix
+					)->fetch()->content
 				);
 
 				$tmpCollection->assets[] = $tmpAsset;

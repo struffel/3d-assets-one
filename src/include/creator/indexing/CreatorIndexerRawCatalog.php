@@ -63,7 +63,10 @@ class CreatorIndexerRawCatalog extends CreatorIndexer
 						creator: Creator::RAWCATALOG,
 						license: License::CUSTOM,
 						thumbnailUrl: $rawCatalogAsset->cover,
-						quirks: [Quirk::SIGNUP_REQUIRED]
+						quirks: [Quirk::SIGNUP_REQUIRED],
+						rawThumbnailData: new WebItemReference(
+							url: $rawCatalogAsset->cover
+						)->fetch()->content
 					);
 
 					$tmpCollection->assets[] = $tmpAsset;

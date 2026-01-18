@@ -91,7 +91,10 @@ class CreatorIndexerCgMood extends CreatorIndexer
 						license: License::CUSTOM,
 						creator: Creator::CGMOOD,
 						quirks: [Quirk::SIGNUP_REQUIRED, Quirk::LIMITED_FREE_DOWNLOADS],
-						status: AssetStatus::PENDING
+						status: AssetStatus::ACTIVE,
+						rawThumbnailData: new WebItemReference(
+							url: "https://cgmood.com" . $assetImageElement->attr('src')
+						)->fetch()->content
 					);
 				}
 			}

@@ -22,8 +22,9 @@ class Asset
 		public Creator $creator,
 		public array $tags = [],
 		public array $quirks = [],	// Array of QUIRK
-		public AssetStatus $status = AssetStatus::PENDING,
-		public ?DateTime $lastSuccessfulValidation = NULL
+		public AssetStatus $status = AssetStatus::ACTIVE,
+		public ?DateTime $lastSuccessfulValidation = NULL,
+		public ?string $rawThumbnailData = NULL
 	) {}
 
 	public function getThumbnailUrl(int $size, string $extension, ?string $backgroundColor): string

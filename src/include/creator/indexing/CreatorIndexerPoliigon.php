@@ -93,7 +93,10 @@ class CreatorIndexerPoliigon extends CreatorIndexer
 						license: License::CUSTOM,
 						creator: Creator::POLIIGON,
 						quirks: [Quirk::SIGNUP_REQUIRED],
-						status: AssetStatus::PENDING
+						status: AssetStatus::ACTIVE,
+						rawThumbnailData: new WebItemReference(
+							url: $assetBox->find('img')->attr('src')
+						)->fetch()->content
 					);
 				}
 			}

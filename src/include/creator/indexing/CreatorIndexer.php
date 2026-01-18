@@ -5,6 +5,7 @@ namespace creator\indexing;
 use asset\Asset;
 use asset\AssetCollection;
 use asset\AssetQuery;
+use asset\AssetStatus;
 use creator\Creator;
 use Exception;
 
@@ -26,6 +27,8 @@ abstract class CreatorIndexer
 			throw new Exception("Cannot change creator of indexer.");
 		}*/
 	}
+
+	private int $maxAssetsPerRun = 5;
 
 	// General functions
 
@@ -70,11 +73,6 @@ abstract class CreatorIndexer
 	}
 
 	// Creator-specific functions
-
-	public function fetchThumbnailImage(string $url): string
-	{
-		return new WebItemReference(url: $url)->fetch()->content;
-	}
 
 	public function processUrl(string $url): string
 	{

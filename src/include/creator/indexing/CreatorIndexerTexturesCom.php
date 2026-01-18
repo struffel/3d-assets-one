@@ -64,7 +64,10 @@ class CreatorIndexerTexturesCom extends CreatorIndexer
 						license: License::CUSTOM,
 						creator: Creator::TEXTURES_COM,
 						quirks: [Quirk::SIGNUP_REQUIRED],
-						status: AssetStatus::PENDING
+						status: AssetStatus::ACTIVE,
+						rawThumbnailData: new WebItemReference(
+							url: "https://textures.com/" . $texComAsset['picture']
+						)->fetch()->content
 					);
 				}
 			}

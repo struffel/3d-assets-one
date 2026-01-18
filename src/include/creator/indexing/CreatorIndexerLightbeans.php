@@ -86,7 +86,8 @@ class CreatorIndexerLightbeans extends CreatorIndexer
 					quirks: [
 						Quirk::SIGNUP_REQUIRED
 					],
-					status: AssetStatus::PENDING
+					status: AssetStatus::ACTIVE,
+					rawThumbnailData: $this->fetchThumbnailImage($thumbnailUrl)
 				);
 			}
 		}

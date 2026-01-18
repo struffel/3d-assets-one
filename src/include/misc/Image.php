@@ -10,7 +10,7 @@ use Imagick;
 class Image
 {
 
-	private static string $thumbnailDirectory =  __DIR__ . "/../public/img/thumbnail/";
+	private static string $thumbnailDirectory =  __DIR__ . "/../../public/img/thumbnail/";
 
 	private static array $thumbnailTemplate = [
 		["JPG", "FFFFFF", 32],
@@ -27,16 +27,26 @@ class Image
 	{
 		foreach (Image::$thumbnailTemplate as $t) {
 			$tmpThumbnail = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
+
+			$fileName = Image::$thumbnailDirectory .
+				strtoupper(
+					implode(
+						"-",
+						array_filter([$t[2], $t[0], $t[1]])
+					)
+				) . "/$assetId." . strtolower($t[0]);
+
+			// Create directory if it does not exist
+			$directory = dirname($fileName);
+			if (!is_dir($directory)) {
+				mkdir($directory, 0755, true);
+			}
+
 			file_put_contents(
-				filename: Image::$thumbnailDirectory .
-					strtoupper(
-						implode(
-							"-",
-							array_filter([$t[2], $t[0], $t[1]])
-						)
-					) . "/$assetId." . strtolower($t[0]),
+				filename: $fileName,
 				data: $tmpThumbnail
 			);
+			Log::write("Saved thumbnail", ["assetId" => $assetId, "fileName" => $fileName]);
 		}
 	}
 

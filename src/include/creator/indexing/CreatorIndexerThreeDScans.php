@@ -58,7 +58,10 @@ class CreatorIndexerThreeDScans extends CreatorIndexer
 							license: License::CC0,
 							creator: $this->creator,
 							quirks: [],
-							status: AssetStatus::PENDING
+							status: AssetStatus::ACTIVE,
+							rawThumbnailData: new WebItemReference(
+								url: $assetImageElement->attr('src')
+							)->fetch()->content
 						);
 					}
 				}

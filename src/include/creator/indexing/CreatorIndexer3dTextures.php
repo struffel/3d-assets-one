@@ -103,7 +103,8 @@ class CreatorIndexer3dTextures extends CreatorIndexer
 							type: Type::PBR_MATERIAL,
 							license: License::CC0,
 							creator: Creator::THREE_D_TEXTURES,
-							quirks: [Quirk::ADS]
+							quirks: [Quirk::ADS],
+							rawThumbnailData: new WebItemReference(url: $tmpThumbnail)->fetch()->content
 						);
 
 						$tmpCollection->assets[] = $tmpAsset;

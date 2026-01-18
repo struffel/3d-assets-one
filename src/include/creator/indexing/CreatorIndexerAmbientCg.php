@@ -70,7 +70,8 @@ class CreatorIndexerAmbientCg extends CreatorIndexer
 						license: License::CC0,
 						creator: Creator::AMBIENTCG,
 						id: NULL,
-						quirks: [Quirk::ADS]
+						quirks: [Quirk::ADS],
+						rawThumbnailData: new WebItemReference(url: $acgAsset['previewImage']['512-PNG'])->fetch()->content
 					);
 
 					$tmpCollection->assets[] = $tmpAsset;

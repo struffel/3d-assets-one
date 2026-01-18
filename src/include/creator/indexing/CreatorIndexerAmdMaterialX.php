@@ -61,7 +61,14 @@ class CreatorIndexerAmdMaterialX extends CreatorIndexer
 								'#ID#',
 								$amdAsset['renders_order'][0],
 								$this->previewImageTemplate
-							)
+							),
+							rawThumbnailData: new WebItemReference(
+								url: str_replace(
+									'#ID#',
+									$amdAsset['renders_order'][0],
+									$this->previewImageTemplate
+								)
+							)->fetch()->content,
 						);
 
 						$tmpCollection->assets[] = $tmpAsset;
