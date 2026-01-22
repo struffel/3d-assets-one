@@ -6,34 +6,66 @@ use asset\Asset;
 use indexing\event\IndexingEvent;
 use log\Log;
 use log\LogLevel;
-use mysqli;
-use mysqli_result;
+use SQLite3;
+use SQLite3Result;
 
 class Database
 {
 
-	private static mysqli $connection;
+	private static SQLite3 $connection;
 
-	public static function initializeConnection()
+	private static function initializeConnection()
 	{
-
-		Log::write("Initializing DB Connection");
-
-
 		// Create connection
 		if (!isset(self::$connection)) {
-			self::$connection = new mysqli($_ENV["3D1_DB_SERVER"], $_ENV["3D1_DB_USERNAME"], $_ENV["3D1_DB_PASSWORD"]);
-			Log::write("Initialized DB connection", ["server" => $_ENV["3D1_DB_SERVER"], "username" => $_ENV["3D1_DB_USERNAME"]]);
-		}
+			Log::write("Initializing DB Connection");
+			$dbPath = $_ENV["3D1_DB_PATH"];
+			self::$connection = new SQLite3($dbPath);
+			self::$connection->enableExceptions(true);
+			Log::write("Initialized SQLite DB connection", ["database" => $dbPath]);
 
-		// Check connection
-		if (self::$connection->connect_error) {
-			Log::write("Connection failed", ["error" => self::$connection->connect_error], LogLevel::ERROR);
+			if (self::getUserVersion() == 0) {
+				Log::write("Database user version is 0, running initial migration.");
+				self::migrate();
+			}
 		}
+	}
 
-		$query = "use " . $_ENV["3D1_DB_NAME"] . ";";
-		self::$connection->query($query);
-		Log::write("Selected DB", ["database" => $_ENV["3D1_DB_NAME"]]);
+	/**
+	 * Reads the content of `./sql` and runs all .sql files whose name is greater than the current user version of the database in order and updates the user version.
+	 * @return void 
+	 */
+	public static function migrate()
+	{
+
+		self::startTransaction();
+		do {
+			$ranMigrationStep = false;
+			$currentVersion = self::getUserVersion();
+
+			$potentialNextVersion = $currentVersion + 1;
+			$potentialNextPath = __DIR__ . "/sql/migration_" . $potentialNextVersion . ".sql";
+
+			if (file_exists($potentialNextPath)) {
+				Log::write("Running migration step " . $potentialNextVersion);
+				$sql = file_get_contents($potentialNextPath);
+				self::$connection->exec($sql);
+				self::runQuery("PRAGMA user_version = " . $potentialNextVersion . ";");
+				$ranMigrationStep = true;
+			} else {
+				Log::write("No migration step found for version " . $potentialNextVersion . ", stopping migrations.");
+			}
+		} while ($ranMigrationStep);
+		self::commitTransaction();
+	}
+
+	private static function getUserVersion(): int
+	{
+
+		self::initializeConnection();
+
+		$result = self::$connection->querySingle("PRAGMA user_version;");
+		return intval($result);
 	}
 
 	public static function generatePlaceholder(array $array)
@@ -47,40 +79,23 @@ class Database
 
 	public static function startTransaction()
 	{
-		if (!isset(self::$connection)) {
-			self::initializeConnection();
-		}
+		self::initializeConnection();
 		Log::write("Start transaction...");
-		self::$connection->query("START TRANSACTION;");
-		if (self::$connection->error) {
-			Log::write("SQL execution ERROR: ", self::$connection->error, LogLevel::ERROR);
-		} else {
-			Log::write("SQL OK");
-		}
+		self::$connection->exec("BEGIN TRANSACTION;");
 	}
 
 	public static function commitTransaction()
 	{
-		if (!isset(self::$connection)) {
-			self::initializeConnection();
-		}
+		self::initializeConnection();
 		Log::write("Commit transaction...");
-		self::$connection->query("COMMIT;");
-		if (self::$connection->error) {
-			Log::write("SQL execution ERROR: ", self::$connection->error, LogLevel::ERROR);
-		} else {
-			Log::write("SQL OK");
-		}
+		self::$connection->exec("COMMIT;");
 	}
 
-	public static function runQuery(string $sql, array $parameters = []): mysqli_result|bool
+	public static function runQuery(string $sql, array $parameters = []): SQLite3Result|bool
 	{
-
 		Log::write("Received SQL query to run: ", ["sql" => $sql, "parameters" => $parameters]);
+		self::initializeConnection();
 
-		if (!isset(self::$connection)) {
-			self::initializeConnection();
-		}
 
 		if (sizeof($parameters) > 0) {
 
@@ -96,28 +111,43 @@ class Database
 				}
 			}
 
+			$stmt = self::$connection->prepare($sql);
 
-			$result = self::$connection->execute_query($sql, $parameters);
-			if (self::$connection->error) {
-				Log::write("SQL execution ERROR: ", self::$connection->error, LogLevel::ERROR);
-			} else {
-				Log::write("SQL OK");
+			// Bind parameters (SQLite3 uses 1-based index for positional parameters)
+			foreach ($parameters as $index => $value) {
+				$type = self::getSqlite3Type($value);
+				$stmt->bindValue($index + 1, $value, $type);
 			}
+
+			$result = $stmt->execute();
 		} else {
 			$result = self::$connection->query($sql);
-			if (self::$connection->error) {
-				Log::write("Query ERROR: ", self::$connection->error, LogLevel::ERROR);
-			} else {
-				Log::write("Query OK");
-			}
 		}
 
 		return $result;
 	}
 
+	/**
+	 * Determine the SQLite3 type constant for a given value
+	 */
+	private static function getSqlite3Type(mixed $value): int
+	{
+		if ($value === null) {
+			return SQLITE3_NULL;
+		} elseif (is_int($value)) {
+			return SQLITE3_INTEGER;
+		} elseif (is_float($value)) {
+			return SQLITE3_FLOAT;
+		} elseif (is_bool($value)) {
+			return SQLITE3_INTEGER;
+		} else {
+			return SQLITE3_TEXT;
+		}
+	}
+
 	public static function addAssetClickById(int $assetId)
 	{
 		$sql = "INSERT INTO Asset(AssetId,assetClicks) VALUES (?,1) ON DUPLICATE KEY UPDATE assetClicks = assetClicks+1;";
-		Database::runQuery($sql, [intval($assetId)]);
+		Database::runQuery($sql, [$assetId]);
 	}
 }

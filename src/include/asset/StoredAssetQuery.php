@@ -111,25 +111,25 @@ class StoredAssetQuery
 		Log::write("Loading assets based on this query", $this);
 
 		// Begin defining SQL string and parameters for prepared statement
-		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,lastSuccessfulValidation,licenseId,typeId,creatorId,assetTags FROM Asset ";
+		$sqlCommand = " SELECT id,url,title,state,date,clicks,lastSuccessfulValidation,typeId,creatorId,tags FROM Asset ";
 		$sqlValues = [];
 
 		// Joins
 
-		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ";
+		$sqlCommand .= " LEFT JOIN (SELECT id, GROUP_CONCAT(tag , ',') AS tags FROM Tag GROUP BY id ) AllTags USING (id) ";
 
 		$sqlCommand .= " WHERE TRUE ";
 
 
 		foreach ($this->filterTag as $tag) {
-			$sqlCommand .= " AND assetId IN (SELECT assetId FROM Tag WHERE tagName = ? ) ";
+			$sqlCommand .= " AND id IN (SELECT id FROM Tag WHERE tag = ? ) ";
 			$sqlValues[] = $tag;
 		}
 
 
 		if (sizeof($this->filterAssetId) > 0) {
 			$ph = Database::generatePlaceholder($this->filterAssetId);
-			$sqlCommand .= " AND assetId IN ($ph) ";
+			$sqlCommand .= " AND id IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $this->filterAssetId);
 		}
 
@@ -152,7 +152,7 @@ class StoredAssetQuery
 		}
 
 		if ($this->filterStatus !== NULL) {
-			$sqlCommand .= " AND assetActive=? ";
+			$sqlCommand .= " AND state=? ";
 			$sqlValues[] = $this->filterStatus;
 		}
 
@@ -160,16 +160,16 @@ class StoredAssetQuery
 		$sqlCommand .= match ($this->sort) {
 
 			// Options for public display
-			AssetSorting::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
-			AssetSorting::OLDEST => " ORDER BY assetDate ASC, assetId ASC ",
+			AssetSorting::LATEST => " ORDER BY date DESC, id DESC ",
+			AssetSorting::OLDEST => " ORDER BY date ASC, id ASC ",
 			AssetSorting::RANDOM => " ORDER BY RAND() ",
-			AssetSorting::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC ",
+			AssetSorting::POPULAR => " ORDER BY ( (clicks + 10) / POWER( ABS( JULIANDAY('now') - JULIANDAY(date) ) + 1 , 1.3 ) ) DESC, date DESC, id DESC ",
 
 			// Options for internal editor (potentially less optimized)
-			AssetSorting::LEAST_CLICKED => " ORDER BY assetClicks ASC ",
-			AssetSorting::MOST_CLICKED => " ORDER BY assetClicks DESC ",
-			AssetSorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) ASC ",
-			AssetSorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) DESC ",
+			AssetSorting::LEAST_CLICKED => " ORDER BY clicks ASC ",
+			AssetSorting::MOST_CLICKED => " ORDER BY clicks DESC ",
+			AssetSorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) ASC ",
+			AssetSorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) DESC ",
 			AssetSorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RAND() ",
 			AssetSorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RAND() "
 		};
@@ -177,7 +177,7 @@ class StoredAssetQuery
 		// Offset and Limit
 		if ($this->limit != NULL) {
 			// Clean up query
-			$this->limit = max(1, $this->limit);
+			$this->limit = max(1, $this->limit + 1); // +1 to check if there are more assets available
 			$this->offset = max(0, $this->offset);
 
 			$sqlCommand .= " LIMIT ? OFFSET ? ";
@@ -186,33 +186,38 @@ class StoredAssetQuery
 		}
 
 		// Fetch data from DB
-		$databaseOutput = Database::runQuery($sqlCommand, $sqlValues);
-		$databaseOutputFoundRows = Database::runQuery("SELECT FOUND_ROWS() as RowCount;");
+		$databaseResult = Database::runQuery($sqlCommand, $sqlValues);
+		$databaseOutput = [];
+		while ($row = $databaseResult->fetchArray(SQLITE3_ASSOC)) {
+			$databaseOutput[] = $row;
+		}
 
 		// Prepare the final asset collection
-		$output = new StoredAssetCollection(
-			totalNumberOfAssetsInBackend: $databaseOutputFoundRows->fetch_assoc()['RowCount']
-		);
+		$output = new StoredAssetCollection();
 
-		// Add a query for more assets, if there are any 
-		if ($output->totalNumberOfAssetsInBackend > $this->offset + $this->limit) {
+		// Check if there are more assets available for pagination
+		if (count($databaseOutput) == ($this->limit + 1)) {
+			// There are more assets, add a nextCollection query to the result
 			$nextCollectionQuery = clone $this;
 			$nextCollectionQuery->offset += $nextCollectionQuery->limit;
 			$output->nextCollection = $nextCollectionQuery;
+
+			// Remove the last asset from the result set
+			array_pop($databaseOutput);
 		}
 
 		// Assemble the asset objects
-		while ($row = $databaseOutput->fetch_assoc()) {
+		foreach ($databaseOutput as $row) {
 
 			$tags = array_filter(explode(',', $row['assetTags'] ?? ""));
 
 			$output[] = new StoredAsset(
-				status: StoredAssetStatus::from($row['assetActive']),
-				id: $row['assetId'],
+				status: StoredAssetStatus::from($row['state']),
+				id: $row['id'],
 				creatorGivenId: NULL,
-				title: $row['assetName'],
-				url: $row['assetUrl'],
-				date: new DateTime($row['assetDate']),
+				title: $row['title'],
+				url: $row['url'],
+				date: new DateTime($row['date']),
 				tags: $tags,
 				type: AssetType::from($row['typeId']),
 				creator: Creator::from($row['creatorId']),
@@ -220,6 +225,7 @@ class StoredAssetQuery
 			);
 		}
 
+		Log::write("Loaded assets", ["count" => count($output), "nextCollection" => $output->nextCollection]);
 
 		return $output;
 	}

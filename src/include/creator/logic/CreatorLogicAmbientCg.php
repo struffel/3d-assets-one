@@ -26,7 +26,7 @@ class CreatorLogicAmbientCg extends CreatorLogic
 		"include" => "displayData,tagData,imageData"
 	];
 
-	private int $maxAssetsPerRun = 50;
+	private int $maxAssetsPerRun = 20;
 
 	private array $typeMapping = [
 		"Material" => AssetType::PBR_MATERIAL,
@@ -46,6 +46,7 @@ class CreatorLogicAmbientCg extends CreatorLogic
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
 	{
 		// Contact API and get new assets
+		$targetUrl = $this->apiUrl . "?" . http_build_query($this->initialParameters);
 
 		// Prepare asset collection
 		$newAssets = new ScrapedAssetCollection();

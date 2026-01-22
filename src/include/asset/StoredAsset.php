@@ -54,14 +54,14 @@ class StoredAsset extends Asset
 			Log::write("Updating asset", $this);
 
 			// Save base asset
-			$sql = "UPDATE Asset SET assetName=?,assetActive=?,assetUrl=?,assetDate=?,typeId=?,creatorId=?,lastSuccessfulValidation=? WHERE assetId = ?";
-			$parameters = [$this->title, $this->status->value, $this->url, $this->date, $this->type->value, $this->creator->value, $this->lastSuccessfulValidation, $this->id];
+			$sql = "UPDATE Asset SET creatorGivenId=?, title=?,state=?,url=?,date=?,typeId=?,creatorId=?,lastSuccessfulValidation=? WHERE id = ?";
+			$parameters = [$this->creatorGivenId, $this->title, $this->status->value, $this->url, $this->date, $this->type->value, $this->creator->value, $this->lastSuccessfulValidation, $this->id];
 			Database::runQuery($sql, $parameters);
 
 			// Tags
-			Database::runQuery("DELETE FROM Tag WHERE assetId = ?", [$this->id]);
+			Database::runQuery("DELETE FROM Tag WHERE id = ?", [$this->id]);
 			foreach ($this->tags as $tag) {
-				$sql = "INSERT INTO Tag (assetId,tagName) VALUES (?,?);";
+				$sql = "INSERT INTO Tag (id,tag) VALUES (?,?);";
 				$parameters = [$this->id, $tag];
 				Database::runQuery($sql, $parameters);
 			}
@@ -69,19 +69,22 @@ class StoredAsset extends Asset
 			Log::write("Inserting new asset", $this);
 
 			// Base Asset
-			$sql = "INSERT INTO Asset (assetId, assetActive, assetName, assetUrl, assetDate, assetClicks, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);";
-			$parameters = [$this->status->value, $this->title, $this->url, $this->date, 0, $this->type->value, $this->creator->value];
+			$sql = "INSERT INTO Asset (id,creatorGivenId, state, title, url, date, clicks, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$parameters = [$this->creatorGivenId, $this->status->value, $this->title, $this->url, $this->date, 0, $this->type->value, $this->creator->value];
 			Database::runQuery($sql, $parameters);
+
+			// Add the missing id to the asset object
+			$this->id = Database::runQuery("SELECT id FROM Asset WHERE url = ?;", [$this->url])->fetchArray()['id'];
+			if (!$this->id) {
+				throw new Exception("Failed to retrieve ID of newly inserted asset with URL " . $this->url);
+			}
 
 			// Tags
 			foreach ($this->tags as $tag) {
-				$sql = "INSERT INTO Tag (assetId,tagName) VALUES ((SELECT assetId FROM Asset WHERE assetUrl=?),?);";
+				$sql = "INSERT INTO Tag (id,tag) VALUES (?,?);";
 				$parameters = [$this->id, $tag];
 				Database::runQuery($sql, $parameters);
 			}
-
-			// Add the missing id to the asset object
-			$this->id = Database::runQuery("SELECT assetId FROM Asset WHERE assetUrl = ?;", [$this->url])->fetch_assoc()['assetId'];
 		}
 	}
 }

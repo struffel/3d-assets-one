@@ -13,7 +13,7 @@ $query = new StoredAssetQuery(
 	filterAssetId: [$assetId]
 );
 $result = $query->execute();
-$asset = $result->assets[0] ?? null;
+$asset = $result[0] ?? null;
 
 $url = $asset ? $asset->url : null;
 if ($url) {

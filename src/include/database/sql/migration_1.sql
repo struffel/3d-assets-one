@@ -1,11 +1,11 @@
 CREATE TABLE "Asset" (
-	"assetId" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"assetCreatorGivenId" TEXT DEFAULT NULL,
-	"assetUrl" TEXT NOT NULL UNIQUE,
-	"assetName" TEXT NOT NULL,
-	"assetState" INTEGER NOT NULL,
-	"assetDate" TEXT DEFAULT NULL,
-	"assetClicks" INTEGER DEFAULT NULL,
+	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"creatorGivenId" TEXT DEFAULT NULL,
+	"url" TEXT NOT NULL UNIQUE,
+	"title" TEXT NOT NULL,
+	"state" INTEGER NOT NULL,
+	"date" TEXT DEFAULT NULL,
+	"clicks" INTEGER DEFAULT NULL,
 	"typeId" INTEGER NOT NULL,
 	"creatorId" INTEGER NOT NULL,
 	"lastSuccessfulValidation" TEXT DEFAULT CURRENT_TIMESTAMP
@@ -19,15 +19,15 @@ CREATE TABLE "FetchingState" (
 );
 
 CREATE TABLE "Tag" (
-	"assetId" INTEGER NOT NULL,
-	"tagName" TEXT NOT NULL,
-	PRIMARY KEY ("assetId", "tagName"),
-	FOREIGN KEY ("assetId") REFERENCES "Asset" ("assetId") ON DELETE CASCADE
+	"id" INTEGER NOT NULL,
+	"tag" TEXT NOT NULL,
+	PRIMARY KEY ("id", "tag"),
+	FOREIGN KEY ("id") REFERENCES "Asset" ("id") ON DELETE CASCADE
 );
 
-CREATE INDEX "tagIndex" ON "Tag" ("tagName");
+CREATE INDEX "tagIndex" ON "Tag" ("tag");
 
-CREATE INDEX "assetIdIndex" ON "Tag" ("assetId");
+CREATE INDEX "assetIdIndex" ON "Tag" ("id");
 
 CREATE TABLE "Event" (
 	"eventId" INTEGER PRIMARY KEY AUTOINCREMENT,

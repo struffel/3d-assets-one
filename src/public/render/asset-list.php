@@ -1,7 +1,7 @@
 <?php
 
 use asset\StoredAssetQuery;
-use asset\Asset;
+use asset\StoredAsset;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
@@ -14,21 +14,23 @@ header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 
 <?php if ($query->offset == 0) { ?>
 
-	<div id="asset-count-text">Showing <?= $assets->totalNumberOfAssetsInBackend ?> results</div>
+	<div id="asset-count-text">Showing ... results</div>
 
 <?php } ?>
 
 <?php $i = 0;
 /**
- * @var \asset\Asset $a */
-foreach ($assets->assets as $a) { ?>
+ * @var StoredAsset $a */
+foreach ($assets as $a) { ?>
 
 	<div class="asset-box">
 		<a target="_blank" href="/go?id=<?= $a->id ?>">
 			<img class="asset-creator-image only-hover" title="<?= $a->creator->title() ?>" width="32" height="32" src="/img/static/creator/<?= $a->creator->value ?>.png">
 			<span class="asset-name only-hover"><?= $a->title ?></span>
 			<span class="asset-icons only-hover">
-				<span title="<?= $a->license->name() ?>"><img src="/svg/license/<?= $a->license->value ?>.svg" width="32" height="32"></span>
+				<?php
+				//<span title="<?= $a->creator->commonLicense()->name() ?? "" "><img src="/svg/license/<?= $a->creator->commonLicense()->value .svg" width="32" height="32"></span>
+				?>
 			</span>
 			<img class="asset-image" alt="<?= $a->title ?>" src="<?= $a->getThumbnailUrl(256, "JPG", "FFFFFF") ?>">
 		</a>

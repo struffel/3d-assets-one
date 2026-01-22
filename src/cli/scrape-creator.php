@@ -59,7 +59,7 @@ $newScrapedAssets = $creatorLogic->scrapeAssets($existingAssets);
 // Perform post-processing on the results
 for ($i = 0; $i < sizeof($newScrapedAssets); $i++) {
 	// Expand and clean up the tag array
-	$newScrapedAssets[$i]->tags = array_merge($newScrapedAssets[$i]->tags, preg_split('/\s+/', $newScrapedAssets[$i]->name));
+	$newScrapedAssets[$i]->tags = array_merge($newScrapedAssets[$i]->tags, preg_split('/\s+/', $newScrapedAssets[$i]->title));
 	$newScrapedAssets[$i]->tags[] = $creator->slug();
 	$newScrapedAssets[$i]->tags = StringUtil::filterTagArray($newScrapedAssets[$i]->tags);
 }
@@ -67,7 +67,7 @@ for ($i = 0; $i < sizeof($newScrapedAssets); $i++) {
 Log::write("Found " . sizeof($newScrapedAssets) . " new assets", $newScrapedAssets);
 
 // Save new assets to DB
-if (sizeof($existingAssets) > 0) {
+if (sizeof($newScrapedAssets) > 0) {
 
 	/**
 	 * @var ScrapedAsset $newScrapedAsset

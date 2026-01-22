@@ -13,7 +13,6 @@ class StoredAssetCollection extends ArrayObject
 {
 	public function __construct(
 		array $assets = array(),
-		public ?int $totalNumberOfAssetsInBackend = NULL,
 		public ?StoredAssetQuery $nextCollection = NULL
 	) {
 		foreach ($assets as $asset) {
