@@ -1,11 +1,10 @@
 -- Written for MySQL 8.0
-
 -- Drop the tables if they exist (optional).
 DROP TABLE IF EXISTS Tag;
-DROP TABLE IF EXISTS Quirk;
-DROP TABLE IF EXISTS Asset;
-DROP TABLE IF EXISTS FetchingState;
 
+DROP TABLE IF EXISTS Asset;
+
+DROP TABLE IF EXISTS IndexingState;
 
 -- Create the Asset table.
 CREATE TABLE IF NOT EXISTS Asset (
@@ -31,18 +30,21 @@ CREATE TABLE IF NOT EXISTS Tag (
 	FOREIGN KEY (assetId) REFERENCES Asset(assetId) ON DELETE CASCADE
 );
 
--- Create the Quirk table.
-CREATE TABLE IF NOT EXISTS Quirk (
-	assetId INT NOT NULL,
-	quirkId int NOT NULL,
-	PRIMARY KEY (assetId, quirkId),
-	FOREIGN KEY (assetId) REFERENCES Asset(assetId) ON DELETE CASCADE
-);
-
--- Create the FetchingState table.
-CREATE TABLE IF NOT EXISTS FetchingState (
+-- Create the IndexingState table.
+CREATE TABLE IF NOT EXISTS IndexingState (
 	creatorId INT,
 	stateKey VARCHAR(64),
-	stateValue TEXT
-	PRIMARY KEY (creatorId,stateKey)
-)
+	stateValue TEXT,
+	PRIMARY KEY (creatorId, stateKey)
+) 
+
+
+-- Create the IndexingEvent table. 
+Create TABLE IndexingEvent(
+	eventId BIGINT PRIMARY KEY AUTO_INCREMENT,
+	eventTime DATETIME NOT NULL,
+	eventType INT NOT NULL,
+	eventAffectedAssetId INT,
+	eventAffectedCreatorId INT,
+	eventAffectedUrl VARCHAR(500)
+);

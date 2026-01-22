@@ -11,7 +11,7 @@ foreach (Creator::cases() as $c) {
 	$creators[] = [
 		"id" => $c->value,
 		"slug" => $c->slug(),
-		"name" => $c->name(),
+		"name" => $c->title(),
 		"description" => $c->description(),
 	];
 }

@@ -1,8 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
-use asset\AssetStatus;
-use asset\Sorting;
+use asset\ScrapedAssetStatus;
+use asset\AssetSorting;
 use creator\Creator;
 
 
@@ -22,18 +22,18 @@ use creator\Creator;
 		<select name="creator[]">
 			<option value></option>
 			<?php foreach (Creator::cases() as $c) { ?>
-				<option class="form-option" value="<?= $c->slug() ?>"><?= $c->name() ?></option>
+				<option class="form-option" value="<?= $c->slug() ?>"><?= $c->title() ?></option>
 			<?php } ?>
 		</select>
 		<input type="number" name="id[]" placeholder="assetId">
 		<select name="sort">
-			<?php foreach (Sorting::cases() as $c) { ?>
+			<?php foreach (AssetSorting::cases() as $c) { ?>
 				<option class="form-option" value="<?= $c->value ?>"><?= $c->value ?></option>
 			<?php } ?>
 		</select>
 		<select name="status">
 			<option value></option>
-			<?php foreach (AssetStatus::cases() as $c) { ?>
+			<?php foreach (ScrapedAssetStatus::cases() as $c) { ?>
 				<option class="form-option" value="<?= $c->value ?>"><?= $c->name ?></option>
 			<?php } ?>
 		</select>

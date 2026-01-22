@@ -13,8 +13,30 @@ class Log
 	private static LogLevel $level = LogLevel::INFO;
 	private static bool $enabled = false;
 	private static bool $writeToStdout = false;
-
 	private static string $logName;
+
+	private static bool $finalized = false;
+
+	public static function stop(LogResult $result)
+	{
+		if (self::$finalized) {
+			throw new Exception("Logger has already been stopped.");
+		}
+		if (!self::$enabled) {
+			throw new Exception("Logger is not enabled.");
+		}
+
+		Log::write("Stopped logging");
+
+		// Move log file to dated sub-directory
+		$logFilePath = self::getLogFilePath();
+		$newLogFilePath = self::getLogFilePath($result->value);
+		rename($logFilePath, $newLogFilePath);
+
+		self::$finalized = true;
+		self::$enabled = false;
+	}
+
 
 	public static function start(string $logName, LogLevel $level = LogLevel::INFO, bool $writeToStdout = false)
 	{
@@ -32,7 +54,6 @@ class Log
 
 		self::cleanUpLogDirectory(30); // Delete logs older than 30 days
 
-		Log::writeRaw("\n==============================\n");
 		Log::write("Started logging", ["Name" => $logName, "Level" => $level]);
 	}
 
@@ -47,6 +68,7 @@ class Log
 		];
 
 		Log::write("Uncaught exception", $exceptionDetails, LogLevel::EXCEPTION);
+		Self::stop(LogResult::ERR);
 		throw $th;
 	}
 
@@ -76,9 +98,10 @@ class Log
 
 		if ($data) {
 			$dataJson = json_encode($data, JSON_PRETTY_PRINT) . PHP_EOL;
-			foreach (explode(PHP_EOL, $dataJson) as $line) {
+			/*foreach (explode(PHP_EOL, $dataJson) as $line) {
 				$output .= str_repeat(" ", $outputPrefixLength) . " " . $line . PHP_EOL;
-			}
+			}*/
+			$output .= $dataJson . PHP_EOL;
 		}
 
 		self::writeRaw($output);
@@ -99,12 +122,12 @@ class Log
 	 * Create sub-directories if the name contains slashes.
 	 * @return string 
 	 */
-	private static function getLogFilePath(): string
+	private static function getLogFilePath(string $suffix = ""): string
 	{
 		if (!isset(self::$logName)) {
 			throw new Exception("No log name defined.");
 		}
-		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . date('Y-m-d', time()) . "/" . self::$logName . ".log";
+		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . "." . $suffix . ".log";
 	}
 
 	private static function createFileIfNotPresent($file)

@@ -1,0 +1,84 @@
+<?php
+
+namespace creator\logic;
+
+use asset\StoredAsset;
+use asset\CommonLicense;
+use asset\AssetType;
+use asset\ScrapedAsset;
+use asset\ScrapedAssetCollection;
+use asset\ScrapedAssetStatus;
+use asset\StoredAssetCollection;
+use creator\Creator;
+use creator\CreatorLogic;
+use DateTime;
+use fetch\WebItemReference;
+use log\Log;
+
+class CreatorLogicAmbientCg extends CreatorLogic
+{
+
+	protected Creator $creator = Creator::AMBIENTCG;
+	private string $apiUrl = "https://ambientcg.com/api/v2/full_json";
+	private array $initialParameters = [
+		"limit" => 100,
+		"offset" => 0,
+		"include" => "displayData,tagData,imageData"
+	];
+
+	private int $maxAssetsPerRun = 50;
+
+	private array $typeMapping = [
+		"Material" => AssetType::PBR_MATERIAL,
+		"Decal" => AssetType::PBR_MATERIAL,
+		"Atlas" => AssetType::PBR_MATERIAL,
+		"HDRI" => AssetType::HDRI,
+		"3DModel" => AssetType::MODEL_3D,
+		"SculptingBrush" => AssetType::OTHER,
+		"Terrain" => AssetType::OTHER,
+		"SBSAR" => AssetType::PBR_MATERIAL,
+		"Substance" => AssetType::PBR_MATERIAL,
+		"PlainTexture" => AssetType::PBR_MATERIAL,
+		"Brush" => AssetType::OTHER,
+		"HDRIElement" => AssetType::HDRI
+	];
+
+	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
+	{
+		// Contact API and get new assets
+
+		// Prepare asset collection
+		$newAssets = new ScrapedAssetCollection();
+
+		while ($targetUrl != "" && sizeof($newAssets) < $this->maxAssetsPerRun) {
+			$result = new WebItemReference($targetUrl)->fetch()->parseAsJson();
+
+			// Iterate through result
+			foreach ($result['foundAssets'] as $acgAsset) {
+
+				if (!$existingAssets->containsUrl(strtolower($acgAsset['shortLink'])) && sizeof($newAssets) < $this->maxAssetsPerRun) {
+
+					$tmpAsset = new ScrapedAsset(
+						url: $acgAsset['shortLink'],
+						creatorGivenId: $acgAsset['assetId'] ?? NULL,
+						date: new DateTime($acgAsset['releaseDate']),
+						title: $acgAsset['displayName'],
+						tags: $acgAsset['tags'],
+						type: $this->typeMapping[$acgAsset['dataType']] ?? AssetType::OTHER,
+
+						creator: Creator::AMBIENTCG,
+						id: NULL,
+						rawThumbnailData: new WebItemReference(url: $acgAsset['previewImage']['512-PNG'])->fetch()->content,
+						status: ScrapedAssetStatus::NEWLY_FOUND,
+					);
+
+					$newAssets[] = $tmpAsset;
+				}
+			}
+
+			$targetUrl = $result['nextPageHttp'] ?? "";
+		}
+
+		return $newAssets;
+	}
+}

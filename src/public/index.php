@@ -1,8 +1,8 @@
 <?php
 
-use asset\License;
-use asset\Sorting;
-use asset\Type;
+use asset\CommonLicense;
+use asset\AssetSorting;
+use asset\AssetType;
 use creator\Creator;
 
 
@@ -34,27 +34,27 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			<label class="form-label" for="creator[]">Site</label>
 			<select size="<?= sizeof(Creator::cases()) ?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
 				<?php foreach (Creator::cases() as $c) { ?>
-					<option class="form-option" <?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option" value="<?= $c->slug() ?>"><?= $c->name() ?></option>
+					<option class="form-option" <?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option" value="<?= $c->slug() ?>"><?= $c->title() ?></option>
 				<?php } ?>
 			</select>
 
 			<label class="form-label" for="type[]">Type</label>
-			<select size="<?= sizeof(Type::cases()) ?>" class="multi-select" name="type[]" multiple>
-				<?php foreach (Type::cases() as $c) { ?>
+			<select size="<?= sizeof(AssetType::cases()) ?>" class="multi-select" name="type[]" multiple>
+				<?php foreach (AssetType::cases() as $c) { ?>
 					<option class="form-option" <?= in_array($c->slug(), $_GET['type'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
 				<?php } ?>
 			</select>
 
 			<label class="form-label" for="license[]">License</label>
-			<select size="<?= sizeof(License::cases()) ?>" class="multi-select" name="license[]" multiple>
-				<?php foreach (License::cases() as $c) { ?>
+			<select size="<?= sizeof(CommonLicense::cases()) ?>" class="multi-select" name="license[]" multiple>
+				<?php foreach (CommonLicense::cases() as $c) { ?>
 					<option class="form-option" <?= in_array($c->slug(), $_GET['license'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
 				<?php } ?>
 			</select>
 
 			<label class="form-label" for="sort">Sort by</label>
 			<select name="sort">
-				<?php foreach ([Sorting::POPULAR, Sorting::LATEST, Sorting::OLDEST, Sorting::RANDOM] as $c) { ?>
+				<?php foreach ([AssetSorting::POPULAR, AssetSorting::LATEST, AssetSorting::OLDEST, AssetSorting::RANDOM] as $c) { ?>
 					<option class="form-option" <?= (($_GET['sort'] ?? '') === $c->value) ? 'selected' : '' ?> value="<?= $c->value ?>"><?= ucfirst($c->value) ?></option>
 				<?php } ?>
 			</select>

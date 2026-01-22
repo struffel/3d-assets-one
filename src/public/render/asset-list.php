@@ -1,11 +1,11 @@
 <?php
 
-use asset\AssetQuery;
+use asset\StoredAssetQuery;
 use asset\Asset;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
-$query = AssetQuery::fromHttpGet();
+$query = StoredAssetQuery::fromHttpGet();
 $assets = $query->execute();
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
@@ -25,12 +25,12 @@ foreach ($assets->assets as $a) { ?>
 
 	<div class="asset-box">
 		<a target="_blank" href="/go?id=<?= $a->id ?>">
-			<img class="asset-creator-image only-hover" title="<?= $a->creator->name() ?>" width="32" height="32" src="/img/static/creator/<?= $a->creator->value ?>.png">
-			<span class="asset-name only-hover"><?= $a->name ?></span>
+			<img class="asset-creator-image only-hover" title="<?= $a->creator->title() ?>" width="32" height="32" src="/img/static/creator/<?= $a->creator->value ?>.png">
+			<span class="asset-name only-hover"><?= $a->title ?></span>
 			<span class="asset-icons only-hover">
 				<span title="<?= $a->license->name() ?>"><img src="/svg/license/<?= $a->license->value ?>.svg" width="32" height="32"></span>
 			</span>
-			<img class="asset-image" alt="<?= $a->name ?>" src="<?= $a->getThumbnailUrl(256, "JPG", "FFFFFF") ?>">
+			<img class="asset-image" alt="<?= $a->title ?>" src="<?= $a->getThumbnailUrl(256, "JPG", "FFFFFF") ?>">
 		</a>
 	</div>
 

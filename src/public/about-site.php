@@ -1,6 +1,6 @@
 <?php
 
-use asset\Sorting;
+use asset\AssetSorting;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 ?>
@@ -81,7 +81,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			</tr>
 			<tr>
 				<td><code>sort</code></td>
-				<td>Determines the sorting order of the result. Possible values are: <code><?php foreach (Sorting::cases() as $s) {
+				<td>Determines the sorting order of the result. Possible values are: <code><?php foreach (AssetSorting::cases() as $s) {
 																								echo $s->value . " ";
 																							} ?></code></td>
 			</tr>

@@ -1,13 +1,13 @@
 <?php
 
-use asset\AssetQuery;
-use asset\Sorting;
+use asset\StoredAssetQuery;
+use asset\AssetSorting;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-Type: application/rss+xml");
 
-$query = AssetQuery::fromHttpGet();
-$query->sort = Sorting::LATEST;
+$query = StoredAssetQuery::fromHttpGet();
+$query->sort = AssetSorting::LATEST;
 $assetCollection = $query->execute();
 
 echo '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;

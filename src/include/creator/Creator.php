@@ -2,7 +2,28 @@
 
 namespace creator;
 
-use indexing\CreatorIndexer;
+use asset\CommonLicense;
+use creator\CreatorLogic;
+use creator\logic\CreatorLogicAmbientCg;
+use creator\logic\CreatorLogic3dTextures;
+use creator\logic\CreatorLogicPolyhaven;
+use creator\logic\CreatorLogicShareTextures;
+use creator\logic\CreatorLogicCgBookcase;
+use creator\logic\CreatorLogicTextureCan;
+use creator\logic\CreatorLogicNoEmotionsHdr;
+use creator\logic\CreatorLogicAmdMaterialX;
+use creator\logic\CreatorLogicRawCatalog;
+use creator\logic\CreatorLogicHdriWorkshop;
+use creator\logic\CreatorLogicPbrPx;
+use creator\logic\CreatorLogicPoliigon;
+use creator\logic\CreatorLogicTexturesCom;
+use creator\logic\CreatorLogicCgMood;
+use creator\logic\CreatorLogicThreeDScans;
+use creator\logic\CreatorLogicLocationTextures;
+use creator\logic\CreatorLogicTwinbru;
+use creator\logic\CreatorLogicLightbeans;
+use Exception;
+use InvalidArgumentException;
 
 enum Creator: int
 {
@@ -26,27 +47,7 @@ enum Creator: int
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
 
-	public static function regularRefreshList(): array
-	{
-		return [
-			self::AMBIENTCG,
-			self::POLYHAVEN,
-			self::SHARETEXTURES,
-			self::THREE_D_TEXTURES,
-			self::CGBOOKCASE,
-			self::TEXTURECAN,
-			self::GPUOPENMATLIB,
-			self::RAWCATALOG,
-			self::POLIIGON,
-			self::TEXTURES_COM,
-			self::CGMOOD,
-			self::THREE_D_SCANS,
-			self::LOCATION_TEXTURES,
-			self::PBR_PX,
-			self::TWINBRU,
-			self::LIGHTBEANS
-		];
-	}
+
 
 	public function slug(): string
 	{
@@ -73,7 +74,7 @@ enum Creator: int
 		};
 	}
 
-	public function name(): string
+	public function title(): string
 	{
 		return match ($this) {
 			self::AMBIENTCG => 'ambientCG',
@@ -123,12 +124,25 @@ enum Creator: int
 		};
 	}
 
-	public function licenseUrl(): string
+	public function commonLicense(): ?CommonLicense
+	{
+		return match ($this) {
+			self::AMBIENTCG => CommonLicense::CC0,
+			self::POLYHAVEN => CommonLicense::CC0,
+			self::SHARETEXTURES => CommonLicense::CC0,
+			self::TEXTURECAN => CommonLicense::CC0,
+			self::CGBOOKCASE => CommonLicense::CC0,
+			self::NOEMOTIONHDRS => CommonLicense::CC_BY_ND,
+			self::GPUOPENMATLIB => CommonLicense::APACHE_2_0
+		};
+	}
+
+	public function licenseUrl(): ?string
 	{
 		return match ($this) {
 			self::AMBIENTCG => 'https://docs.ambientcg.com/license/',
 			self::LOCATION_TEXTURES => 'https://locationtextures.com/privacy-policy/',
-			default => ""
+			default => NULL
 		};
 	}
 
@@ -157,6 +171,30 @@ enum Creator: int
 		};
 	}
 
+	// Additional helpers
+
+	public static function regularRefreshList(): array
+	{
+		return [
+			self::AMBIENTCG,
+			self::POLYHAVEN,
+			self::SHARETEXTURES,
+			self::THREE_D_TEXTURES,
+			self::CGBOOKCASE,
+			self::TEXTURECAN,
+			self::GPUOPENMATLIB,
+			self::RAWCATALOG,
+			self::POLIIGON,
+			self::TEXTURES_COM,
+			self::CGMOOD,
+			self::THREE_D_SCANS,
+			self::LOCATION_TEXTURES,
+			self::PBR_PX,
+			self::TWINBRU,
+			self::LIGHTBEANS
+		];
+	}
+
 	public static function fromSlug(string $slug): ?self
 	{
 		foreach (self::cases() as $c) {
@@ -167,28 +205,28 @@ enum Creator: int
 		return null;
 	}
 
-	public function getIndexer(): ?CreatorIndexer
+	public function getLogic(): CreatorLogic
 	{
 		return match ($this) {
-			self::AMBIENTCG => new \indexing\creator\CreatorIndexerAmbientCg(),
-			self::POLYHAVEN => new \indexing\creator\CreatorIndexerPolyhaven(),
-			self::SHARETEXTURES => new \indexing\creator\CreatorIndexerShareTextures(),
-			self::THREE_D_TEXTURES => new \indexing\creator\CreatorIndexer3dTextures(),
-			self::CGBOOKCASE => new \indexing\creator\CreatorIndexerCgBookcase(),
-			self::TEXTURECAN => new \indexing\creator\CreatorIndexerTextureCan(),
-			self::NOEMOTIONHDRS => new \indexing\creator\CreatorIndexerNoEmotionsHdr(),
-			self::GPUOPENMATLIB => new \indexing\creator\CreatorIndexerAmdMaterialX(),
-			self::RAWCATALOG => new \indexing\creator\CreatorIndexerRawCatalog(),
-			self::HDRIWORKSHOP => new \indexing\creator\CreatorIndexerHdriWorkshop(),
-			self::POLIIGON => new \indexing\creator\CreatorIndexerPoliigon(),
-			self::TEXTURES_COM => new \indexing\creator\CreatorIndexerTexturesCom(),
-			self::CGMOOD => new \indexing\creator\CreatorIndexerCgMood(),
-			self::THREE_D_SCANS => new \indexing\creator\CreatorIndexerThreeDScans(),
-			self::LOCATION_TEXTURES => new \indexing\creator\CreatorIndexerLocationTextures(),
-			self::PBR_PX => new \indexing\creator\CreatorIndexerPbrPx(),
-			self::TWINBRU => new \indexing\creator\CreatorIndexerTwinbru(),
-			self::LIGHTBEANS => new \indexing\creator\CreatorIndexerLightbeans(),
-			default => null
+			self::AMBIENTCG => new CreatorLogicAmbientCg(),
+			self::POLYHAVEN => new CreatorLogicPolyhaven(),
+			self::SHARETEXTURES => new CreatorLogicShareTextures(),
+			self::THREE_D_TEXTURES => new CreatorLogic3dTextures(),
+			self::CGBOOKCASE => new CreatorLogicCgBookcase(),
+			self::TEXTURECAN => new CreatorLogicTextureCan(),
+			self::NOEMOTIONHDRS => new CreatorLogicNoEmotionsHdr(),
+			self::GPUOPENMATLIB => new CreatorLogicAmdMaterialX(),
+			self::RAWCATALOG => new CreatorLogicRawCatalog(),
+			self::HDRIWORKSHOP => new CreatorLogicHdriWorkshop(),
+			self::POLIIGON => new CreatorLogicPoliigon(),
+			self::TEXTURES_COM => new CreatorLogicTexturesCom(),
+			self::CGMOOD => new CreatorLogicCgMood(),
+			self::THREE_D_SCANS => new CreatorLogicThreeDScans(),
+			self::LOCATION_TEXTURES => new CreatorLogicLocationTextures(),
+			self::PBR_PX => new CreatorLogicPbrPx(),
+			self::TWINBRU => new CreatorLogicTwinbru(),
+			self::LIGHTBEANS => new CreatorLogicLightbeans(),
+			default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
 		};
 	}
 }

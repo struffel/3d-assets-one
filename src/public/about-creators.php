@@ -17,7 +17,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 					<img class="creator-box-image" src="/img/static/creator/<?= $c->value ?>.png">
 				</span>
 				<span>
-					<h2><?= $c->name() ?></h2>
+					<h2><?= $c->title() ?></h2>
 					<p><?= $c->description() ?></p>
 					<p><a class="subtle-link" href="<?= $c->baseUrl() ?>">Main website</a></p>
 				</span>

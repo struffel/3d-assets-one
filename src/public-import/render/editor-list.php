@@ -1,14 +1,14 @@
 <?php
 
-use asset\AssetQuery;
-use asset\AssetStatus;
-use asset\License;
+use asset\StoredAssetQuery;
+use asset\ScrapedAssetStatus;
+use asset\CommonLicense;
 
-use asset\Type;
+use asset\AssetType;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
-$query = AssetQuery::fromHttpGet(filterStatus: NULL);
+$query = StoredAssetQuery::fromHttpGet(filterStatus: NULL);
 $assets = $query->execute();
 ?>
 
@@ -36,19 +36,19 @@ $assets = $query->execute();
 
 		<div>
 			<select name="status">
-				<?php foreach (AssetStatus::cases() as $c) { ?>
+				<?php foreach (ScrapedAssetStatus::cases() as $c) { ?>
 					<option <?= $a->status == $c ? 'selected' : '' ?> class="form-option" value="<?= $c->value ?>"><?= $c->name ?></option>
 				<?php } ?>
 			</select>
 
 			<select name="type">
-				<?php foreach (Type::cases() as $c) { ?>
+				<?php foreach (AssetType::cases() as $c) { ?>
 					<option <?= $a->type == $c ? 'selected' : '' ?> class="form-option" value="<?= $c->value ?>"><?= $c->name ?></option>
 				<?php } ?>
 			</select>
 
 			<select name="license">
-				<?php foreach (License::cases() as $c) { ?>
+				<?php foreach (CommonLicense::cases() as $c) { ?>
 					<option <?= $a->license == $c ? 'selected' : '' ?> class="form-option" value="<?= $c->value ?>"><?= $c->name ?></option>
 				<?php } ?>
 			</select>

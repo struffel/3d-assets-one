@@ -1,13 +1,13 @@
 <?php
 
-use asset\AssetQuery;
-use misc\Database;
+use asset\StoredAssetQuery;
+use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 $assetId = intval($_GET['id'] ?? "0");
 
-$query = new AssetQuery(
+$query = new StoredAssetQuery(
 	offset: 0,
 	limit: 1,
 	filterAssetId: [$assetId]

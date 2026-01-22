@@ -1,18 +1,18 @@
 <?php
 
-use asset\AssetQuery;
-use asset\AssetStatus;
-use asset\License;
-use asset\Type;
+use asset\StoredAssetQuery;
+use asset\ScrapedAssetStatus;
+use asset\CommonLicense;
+use asset\AssetType;
 use creator\Creator;
 
-use misc\Database;
+use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 if ($_POST['id'] ?? false) {
 	Database::startTransaction();
-	$query = new AssetQuery(filterAssetId: [$_POST['id']], filterStatus: NULL);
+	$query = new StoredAssetQuery(filterAssetId: [$_POST['id']], filterStatus: NULL);
 	$assets = $query->execute();
 	$a = $assets->assets[0];
 
@@ -41,11 +41,11 @@ if ($_POST['id'] ?? false) {
 	// Enums
 
 	if (isset($_POST['type'])) {
-		$a->type = Type::from(intval($_POST['type']));
+		$a->type = AssetType::from(intval($_POST['type']));
 	}
 
 	if (isset($_POST['license'])) {
-		$a->license = License::from(intval($_POST['license']));
+		$a->license = CommonLicense::from(intval($_POST['license']));
 	}
 
 	if (isset($_POST['creator'])) {
@@ -53,7 +53,7 @@ if ($_POST['id'] ?? false) {
 	}
 
 	if (isset($_POST['status'])) {
-		$a->status = AssetStatus::from(intval($_POST['status']));
+		$a->status = ScrapedAssetStatus::from(intval($_POST['status']));
 	}
 
 	// Arrays

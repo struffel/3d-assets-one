@@ -1,11 +1,11 @@
 <?php
 
-use asset\AssetQuery;
+use asset\StoredAssetQuery;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-type: application/json");
 
-$query = AssetQuery::fromHttpGet();
+$query = StoredAssetQuery::fromHttpGet();
 $assets = $query->execute();
 
 $thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {

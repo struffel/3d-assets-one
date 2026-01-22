@@ -1,0 +1,226 @@
+<?php
+
+namespace asset;
+
+use creator\Creator;
+
+use DateTime;
+use database\Database;
+use log\Log;
+
+class StoredAssetQuery
+{
+	public function __construct(
+		// Basics
+		public ?int $offset = NULL,						// ?offset
+		public ?int $limit = NULL,						// ?limit
+		public ?AssetSorting $sort = AssetSorting::LATEST,		// ?sort
+
+		// Filters
+		public ?array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
+		public ?array $filterTag = [],			// ?tags, Assets must have ALL tags in the array in order to be included.
+		public ?array $filterCreator = [],		// ?creator, limits the search to certain creators.
+		public ?array $filterLicense = [],		// ?license, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
+		public ?array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
+		public ?StoredAssetStatus $filterStatus = StoredAssetStatus::ACTIVE,				// NULL => Any status
+
+	) {}
+
+	public function toHttpGet(bool $includeStatus = false): string
+	{
+
+		$enumToSlugConverter = function ($e) {
+			return $e->slug();
+		};
+
+		$output = [];
+
+		$output['q'] = implode(",", $this->filterTag);
+		$output['offset'] = $this->offset;
+		$output['limit'] = $this->limit;
+		$output['sort'] = $this->sort->value;
+		$output['id'] = $this->filterAssetId;
+		$output['creator'] = array_map($enumToSlugConverter, $this->filterCreator);
+		$output['license'] = array_map($enumToSlugConverter, $this->filterLicense);
+		$output['type'] = array_map($enumToSlugConverter, $this->filterType);
+
+		if ($includeStatus) {
+			$output['status'] = $this->filterStatus->value ?? NULL;
+		}
+
+		return http_build_query($output);
+	}
+
+	/**
+	 * Generates a new AssetQuery based on the current HTTP GET parameters in $_GET.
+	 * The asset status can be forced to a specific value using the method paramter 'filterStatus'.
+	 * Setting filterStatus to NULL allows the status to be controlled using a HTTP parameter.
+	 */
+	public static function fromHttpGet(?StoredAssetStatus $filterStatus = StoredAssetStatus::ACTIVE): StoredAssetQuery
+	{
+
+		// status filter (only if it's not defined in the method head)
+		if ($filterStatus === NULL && isset($_GET['status']) && $_GET['status'] != "") {
+			$filterStatus = StoredAssetStatus::tryFrom(intval($_GET['status']));
+		}
+
+		// assetId filter
+		$filterAssetId = [];
+		foreach ($_GET['id'] ?? [] as $assetId) {
+			$filterAssetId[] = intval($assetId);
+		}
+		$filterAssetId = array_filter($filterAssetId);
+
+		// creator filter
+		$filterCreator = [];
+		foreach ($_GET['creator'] ?? [] as $creatorSlug) {
+			$filterCreator[] = Creator::fromSlug($creatorSlug);
+		}
+		$filterCreator = array_filter($filterCreator);
+
+		// type filter
+		$filterType = [];
+		foreach ($_GET['type'] ?? [] as $typeSlug) {
+			$filterType[] = AssetType::fromSlug($typeSlug);
+		}
+		$filterType = array_filter($filterType);
+
+		// license filter
+		$filterLicense = [];
+		foreach ($_GET['license'] ?? [] as $licenseSlug) {
+			$filterLicense[] = CommonLicense::fromSlug($licenseSlug);
+		}
+		$filterLicense = array_filter($filterLicense);
+
+		return new StoredAssetQuery(
+			offset: intval($_GET['offset'] ?? 0),
+			limit: min(intval($_GET['limit'] ?? 150), 500),
+			sort: AssetSorting::fromAnyString($_GET['sort'] ?? "latest"),
+			filterAssetId: $filterAssetId,
+			filterTag: array_map('trim', array_filter(preg_split('/\s|,/', $_GET['q'] ?? ""))),
+			filterCreator: $filterCreator,
+			filterLicense: $filterLicense,
+			filterType: $filterType,
+			filterStatus: $filterStatus
+		);
+	}
+
+	public function execute(): StoredAssetCollection
+	{
+
+		Log::write("Loading assets based on this query", $this);
+
+		// Begin defining SQL string and parameters for prepared statement
+		$sqlCommand = " SELECT SQL_CALC_FOUND_ROWS assetId,assetUrl,assetThumbnailUrl,assetName,assetActive,assetDate,assetClicks,lastSuccessfulValidation,licenseId,typeId,creatorId,assetTags FROM Asset ";
+		$sqlValues = [];
+
+		// Joins
+
+		$sqlCommand .= " LEFT JOIN (SELECT assetId, GROUP_CONCAT(tagName SEPARATOR ',') AS assetTags FROM Tag GROUP BY assetId ) AllTags USING (assetId) ";
+
+		$sqlCommand .= " WHERE TRUE ";
+
+
+		foreach ($this->filterTag as $tag) {
+			$sqlCommand .= " AND assetId IN (SELECT assetId FROM Tag WHERE tagName = ? ) ";
+			$sqlValues[] = $tag;
+		}
+
+
+		if (sizeof($this->filterAssetId) > 0) {
+			$ph = Database::generatePlaceholder($this->filterAssetId);
+			$sqlCommand .= " AND assetId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterAssetId);
+		}
+
+		if (sizeof($this->filterType ?? []) > 0) {
+			$ph = Database::generatePlaceholder($this->filterType);
+			$sqlCommand .= " AND typeId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterType);
+		}
+
+		if (sizeof($this->filterLicense ?? []) > 0) {
+			$ph = Database::generatePlaceholder($this->filterLicense);
+			$sqlCommand .= " AND licenseId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterLicense);
+		}
+
+		if (sizeof($this->filterCreator ?? []) > 0) {
+			$ph = Database::generatePlaceholder($this->filterCreator);
+			$sqlCommand .= " AND creatorId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $this->filterCreator);
+		}
+
+		if ($this->filterStatus !== NULL) {
+			$sqlCommand .= " AND assetActive=? ";
+			$sqlValues[] = $this->filterStatus;
+		}
+
+		// Sort
+		$sqlCommand .= match ($this->sort) {
+
+			// Options for public display
+			AssetSorting::LATEST => " ORDER BY assetDate DESC, assetId DESC ",
+			AssetSorting::OLDEST => " ORDER BY assetDate ASC, assetId ASC ",
+			AssetSorting::RANDOM => " ORDER BY RAND() ",
+			AssetSorting::POPULAR => " ORDER BY ( (assetClicks + 10) / POW( ABS( DATEDIFF( NOW(),assetDate ) ) + 1 , 1.3 ) ) DESC, assetDate DESC, assetId DESC ",
+
+			// Options for internal editor (potentially less optimized)
+			AssetSorting::LEAST_CLICKED => " ORDER BY assetClicks ASC ",
+			AssetSorting::MOST_CLICKED => " ORDER BY assetClicks DESC ",
+			AssetSorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) ASC ",
+			AssetSorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.assetId = Asset.assetId) DESC ",
+			AssetSorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RAND() ",
+			AssetSorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RAND() "
+		};
+
+		// Offset and Limit
+		if ($this->limit != NULL) {
+			// Clean up query
+			$this->limit = max(1, $this->limit);
+			$this->offset = max(0, $this->offset);
+
+			$sqlCommand .= " LIMIT ? OFFSET ? ";
+			$sqlValues[] = $this->limit;
+			$sqlValues[] = $this->offset;
+		}
+
+		// Fetch data from DB
+		$databaseOutput = Database::runQuery($sqlCommand, $sqlValues);
+		$databaseOutputFoundRows = Database::runQuery("SELECT FOUND_ROWS() as RowCount;");
+
+		// Prepare the final asset collection
+		$output = new StoredAssetCollection(
+			totalNumberOfAssetsInBackend: $databaseOutputFoundRows->fetch_assoc()['RowCount']
+		);
+
+		// Add a query for more assets, if there are any 
+		if ($output->totalNumberOfAssetsInBackend > $this->offset + $this->limit) {
+			$nextCollectionQuery = clone $this;
+			$nextCollectionQuery->offset += $nextCollectionQuery->limit;
+			$output->nextCollection = $nextCollectionQuery;
+		}
+
+		// Assemble the asset objects
+		while ($row = $databaseOutput->fetch_assoc()) {
+
+			$tags = array_filter(explode(',', $row['assetTags'] ?? ""));
+
+			$output[] = new StoredAsset(
+				status: StoredAssetStatus::from($row['assetActive']),
+				id: $row['assetId'],
+				creatorGivenId: NULL,
+				title: $row['assetName'],
+				url: $row['assetUrl'],
+				date: new DateTime($row['assetDate']),
+				tags: $tags,
+				type: AssetType::from($row['typeId']),
+				creator: Creator::from($row['creatorId']),
+				lastSuccessfulValidation: new DateTime($row['lastSuccessfulValidation'] ?? '1970-01-01 00:00:00'),
+			);
+		}
+
+
+		return $output;
+	}
+}

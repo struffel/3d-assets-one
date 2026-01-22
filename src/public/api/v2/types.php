@@ -1,13 +1,13 @@
 <?php
 
-use asset\Type;
+use asset\AssetType;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-type: application/json");
 
 $types = [];
 
-foreach (Type::cases() as $t) {
+foreach (AssetType::cases() as $t) {
 	$types[] = [
 		"id" => $t->value,
 		"slug" => $t->slug(),
