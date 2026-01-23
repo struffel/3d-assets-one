@@ -18,8 +18,6 @@ use Rct567\DomQuery\DomQuery;
 class CreatorLogicThreeDScans extends CreatorLogic
 {
 
-
-
 	protected Creator $creator = Creator::THREE_D_SCANS;
 	private string $indexingBaseUrl = "https://threedscans.com/page/";
 

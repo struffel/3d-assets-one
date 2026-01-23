@@ -74,9 +74,4 @@ class CreatorLogicCgBookcase extends CreatorLogic
 
 		return $tmpCollection;
 	}
-
-	public function fetchThumbnailImage(string $url): string
-	{
-		return Image::removeUniformBackground((new WebItemReference($url))->fetch()->content, 2, 2, 0.015);
-	}
 }

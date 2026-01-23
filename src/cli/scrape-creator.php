@@ -21,7 +21,7 @@ require_once __DIR__ . '/../include/init.php';
 
 // Pick a target creator
 if (isset($argv[1])) {
-	$creator = Creator::from(intval($argv[1]));
+	$creator = Creator::fromAny($argv[1]);
 } else {
 	$randomTargets = Creator::regularRefreshList();
 	$randomIndex = array_rand($randomTargets);
@@ -87,7 +87,7 @@ if (sizeof($newScrapedAssets) > 0) {
 		Database::startTransaction();
 
 		$newStoredAsset->writeToDatabase();
-		Image::saveThumbnail($newStoredAsset->id, $newScrapedAsset->rawThumbnailData);
+		Image::saveThumbnailVariations($newStoredAsset->id, $newScrapedAsset->rawThumbnailData);
 		Log::write("Saved thumbnail for asset ", $newStoredAsset->id);
 
 		Database::commitTransaction();

@@ -44,9 +44,7 @@ class CreatorLogicTextureCan extends CreatorLogic
 					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags']),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
 					creator: Creator::TEXTURECAN,
-					rawThumbnailData: $this->fetchThumbnailImage(
-						$metaTags['tex1:preview-image']
-					),
+					rawThumbnailData: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->content,
 					status: ScrapedAssetStatus::NEWLY_FOUND,
 				);
 
@@ -60,10 +58,5 @@ class CreatorLogicTextureCan extends CreatorLogic
 		}
 
 		return $tmpCollection;
-	}
-
-	public function fetchThumbnailImage(string $url): string
-	{
-		return Image::removeUniformBackground(new WebItemReference($url)->fetch()->content, 2, 2, 0.015);
 	}
 }

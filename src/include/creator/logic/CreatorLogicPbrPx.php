@@ -24,14 +24,12 @@ class CreatorLogicPbrPx extends CreatorLogic
 
 	protected Creator $creator = Creator::PBR_PX;
 
-	private string $indexingBaseUrl = "https://api.pbrpx.com/home/api_product/getPmsg";
-	private string $assetBaseUrl = "https://api.pbrpx.com/home/api_product/getasset";
-	private string $viewPageBaseUrl = "https://library.pbrpx.com/#/asset?asset=";
+	private string $indexingApiBaseUrl = "https://api.pbrpx.com/home/api_product/getPmsg?page_number=";
+	private string $assetApiBaseUrl = "https://api.pbrpx.com/home/api_product/getasset";
+	private string $assetViewingBaseUrl = "https://library.pbrpx.com/#/asset?asset=";
 	private string $mediaBaseUrl = "https://asset.pbrpx.com/";
 	private string $thumbnailIdentifierString = "preview_360_360";
-	protected int $maxAssetsPerRun = 5;
-
-
+	protected int $maxAssetsPerRun = 25;
 
 	public function validateAsset(Asset $asset): bool
 	{
@@ -41,7 +39,7 @@ class CreatorLogicPbrPx extends CreatorLogic
 
 		try {
 			$response = new WebItemReference(
-				url: $this->assetBaseUrl,
+				url: $this->assetApiBaseUrl,
 				method: 'POST',
 				requestBody: json_encode($assetDetailsBody),
 				headers: [
@@ -68,12 +66,7 @@ class CreatorLogicPbrPx extends CreatorLogic
 		do {
 			$assetsFoundThisIteration = 0;
 			$assetListRaw = new WebItemReference(
-				url: $this->indexingBaseUrl,
-				method: 'POST',
-				requestBody: json_encode(['page_number' => $page]),
-				headers: [
-					'Content-Type' => 'application/json'
-				]
+				url: $this->indexingApiBaseUrl . $page
 			)->fetch()->parseAsJson();
 
 			$assetList = $assetListRaw['data']['data'];
@@ -82,15 +75,17 @@ class CreatorLogicPbrPx extends CreatorLogic
 
 				$assetsFoundThisIteration += 1;
 
-				$assetUrl = $this->viewPageBaseUrl . $pbrPxAsset['id'];
+				$assetUrl = $this->assetViewingBaseUrl . $pbrPxAsset['id'];
 
 				if (!$existingAssets->containsUrl($assetUrl)) {
+
 					// Fetch asset details
-					$assetDetailsBody = ['asset' => $pbrPxAsset['id']];
 					$pbrPxAssetDetailsRaw = new WebItemReference(
-						url: $this->assetBaseUrl,
+						url: $this->assetApiBaseUrl,
 						method: 'POST',
-						requestBody: json_encode($assetDetailsBody),
+						requestBody: json_encode([
+							'asset' => strval($pbrPxAsset['id'])
+						]),
 						headers: [
 							'Content-Type' => 'application/json'
 						]
@@ -130,14 +125,13 @@ class CreatorLogicPbrPx extends CreatorLogic
 						title: $pbrPxAssetDetails['ename'],
 						url: $assetUrl,
 						date: new DateTime($pbrPxAsset['create_time']),
-						tags: $tags,
 						type: $type,
-
 						creator: $this->creator,
-						status: ScrapedAssetStatus::NEWLY_FOUND,
 						rawThumbnailData: new WebItemReference(
 							url: $thumbnailUrl
-						)->fetch()->content
+						)->fetch()->content,
+						status: ScrapedAssetStatus::NEWLY_FOUND,
+						tags: $tags,
 					);
 
 					$processedAssets += 1;

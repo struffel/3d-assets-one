@@ -3,8 +3,11 @@
 namespace log;
 
 use Exception;
+use FilesystemIterator;
 use log\LogLevel;
 use misc\StringUtil;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Throwable;
 
 class Log
@@ -35,6 +38,8 @@ class Log
 
 		self::$finalized = true;
 		self::$enabled = false;
+
+		self::cleanUpLogDirectory(7);
 	}
 
 
@@ -142,8 +147,7 @@ class Log
 	}
 
 	/**
-	 * Deletes all log files older than a certain number of days from the log directory.
-	 * This happens based on the directory names (YYYY-MM-DD).
+	 * Recrusively delete all .log files older than specified days.
 	 * @param int $deleteOlderThanDays 
 	 * @return void 
 	 */
@@ -155,14 +159,18 @@ class Log
 			return;
 		}
 
-		$directories = array_diff(scandir($logDirectory, SCANDIR_SORT_DESCENDING), ['.', '..']);
-		$directoriesToDelete = array_slice($directories, $deleteOlderThanDays);
+		$files = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($logDirectory, FilesystemIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
 
-		foreach ($directoriesToDelete as $directory) {
-			$path = $logDirectory . "/" . $directory;
-			if (is_dir($path)) {
-				array_map('unlink', glob($path . "/*"));
-				rmdir($path);
+		$now = time();
+		foreach ($files as $fileinfo) {
+			if ($fileinfo->isFile() && $fileinfo->getExtension() === 'log') {
+				$fileAgeInDays = ($now - $fileinfo->getCTime()) / (60 * 60 * 24);
+				if ($fileAgeInDays > $deleteOlderThanDays) {
+					unlink($fileinfo->getRealPath());
+				}
 			}
 		}
 	}

@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
 	libfreetype6-dev \
 	libzip-dev \
 	libmagickwand-dev \
+	libwebp-dev \
 	sqlite3 \
 	libsqlite3-dev \
 	unzip \
@@ -15,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Configure and install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 	&& docker-php-ext-install -j$(nproc) \
 	gd \
 	zip \

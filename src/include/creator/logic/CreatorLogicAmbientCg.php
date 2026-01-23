@@ -26,7 +26,7 @@ class CreatorLogicAmbientCg extends CreatorLogic
 		"include" => "displayData,tagData,imageData"
 	];
 
-	private int $maxAssetsPerRun = 20;
+	private int $maxAssetsPerRun = 25;
 
 	private array $typeMapping = [
 		"Material" => AssetType::PBR_MATERIAL,

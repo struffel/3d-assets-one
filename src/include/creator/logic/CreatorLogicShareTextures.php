@@ -18,7 +18,7 @@ class CreatorLogicShareTextures extends CreatorLogic
 {
 
 	protected Creator $creator = Creator::SHARETEXTURES;
-	protected int $maxAssetsPerRun = 5;
+	protected int $maxAssetsPerRun = 10;
 
 	private string $listUrl = "https://www.sharetextures.com/tex1-list.php";
 
@@ -41,11 +41,11 @@ class CreatorLogicShareTextures extends CreatorLogic
 					title: $metaTags['og:title'],
 					url: $url,
 					date: new DateTime($metaTags['tex1:release-date']),
-					tags: explode(",", $metaTags['tex1:tags']),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
-					creator: Creator::SHARETEXTURES,
-					rawThumbnailData: $this->fetchThumbnailImage($metaTags['tex1:preview-image']),
+					creator: $this->creator,
+					rawThumbnailData: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->content,
 					status: ScrapedAssetStatus::NEWLY_FOUND,
+					tags: explode(",", $metaTags['tex1:tags']),
 				);
 
 				$tmpCollection[] = $tmpAsset;
@@ -57,10 +57,5 @@ class CreatorLogicShareTextures extends CreatorLogic
 		}
 
 		return $tmpCollection;
-	}
-
-	public function fetchThumbnailImage(string $url): string
-	{
-		return Image::removeUniformBackground(new WebItemReference($url)->fetch()->content, 25, 25, 0.015);
 	}
 }

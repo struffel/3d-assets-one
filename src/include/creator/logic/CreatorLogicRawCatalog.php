@@ -18,7 +18,7 @@ use fetch\WebItemReference;
 class CreatorLogicRawCatalog extends CreatorLogic
 {
 	protected Creator $creator = Creator::RAWCATALOG;
-	protected int $maxAssetsPerRun = 10;
+	protected int $maxAssetsPerRun = 25;
 
 	private string $apiUrl = "https://rawcatalog.com/freeset.xml";
 	private array $typeMatching = [

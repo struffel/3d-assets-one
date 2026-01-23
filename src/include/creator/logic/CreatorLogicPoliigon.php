@@ -16,20 +16,20 @@ use DateTime;
 use fetch\WebItemReference;
 use Rct567\DomQuery\DomQuery;
 
-// poliigon
-
 class CreatorLogicPoliigon extends CreatorLogic
 {
 
 	protected Creator $creator = Creator::POLIIGON;
 
 	private string $baseUrl = "https://www.poliigon.com";
-	private string $searchBaseUrl = "https://www.poliigon.com/search/free?page=";
+	private string $searchBaseUrl = "https://www.poliigon.com/free?sort=newest&page=";
 	private array $urlTypeRegex = [
 		'/\/texture\//i' => AssetType::PBR_MATERIAL,
 		'/\/model\//i' => AssetType::MODEL_3D,
 		'/\/hdri\//i' => AssetType::HDRI,
 	];
+
+	protected int $maxAssetsPerRun = 100;
 
 	private function extractId($url)
 	{
@@ -61,21 +61,32 @@ class CreatorLogicPoliigon extends CreatorLogic
 			$dom = (new WebItemReference($this->searchBaseUrl . $page))->fetch()->parseAsDomDocument();
 			$domQuery = new DomQuery($dom);
 
-			$assetBoxDomElements = $domQuery->find('a.asset-box');
+			// Find all "asset boxes", which are the divs that contain the rest
+			$assetBoxDomElements = $domQuery->find('div.asset-box__item-inner');
 			$assetBoxesFoundThisIteration = sizeof($assetBoxDomElements);
+
 			foreach ($assetBoxDomElements as $assetBox) {
 
-				$urlPath = $assetBox->attr('href');
+				if (sizeof($tmpCollection) >= $this->maxAssetsPerRun) {
+					break 2; // Break out of both loops
+				}
+
+				// Find the URL of the asset
+				$assetLink = $assetBox->find('a.asset-box__item-link');
+				$urlPath = $assetLink->attr('href');
 				$url = $this->baseUrl . $urlPath;
+
+				// Check if already exists
 				if (!$this->isInExistingAssets($url, $existingAssets)) {
 
-					$name = $assetBox->find('img')->attr('alt');
+					// Get the name
+					$name = $assetBox->find('.asset-box__item-title-name')->text();
 
+					// Determine the type
 					$type = NULL;
-
-					foreach ($this->urlTypeRegex as $regex => $typeId) {
+					foreach ($this->urlTypeRegex as $regex => $typeCandidate) {
 						if (preg_match($regex, $urlPath)) {
-							$type = AssetType::from($typeId);
+							$type = $typeCandidate;
 						}
 					}
 					if (!$type) {

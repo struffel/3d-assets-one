@@ -12,11 +12,13 @@ use asset\StoredAssetCollection;
 use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
+use fetch\WebItemReference;
 
 class CreatorLogicNoEmotionsHdr extends CreatorLogic
 {
 
 	protected Creator $creator = Creator::NOEMOTIONHDRS;
+	protected int $maxAssetsPerRun = 10;
 
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
 	{
@@ -25,23 +27,25 @@ class CreatorLogicNoEmotionsHdr extends CreatorLogic
 
 		foreach ($this->urlList as $url) {
 
-			if (!$existingAssets->containsUrl($url)) {
+			if (!$existingAssets->containsUrl($url) && sizeof($tmpCollection) < $this->maxAssetsPerRun) {
 
 				$category = ucfirst(substr(pathinfo($url)['filename'], 3));
-				$name = explode("=", $url)[1];
+				$name = urldecode(explode("=", $url)[1]);
+
+				$thumbnailUrl = "https://noemotionhdrs.net/Previews/772x386/{$category}/{$name}.jpg";
 
 				$tmpAsset = new ScrapedAsset(
 					id: NULL,
 					creatorGivenId: null,
 					title: $name,
-					date: new DateTime("2010-" . preg_split('/=|_/', $url)[1]),
+					date: new DateTime("2010-" . preg_split('/=|_/', urldecode($url))[1]),
 					url: $url,
 					tags: ['Sky', $category],
 					type: AssetType::HDRI,
 					creator: Creator::NOEMOTIONHDRS,
 
 					status: ScrapedAssetStatus::NEWLY_FOUND,
-					rawThumbnailData: null,
+					rawThumbnailData: new WebItemReference($thumbnailUrl)->fetch()->content,
 				);
 
 				$tmpCollection[] = $tmpAsset;

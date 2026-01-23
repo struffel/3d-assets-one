@@ -25,7 +25,7 @@ class CreatorLogicTwinbru extends CreatorLogic
 
 	private string $tagRegex = '/[^A-Za-z0-9%]/';
 
-	private string $indexingBaseUrl = 'https://textures.twinbru.com/ods/products';
+	private string $indexingBaseUrl = 'https://textures.twinbru.com/api/ods/products';
 	private array $indexingBaseParameters = [
 		'pageSize' => 25,
 		'sortAttribute' => 'launch',
@@ -34,9 +34,9 @@ class CreatorLogicTwinbru extends CreatorLogic
 	];
 	private string $viewPageBaseUrl = 'https://textures.twinbru.com/products/';
 	private string $viewPageSuffix = 'utm_source=3dassets.one';
-	private string $thumbnailQueryBaseUrl = 'https://textures.twinbru.com/ods/assets';
+	private string $thumbnailQueryBaseUrl = 'https://textures.twinbru.com/api/ods/assets';
 	private string $thumbnailBaseUrl = 'https://textures.twinbru.com/assets/';
-	private string $sessionCookieUrl = 'https://textures.twinbru.com/layout?item=products&account=bru';
+	private string $sessionCookieUrl = 'https://textures.twinbru.com/en/products';
 
 	private function extractTags(array|string $input)
 	{
@@ -64,26 +64,15 @@ class CreatorLogicTwinbru extends CreatorLogic
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
 	{
 
-		// Open a session
-
-		$odsToken = new WebItemReference($this->sessionCookieUrl)->fetchCookie(
-			targetCookieName: "ods-token"
-		);
-
-
 		// Collect assets
-
 		$tmpCollection = new ScrapedAssetCollection();
 		$page = $this->getCreatorState("page") ?? 1;
 
 		$requestBody = $this->indexingBaseParameters;
 		$requestBody["page"] = $page;
 
-
-
 		$rawData = new WebItemReference(
 			url: $this->indexingBaseUrl . "?" . http_build_query($requestBody),
-			headers: ["Cookie" => "ods-token=$odsToken"]
 		)->fetch()->parseAsJson();
 
 		if ($rawData == null) {
@@ -124,7 +113,6 @@ class CreatorLogicTwinbru extends CreatorLogic
 						$thumbnailQueryResponse = NULL;
 
 						$thumbnailQueryResponse = new WebItemReference(
-							headers: ["Cookie" => "ods-token=$odsToken"],
 							url: $this->thumbnailQueryBaseUrl . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.$viewType/stockId.eq." . $twinbruAsset['itemId']])
 						)->fetch()->parseAsJson();
 

@@ -32,9 +32,14 @@ class WebItemReference
 
 		$this->options = [
 			'headers' => $this->headers,
-			'body' => $this->requestBody,
-			'form_params' => $this->queryParameters
 		];
+
+		// Add body or query parameters if provided
+		if (!empty($this->requestBody)) {
+			$this->options['body'] = $this->requestBody;
+		} elseif (!empty($this->queryParameters)) {
+			$this->options['form_params'] = $this->queryParameters;
+		}
 	}
 
 	public function fetchCookie(string $targetCookieName): ?string
@@ -50,10 +55,10 @@ class WebItemReference
 			$cookie = $cookieJar->getCookieByName($targetCookieName)->getValue();
 			Log::write("Cookie Request successful!");
 		} catch (ClientException $e) {
-			Log::write("Cookie Request client error", $e, LogLevel::ERROR);
+			Log::write("Cookie Request client error", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$cookie = NULL;
 		} catch (Exception $e) {
-			Log::write("Cookie request generic error: ", $e, LogLevel::ERROR);
+			Log::write("Cookie request generic error: ", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$cookie = NULL;
 		}
 
@@ -82,10 +87,10 @@ class WebItemReference
 			$result = $client->request($this->method, $this->url, $this->options);
 			$content = $result->getBody();
 		} catch (ClientException $e) {
-			Log::write("Request client error", $e, LogLevel::ERROR);
+			Log::write("Request client error", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$content = NULL;
 		} catch (Exception $e) {
-			Log::write("Generic request error: ", $e, LogLevel::ERROR);
+			Log::write("Generic request error: ", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$content = NULL;
 		}
 

@@ -8,8 +8,14 @@ CREATE TABLE "Asset" (
 	"clicks" INTEGER DEFAULT NULL,
 	"typeId" INTEGER NOT NULL,
 	"creatorId" INTEGER NOT NULL,
-	"lastSuccessfulValidation" TEXT DEFAULT CURRENT_TIMESTAMP
+	"lastSuccessfulValidation" TEXT DEFAULT CURRENT_TIMESTAMP,
 );
+
+CREATE UNIQUE INDEX "creatorGivenIdIndex" ON "Asset" ("creatorId", "creatorGivenId");
+CREATE UNIQUE INDEX "urlIndex" ON "Asset" ("url");
+CREATE INDEX "stateIndex" ON "Asset" ("state");
+CREATE INDEX "typeIdIndex" ON "Asset" ("typeId");
+CREATE INDEX "creatorIdIndex" ON "Asset" ("creatorId");
 
 CREATE TABLE "FetchingState" (
 	"creatorId" INTEGER NOT NULL,
@@ -26,7 +32,6 @@ CREATE TABLE "Tag" (
 );
 
 CREATE INDEX "tagIndex" ON "Tag" ("tag");
-
 CREATE INDEX "assetIdIndex" ON "Tag" ("id");
 
 CREATE TABLE "Event" (
@@ -37,5 +42,4 @@ CREATE TABLE "Event" (
 );
 
 CREATE INDEX "eventTypeIndex" ON "Event" ("eventType");
-
 CREATE INDEX "eventTimestampIndex" ON "Event" ("eventTimestamp");

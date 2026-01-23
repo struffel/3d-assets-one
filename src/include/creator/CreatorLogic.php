@@ -20,27 +20,19 @@ abstract class CreatorLogic
 {
 
 	// Class variables
-	protected Creator $creator {
-		get {
-			return $this->creator;
-		}
-		set(Creator $value) {
-			throw new Exception("Cannot change creator of indexer.");
-		}
-	}
-
+	protected Creator $creator;
 	private int $maxAssetsPerRun;
 
 	// General functions
 
 	protected final function getCreatorState(string $key): ?string
 	{
-		return Database::runQuery("SELECT * FROM IndexingState WHERE creatorId = ? AND stateKey = ?", [$this->creator->value, $key])->fetch_assoc()['stateValue'] ?? NULL;
+		return Database::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?", [$this->creator->value, $key])->fetchArray()['stateValue'] ?? NULL;
 	}
 
 	protected final function setCreatorState(string $key, string $value): void
 	{
-		Database::runQuery("REPLACE INTO IndexingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [$this->creator->value, $key, $value]);
+		Database::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [$this->creator->value, $key, $value]);
 	}
 
 	// Creator-specific functions

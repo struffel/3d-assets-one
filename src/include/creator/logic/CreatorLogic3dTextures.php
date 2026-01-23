@@ -125,8 +125,4 @@ class CreatorLogic3dTextures extends CreatorLogic
 
 		return $tmpCollection;
 	}
-	public function fetch(string $url): string
-	{
-		return Image::removeUniformBackground(new WebItemReference($url)->fetch()->content, 3, 3, 0.015);
-	}
 }

@@ -11,7 +11,7 @@ use creator\logic\CreatorLogicShareTextures;
 use creator\logic\CreatorLogicCgBookcase;
 use creator\logic\CreatorLogicTextureCan;
 use creator\logic\CreatorLogicNoEmotionsHdr;
-use creator\logic\CreatorLogicAmdMaterialX;
+use creator\logic\CreatorLogicAmdGpuOpen;
 use creator\logic\CreatorLogicRawCatalog;
 use creator\logic\CreatorLogicHdriWorkshop;
 use creator\logic\CreatorLogicPbrPx;
@@ -36,8 +36,6 @@ enum Creator: int
 	case NOEMOTIONHDRS = 7;
 	case GPUOPENMATLIB = 10;
 	case RAWCATALOG = 11;
-	case HDRIWORKSHOP = 12;
-	case PBRMATERIALS = 13;
 	case POLIIGON = 14;
 	case TEXTURES_COM = 15;
 	case CGMOOD = 16;
@@ -47,7 +45,16 @@ enum Creator: int
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
 
-
+	public static function fromAny(mixed $value): self
+	{
+		if (is_numeric($value)) {
+			return self::from(intval($value));
+		} elseif (is_string($value)) {
+			return self::fromSlug($value);
+		} else {
+			throw new InvalidArgumentException("Cannot convert value to Creator enum.");
+		}
+	}
 
 	public function slug(): string
 	{
@@ -61,8 +68,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'noemotionhdrs',
 			self::GPUOPENMATLIB => 'gpuopen-matlib',
 			self::RAWCATALOG => 'rawcatalog',
-			self::HDRIWORKSHOP => 'hdri-workshop',
-			self::PBRMATERIALS => 'pbrmaterials-com',
 			self::POLIIGON => 'poliigon',
 			self::TEXTURES_COM => 'textures-com',
 			self::CGMOOD => 'cgmood',
@@ -86,8 +91,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'NoEmotion HDRs',
 			self::GPUOPENMATLIB => 'AMD GPUOpen MaterialX Library',
 			self::RAWCATALOG => 'Raw Catalog',
-			self::HDRIWORKSHOP => 'HDRI Workshop',
-			self::PBRMATERIALS => 'PBRMaterials.com',
 			self::POLIIGON => 'Poliigon (Free Section)',
 			self::TEXTURES_COM => 'Textures.com (Free Section)',
 			self::CGMOOD => 'CGMood (Free Section)',
@@ -111,8 +114,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'An older website with an impressive collection of free HDRIs.',
 			self::GPUOPENMATLIB => 'A collection of high-quality materials and related textures that is available completely for free, hosted by AMD GPUOpen. (Duplicates of materials from Polyhaven are excluded.)',
 			self::RAWCATALOG => 'A unique library that includes many ready-to-use resources for creating amazing projects in the field of video games, films, animation and visualization.',
-			self::HDRIWORKSHOP => 'Royalty free, high quality HDRIs with unclipped sun, up to 29 EV range and camera background photos from the location!',
-			self::PBRMATERIALS => 'PBRMaterials.com, founded in 2022, is dedicated to providing high-end scanned and Substance Designer assets for 3D artists.',
 			self::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
 			self::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
 			self::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
@@ -158,8 +159,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'http://noemotionhdrs.net',
 			self::GPUOPENMATLIB => 'https://matlib.gpuopen.com/',
 			self::RAWCATALOG => 'https://rawcatalog.com',
-			self::HDRIWORKSHOP => 'https://hdri-workshop.com/',
-			self::PBRMATERIALS => 'https://pbrmaterials.com',
 			self::POLIIGON => 'https://www.poliigon.com/search/free',
 			self::TEXTURES_COM => 'https://www.textures.com/free',
 			self::CGMOOD => 'https://cgmood.com/free',
@@ -215,9 +214,8 @@ enum Creator: int
 			self::CGBOOKCASE => new CreatorLogicCgBookcase(),
 			self::TEXTURECAN => new CreatorLogicTextureCan(),
 			self::NOEMOTIONHDRS => new CreatorLogicNoEmotionsHdr(),
-			self::GPUOPENMATLIB => new CreatorLogicAmdMaterialX(),
+			self::GPUOPENMATLIB => new CreatorLogicAmdGpuOpen(),
 			self::RAWCATALOG => new CreatorLogicRawCatalog(),
-			self::HDRIWORKSHOP => new CreatorLogicHdriWorkshop(),
 			self::POLIIGON => new CreatorLogicPoliigon(),
 			self::TEXTURES_COM => new CreatorLogicTexturesCom(),
 			self::CGMOOD => new CreatorLogicCgMood(),

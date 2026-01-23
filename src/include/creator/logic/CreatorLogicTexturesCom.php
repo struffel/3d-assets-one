@@ -12,6 +12,7 @@ use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
 use fetch\WebItemReference;
+use log\Log;
 
 // textures.com
 
@@ -19,6 +20,7 @@ class CreatorLogicTexturesCom extends CreatorLogic
 {
 
 	protected Creator $creator = Creator::TEXTURES_COM;
+	protected int $maxAssetsPerRun = 25;
 
 	private string $apiBaseUrl = "https://www.textures.com/api/v1/texture/search?filter=free&page=";
 	private array $categoryMapping = [
@@ -32,7 +34,10 @@ class CreatorLogicTexturesCom extends CreatorLogic
 		"114552" => AssetType::HDRI,
 		"23740" => AssetType::HDRI,
 		"114568" => AssetType::OTHER,
-		"114571" => AssetType::OTHER
+		"114571" => AssetType::OTHER,
+		"114579" => AssetType::MODEL_3D,
+		"114590" => AssetType::MODEL_3D,
+		"114576" => AssetType::MODEL_3D,
 	];
 
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
@@ -50,7 +55,13 @@ class CreatorLogicTexturesCom extends CreatorLogic
 
 				$url = "https://textures.com/download/" . $texComAsset['filenameWithoutSet'] . "/" . $texComAsset['defaultPhotoSet']['id'];
 
+				if (sizeof($tmpCollection) >= $this->maxAssetsPerRun) {
+					break 2;
+				}
+
 				if (!$existingAssets->containsUrl($url)) {
+
+					Log::write("Found new asset ", ["categoryId" => $texComAsset['defaultCategoryId'], "title" => $texComAsset['defaultPhotoSet']['titleThumbnail']]);
 
 					$tmpCollection[] = new ScrapedAsset(
 						id: NULL,

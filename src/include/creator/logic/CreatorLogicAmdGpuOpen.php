@@ -16,7 +16,7 @@ use misc\Image;
 
 // amd materialx
 
-class CreatorLogicAmdMaterialX extends CreatorLogic
+class CreatorLogicAmdGpuOpen extends CreatorLogic
 {
 
 	protected Creator $creator = Creator::GPUOPENMATLIB;
@@ -26,7 +26,7 @@ class CreatorLogicAmdMaterialX extends CreatorLogic
 	private string $urlTemplate = 'https://matlib.gpuopen.com/main/materials/all?material=#ID#';
 	private string $previewImageTemplate = 'https://image.matlib.gpuopen.com/#ID#.jpeg';
 	private string $excludeTitleRegex = "/^TH: /";
-	protected int $maxAssetsPerRun = 1;
+	protected int $maxAssetsPerRun = 5;
 
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
 	{
@@ -34,11 +34,10 @@ class CreatorLogicAmdMaterialX extends CreatorLogic
 		$tmpCollection = new ScrapedAssetCollection();
 		$targetUrl = $this->apiUrl;
 		// Limit number of assets to avoid excessive calls to the tag API
-		$countAssets = 0;
 		do {
 			$apiJson = new WebItemReference($targetUrl)->fetch()->parseAsJson();
 			foreach ($apiJson['results'] as $amdAsset) {
-				if ($countAssets < $this->maxAssetsPerRun && !preg_match($this->excludeTitleRegex, $amdAsset['title'])) {
+				if (sizeof($tmpCollection) < $this->maxAssetsPerRun && !preg_match($this->excludeTitleRegex, $amdAsset['title'])) {
 
 					$url = str_replace('#ID#', $amdAsset['id'], $this->urlTemplate);
 					if (!$existingAssets->containsUrl($url)) {
@@ -69,18 +68,12 @@ class CreatorLogicAmdMaterialX extends CreatorLogic
 						);
 
 						$tmpCollection[] = $tmpAsset;
-						$countAssets++;
 					}
 				}
 			}
 			$targetUrl = $apiJson['next'] ?? null;
-		} while ($targetUrl != null && $countAssets < $this->maxAssetsPerRun);
+		} while ($targetUrl != null && sizeof($tmpCollection) < $this->maxAssetsPerRun);
 
 		return $tmpCollection;
-	}
-
-	public function fetchThumbnailImage(string $url): string
-	{
-		return Image::removeUniformBackground(new WebItemReference($url)->fetch()->content, 10, 10, 0.015);
 	}
 }

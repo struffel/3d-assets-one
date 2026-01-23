@@ -177,7 +177,7 @@ class StoredAssetQuery
 		// Offset and Limit
 		if ($this->limit != NULL) {
 			// Clean up query
-			$this->limit = max(1, $this->limit + 1); // +1 to check if there are more assets available
+			$this->limit = max(1, $this->limit); // +1 to check if there are more assets available
 			$this->offset = max(0, $this->offset);
 
 			$sqlCommand .= " LIMIT ? OFFSET ? ";
@@ -195,15 +195,10 @@ class StoredAssetQuery
 		// Prepare the final asset collection
 		$output = new StoredAssetCollection();
 
-		// Check if there are more assets available for pagination
-		if (count($databaseOutput) == ($this->limit + 1)) {
-			// There are more assets, add a nextCollection query to the result
+		if (count($databaseOutput) > 0) {
 			$nextCollectionQuery = clone $this;
 			$nextCollectionQuery->offset += $nextCollectionQuery->limit;
 			$output->nextCollection = $nextCollectionQuery;
-
-			// Remove the last asset from the result set
-			array_pop($databaseOutput);
 		}
 
 		// Assemble the asset objects
