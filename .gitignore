@@ -12,3 +12,4 @@ main.htpasswd
 
 src/public/img/thumbnail/*
 log/*
+src/3d1.sqlite
