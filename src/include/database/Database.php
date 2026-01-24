@@ -22,6 +22,7 @@ class Database
 			$dbPath = $_ENV["3D1_DB_PATH"];
 			self::$connection = new SQLite3($dbPath);
 			self::$connection->enableExceptions(true);
+			self::$connection->busyTimeout(5000);
 			Log::write("Initialized SQLite DB connection", ["database" => $dbPath]);
 
 			if (self::getUserVersion() == 0) {
