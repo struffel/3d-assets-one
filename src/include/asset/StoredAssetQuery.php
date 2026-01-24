@@ -148,7 +148,7 @@ class StoredAssetQuery
 			AssetSorting::LATEST => " ORDER BY date DESC, id DESC ",
 			AssetSorting::OLDEST => " ORDER BY date ASC, id ASC ",
 			AssetSorting::RANDOM => " ORDER BY RANDOM() ",
-			AssetSorting::POPULAR => " ORDER BY ( (clicks + 10) / POWER( ABS( JULIANDAY('now') - JULIANDAY(date) ) + 1 , 1.3 ) ) DESC, date DESC, id DESC ",
+			AssetSorting::POPULAR => " ORDER BY ( clicks / ABS( JULIANDAY('now') - JULIANDAY(date) ) + 1  ) DESC, date DESC, id DESC ",
 
 			// Options for internal editor (potentially less optimized)
 			AssetSorting::LEAST_CLICKED => " ORDER BY clicks ASC ",
@@ -189,7 +189,7 @@ class StoredAssetQuery
 		// Assemble the asset objects
 		foreach ($databaseOutput as $row) {
 
-			$tags = array_filter(explode(',', $row['assetTags'] ?? ""));
+			$tags = array_filter(explode(',', $row['tags'] ?? ""));
 
 			$output[] = new StoredAsset(
 				status: StoredAssetStatus::from($row['state']),

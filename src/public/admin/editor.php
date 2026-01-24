@@ -20,7 +20,7 @@ Auth::requireAuth();
 
 <body>
 
-	<form class="editor-form"
+	<form id="editor-form"
 		hx-get="/admin/render/editor-list.php"
 		hx-target="main"
 		hx-trigger="submit,change,load,input delay:200ms"
@@ -76,7 +76,7 @@ Auth::requireAuth();
 				</option>
 			<?php } ?>
 		</select>
-
+		<hr>
 	</form>
 	<main class="editor-main">
 

@@ -17,9 +17,9 @@ $asset = $result[0] ?? null;
 
 $url = $asset ? $asset->url : null;
 if ($url) {
+	Database::addAssetClickById($assetId);
 	header("Location: $url");
 } else {
 	http_response_code(404);
 	die("3Dassets.one\nURL could not be resolved.");
 }
-Database::addAssetClickById($assetId);

@@ -154,7 +154,7 @@ class Database
 
 	public static function addAssetClickById(int $assetId)
 	{
-		$sql = "INSERT INTO Asset(AssetId,assetClicks) VALUES (?,1) ON DUPLICATE KEY UPDATE assetClicks = assetClicks+1;";
+		$sql = "UPDATE Asset SET clicks = clicks + 1 WHERE id = ?;";
 		Database::runQuery($sql, [$assetId]);
 	}
 }

@@ -25,7 +25,7 @@ foreach ($assets as $a) {
 }
 
 if ($assets->nextCollection != NULL) { ?>
-	<div style="opacity:0;transform:translateY(-650px);" id="load-more" hx-get="/render/editor-list.php?<?= $assets->nextCollection->toHttpGet() ?>" hx-trigger="intersect once" hx-swap="outerHTML"></div>
+	<div style="opacity:0;transform:translateY(-650px);" id="load-more" hx-get="/admin/render/editor-list.php?<?= $assets->nextCollection->toHttpGet() ?>" hx-trigger="intersect once" hx-swap="outerHTML"></div>
 <?php } else { ?>
 	<div id="end-reached" class="results-end-text">
 		End of results.
