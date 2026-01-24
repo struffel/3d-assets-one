@@ -7,9 +7,16 @@ use blocks\FooterBlock;
 use blocks\HeadBlock;
 use blocks\HeaderBlock;
 use creator\Creator;
-
+use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
+
+$assetCountByCreator = [];
+$result = Database::runQuery("SELECT creatorId, COUNT(*) AS count FROM Asset GROUP BY creatorId");
+while ($row = $result->fetchArray()) {
+	$assetCountByCreator[$row['creatorId']] = $row['count'];
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,8 +27,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 	<nav id="asset-filters">
 		<?php HeaderBlock::render(); ?>
-
-
 		<form
 			id="asset-filters-form"
 			oninput="window.scrollTo(0,0);"
@@ -43,8 +48,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 								class="form-option"
 								<?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option"
 								value="<?= $c->slug() ?>"
-								data-license="<?= $c->commonLicense()?->slug() ?? '' ?>">
-								<?= $c->title() ?>
+								data-count="<?= $assetCountByCreator[$c->value] ?? 0 ?>">
+								<?= $c->title()  ?>
 							</option>
 						<?php endforeach; ?>
 					</optgroup>

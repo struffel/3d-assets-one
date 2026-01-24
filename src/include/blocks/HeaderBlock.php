@@ -2,10 +2,14 @@
 
 namespace blocks;
 
+use database\Database;
+
 class HeaderBlock
 {
 	public static function render()
-	{ ?>
+	{
+
+?>
 
 		<link rel="stylesheet" href="/css/component/header.css">
 		<header>
