@@ -22,21 +22,24 @@ class CreatorLogicTwinbru extends CreatorLogic
 {
 
 	protected Creator $creator = Creator::TWINBRU;
-
 	private string $tagRegex = '/[^A-Za-z0-9%]/';
 
-	private string $indexingBaseUrl = 'https://textures.twinbru.com/api/ods/products';
+	// Configuration for indexing products
+	private string $indexingBaseUrl = "https://textures.twinbru.com/api/ods/products";
 	private array $indexingBaseParameters = [
-		'pageSize' => 25,
+		'pageSize' => 50,
 		'sortAttribute' => 'launch',
 		'sortDirection' => 'DSC',
 		'prefilter' => 'status.eq.RN/bvs_special.ne.any(customer%20special,treatment%20special)/has3dTexture.eq.True'
 	];
+
+	// Configuration for viewing
 	private string $viewPageBaseUrl = 'https://textures.twinbru.com/products/';
-	private string $viewPageSuffix = 'utm_source=3dassets.one';
+
+	// Configuration for thumbnails
 	private string $thumbnailQueryBaseUrl = 'https://textures.twinbru.com/api/ods/assets';
-	private string $thumbnailBaseUrl = 'https://textures.twinbru.com/assets/';
-	private string $sessionCookieUrl = 'https://textures.twinbru.com/en/products';
+	private string $thumbnailBaseUrl = 'https://cdn.twinbru.com/ods/assets/';
+
 
 	private function extractTags(array|string $input)
 	{
@@ -64,43 +67,32 @@ class CreatorLogicTwinbru extends CreatorLogic
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
 	{
 
-		// Collect assets
+		// Prepare the collection
 		$tmpCollection = new ScrapedAssetCollection();
+
+		// Determine current API page to scrape
 		$page = $this->getCreatorState("page") ?? 1;
 
+		// Fetch the raw list from the API
 		$requestBody = $this->indexingBaseParameters;
 		$requestBody["page"] = $page;
-
-		$rawData = new WebItemReference(
+		$rawOdsProductData = new WebItemReference(
 			url: $this->indexingBaseUrl . "?" . http_build_query($requestBody),
 		)->fetch()->parseAsJson();
 
-		if ($rawData == null) {
-			Log::write("Reset page counter because of an error.", null, LogLevel::WARNING);
-			$page = 0;
-		}
+		if ($rawOdsProductData) {
+			$odsProductList = $rawOdsProductData['results'] ?? [];
 
-		if ($rawData) {
-			$assetList = $rawData['results'];
-
-			// Reset page counter
-			if ($page >= $rawData['totalPageCount'] ?? 0) {
-				Log::write("Reset page counter because end has been reached.");
-				$page = 0;
-			} else {
-				Log::write("Page overview", ["current" => $page, "end" => ($rawData['totalPageCount'] ?? 0)], LogLevel::INFO);
-			}
-
-			foreach ($assetList as $twinbruAsset) {
+			foreach ($odsProductList as $odsProduct) {
 
 				// Get the asset's fields
-				$twinbruAsset = $twinbruAsset["item"];
-				if (!$twinbruAsset) {
+				$odsProduct = $odsProduct["item"];
+				if (!$odsProduct) {
 					continue;
 				}
 
 				// Build the asset's base URL
-				$assetUrl = $this->viewPageBaseUrl . $twinbruAsset['itemId'] . "?" . $this->viewPageSuffix;
+				$assetUrl = $this->viewPageBaseUrl . $odsProduct['itemId'];
 
 				// Create asset if it is not yet in DB
 				if (!$existingAssets->containsUrl($assetUrl)) {
@@ -108,14 +100,15 @@ class CreatorLogicTwinbru extends CreatorLogic
 					// Thumbnail
 					$thumbnailUrl = NULL;
 
-					foreach (['BL_20', 'BL_20_CU'] as $viewType) {
-						// Get the thumbnail URL
-						$thumbnailQueryResponse = NULL;
+					// Query for thumbnail data, trying different render scenes
+					foreach (['Swatch_ruler', 'BL_20_CU', 'BL_65_CU', 'BL_20', 'BL_65'] as $renderScene) {
 
+						// Build a query for this render scene
 						$thumbnailQueryResponse = new WebItemReference(
-							url: $this->thumbnailQueryBaseUrl . "?" . http_build_query(["pageSize" => 200, "filter" => "renderView.eq.$viewType/stockId.eq." . $twinbruAsset['itemId']])
+							url: $this->thumbnailQueryBaseUrl . "?" . http_build_query(["pageSize" => 200, "filter" => "renderScene.eq.$renderScene/stockId.eq." . $odsProduct['itemId']])
 						)->fetch()->parseAsJson();
 
+						// If we found a result, build the thumbnail URL and stop trying
 						if (sizeof($thumbnailQueryResponse['results']) > 0) {
 							$thumbnailUrl = $this->thumbnailBaseUrl . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";
 							break;
@@ -123,7 +116,7 @@ class CreatorLogicTwinbru extends CreatorLogic
 					}
 
 					if (!$thumbnailUrl) {
-						Log::write("Skipping because faulty thumbnail", LogLevel::ERROR);
+						Log::write("Skipping asset because no thumbnail could be resolved", $assetUrl, LogLevel::ERROR);
 						continue;
 					}
 
@@ -134,20 +127,20 @@ class CreatorLogicTwinbru extends CreatorLogic
 					$tags = array_unique(
 						array_filter(
 							array_merge(
-								$this->extractTags($twinbruAsset['class'] ?? ""),
-								$this->extractTags($twinbruAsset['use'] ?? ""),
-								$this->extractTags($twinbruAsset['finish'] ?? ""),
-								$this->extractTags($twinbruAsset['quality'] ?? ""),
-								$this->extractTags($twinbruAsset['characteristics'] ?? ""),
-								$this->extractTags($twinbruAsset['brand'] ?? ""),
-								$this->extractTags($twinbruAsset['company'] ?? ""),
-								$this->extractTags($twinbruAsset['designName'] ?? ""),
-								$this->extractTags($twinbruAsset['collectionName'] ?? ""),
-								$this->extractTags($twinbruAsset['colouring'] ?? ""),
-								$this->extractTags($twinbruAsset['main_colour_type_description'] ?? ""),
-								$this->extractTags($twinbruAsset['cat_woven'] ?? []),
-								$this->extractTags($twinbruAsset['end_use'] ?? []),
-								$this->extractTags($twinbruAsset['colour_type_description'] ?? [])
+								$this->extractTags($odsProduct['class'] ?? ""),
+								$this->extractTags($odsProduct['use'] ?? ""),
+								$this->extractTags($odsProduct['finish'] ?? ""),
+								$this->extractTags($odsProduct['quality'] ?? ""),
+								$this->extractTags($odsProduct['characteristics'] ?? ""),
+								$this->extractTags($odsProduct['brand'] ?? ""),
+								$this->extractTags($odsProduct['company'] ?? ""),
+								$this->extractTags($odsProduct['designName'] ?? ""),
+								$this->extractTags($odsProduct['collectionName'] ?? ""),
+								$this->extractTags($odsProduct['colouring'] ?? ""),
+								$this->extractTags($odsProduct['main_colour_type_description'] ?? ""),
+								$this->extractTags($odsProduct['cat_woven'] ?? []),
+								$this->extractTags($odsProduct['end_use'] ?? []),
+								$this->extractTags($odsProduct['colour_type_description'] ?? [])
 							)
 						)
 					);
@@ -155,19 +148,19 @@ class CreatorLogicTwinbru extends CreatorLogic
 					Log::write("Resolved tags", $tags, LogLevel::INFO);
 
 					// Type
-					$type = ($twinbruAsset['has3dTexture'] ?? true) ? AssetType::PBR_MATERIAL : AssetType::OTHER;
+					$type = ($odsProduct['has3dTexture'] ?? true) ? AssetType::PBR_MATERIAL : AssetType::OTHER;
 
 					// Date
-					$date = substr($twinbruAsset['launch'] ?? date("Ym"), 0, 4);
+					$date = substr($odsProduct['launch'] ?? date("Ym"), 0, 4);
 					$date .= "-";
-					$date .= substr($twinbruAsset['launch'] ?? date("Ym"), 4, 2);
+					$date .= substr($odsProduct['launch'] ?? date("Ym"), 4, 2);
 					$date .= "-01";
 
 					// Name
-					if ($twinbruAsset['designName'] == $twinbruAsset['collectionName']) {
-						$name = $twinbruAsset['collectionName'] . " / " . $twinbruAsset['main_colour_type_description'];
+					if ($odsProduct['designName'] == $odsProduct['collectionName']) {
+						$name = $odsProduct['collectionName'] . " / " . $odsProduct['main_colour_type_description'];
 					} else {
-						$name = $twinbruAsset['designName'] . " / " . $twinbruAsset['collectionName'] . " / " . $twinbruAsset['main_colour_type_description'];
+						$name = $odsProduct['designName'] . " / " . $odsProduct['collectionName'] . " / " . $odsProduct['main_colour_type_description'];
 					}
 
 					// Build asset
@@ -187,13 +180,17 @@ class CreatorLogicTwinbru extends CreatorLogic
 					);
 				}
 			}
+
+			if (sizeof($odsProductList) > 0) {
+				// Increment page for next scrape run
+				$this->setCreatorState("page", $page + 1);
+			}
 		}
 
-		// Increase page counter
-		$page += 1;
-		$this->setCreatorState("page", $page);
-
-
+		if ($rawOdsProductData == null || sizeof($odsProductList) == 0) {
+			Log::write("Reset page counter because of an error.", null, LogLevel::WARNING);
+			$this->setCreatorState("page", 1);
+		}
 
 		return $tmpCollection;
 	}

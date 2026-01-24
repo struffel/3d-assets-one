@@ -21,7 +21,7 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 	protected Creator $creator = Creator::LIGHTBEANS;
 
-	protected int $maxAssetsPerRun = 10;
+	protected int $maxAssetsPerRun = 20;
 
 	private string $sitemapUrl = "https://lightbeans.com/sitemap.xml";
 	private string $sitemapUrlMustContain = "lightbeans.com/en/texture/";
@@ -91,29 +91,35 @@ class CreatorLogicLightbeans extends CreatorLogic
 		return $tmpCollection;
 	}
 
-	public function fetchThumbnailImage(string $url): string
+	private function fetchThumbnailImage(string $url): string
 	{
 
 		// Load the image
-		$image = (new WebItemReference($url))->fetch()->content;
-		$imagick = new \Imagick();
-		$imagick->readImageBlob($image);
+		$imageData = (new WebItemReference($url))->fetch()->content;
+		$image = imagecreatefromstring($imageData);
 
-		//Get the dimensions of the original image
-		$width = $imagick->getImageWidth();
-		$height = $imagick->getImageHeight();
+		// Get the dimensions of the original image
+		$width = imagesx($image);
+		$height = imagesy($image);
 
-		// Calculate 60% of the smallest dimension to keep the crop square
-		$cropSize = min($width, $height) * 0.75;
+		// Calculate 65% of the smallest dimension to keep the crop square
+		$cropSize = (int)(min($width, $height) * 0.65);
 
-		// Calculate the coordinates for the center crop
-		$x = ($width - $cropSize) / 2;
-		$y = ($height - $cropSize) / 2;
+		// Calculate the coordinates for the (near-)center crop
+		$x = (int)(($width - $cropSize) / 2);
+		$y = (int)(($height - $cropSize) / 1.5);
+
+		// Create a new image for the cropped result
+		$croppedImage = imagecreatetruecolor($cropSize, $cropSize);
 
 		// Crop the image to the calculated dimensions
-		$imagick->cropImage($cropSize, $cropSize, $x, $y);
+		imagecopy($croppedImage, $image, 0, 0, $x, $y, $cropSize, $cropSize);
 
+		// Output to string
+		ob_start();
+		imagepng($croppedImage);
+		$result = ob_get_clean();
 
-		return $imagick->getImageBlob();
+		return $result;
 	}
 }
