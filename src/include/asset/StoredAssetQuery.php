@@ -20,7 +20,6 @@ class StoredAssetQuery
 		public ?array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
 		public ?array $filterTag = [],			// ?tags, Assets must have ALL tags in the array in order to be included.
 		public ?array $filterCreator = [],		// ?creator, limits the search to certain creators.
-		public ?array $filterLicense = [],		// ?license, defines which licenes should be allowed. Empty array causes all licenses to be allowed.
 		public ?array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
 		public ?StoredAssetStatus $filterStatus = StoredAssetStatus::ACTIVE,				// NULL => Any status
 
@@ -41,7 +40,6 @@ class StoredAssetQuery
 		$output['sort'] = $this->sort->value;
 		$output['id'] = $this->filterAssetId;
 		$output['creator'] = array_map($enumToSlugConverter, $this->filterCreator);
-		$output['license'] = array_map($enumToSlugConverter, $this->filterLicense);
 		$output['type'] = array_map($enumToSlugConverter, $this->filterType);
 
 		if ($includeStatus) {
@@ -85,12 +83,6 @@ class StoredAssetQuery
 		}
 		$filterType = array_filter($filterType);
 
-		// license filter
-		$filterLicense = [];
-		foreach ($_GET['license'] ?? [] as $licenseSlug) {
-			$filterLicense[] = CommonLicense::fromSlug($licenseSlug);
-		}
-		$filterLicense = array_filter($filterLicense);
 
 		return new StoredAssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
@@ -99,7 +91,6 @@ class StoredAssetQuery
 			filterAssetId: $filterAssetId,
 			filterTag: array_map('trim', array_filter(preg_split('/\s|,/', $_GET['q'] ?? ""))),
 			filterCreator: $filterCreator,
-			filterLicense: $filterLicense,
 			filterType: $filterType,
 			filterStatus: $filterStatus
 		);
@@ -139,12 +130,6 @@ class StoredAssetQuery
 			$sqlValues = array_merge($sqlValues, $this->filterType);
 		}
 
-		if (sizeof($this->filterLicense ?? []) > 0) {
-			$ph = Database::generatePlaceholder($this->filterLicense);
-			$sqlCommand .= " AND licenseId IN ($ph) ";
-			$sqlValues = array_merge($sqlValues, $this->filterLicense);
-		}
-
 		if (sizeof($this->filterCreator ?? []) > 0) {
 			$ph = Database::generatePlaceholder($this->filterCreator);
 			$sqlCommand .= " AND creatorId IN ($ph) ";
@@ -162,7 +147,7 @@ class StoredAssetQuery
 			// Options for public display
 			AssetSorting::LATEST => " ORDER BY date DESC, id DESC ",
 			AssetSorting::OLDEST => " ORDER BY date ASC, id ASC ",
-			AssetSorting::RANDOM => " ORDER BY RAND() ",
+			AssetSorting::RANDOM => " ORDER BY RANDOM() ",
 			AssetSorting::POPULAR => " ORDER BY ( (clicks + 10) / POWER( ABS( JULIANDAY('now') - JULIANDAY(date) ) + 1 , 1.3 ) ) DESC, date DESC, id DESC ",
 
 			// Options for internal editor (potentially less optimized)
@@ -170,8 +155,8 @@ class StoredAssetQuery
 			AssetSorting::MOST_CLICKED => " ORDER BY clicks DESC ",
 			AssetSorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) ASC ",
 			AssetSorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) DESC ",
-			AssetSorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RAND() ",
-			AssetSorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RAND() "
+			AssetSorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RANDOM() ",
+			AssetSorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RANDOM() "
 		};
 
 		// Offset and Limit

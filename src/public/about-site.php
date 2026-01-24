@@ -71,10 +71,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 				<td>Allows searching for specific types using their slug. Check the <code>/types</code>-endpoint to see a list of possible values.</td>
 			</tr>
 			<tr>
-				<td><code>license[]</code></td>
-				<td>Allows searching for specific licenses using their slug. Check the <code>/licenses</code>-endpoint to see a list of possible values.</td>
-			</tr>
-			<tr>
 				<td><code>limit</code></td>
 				<td>Determines how many assets are returned. Default is 150, maximum is 500 per request.</td>
 			</tr>
@@ -96,8 +92,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 		</table>
 		<h3><code>/api/v2/assets_rss</code></h3>
 		<p>This endpoint generates a customizable RSS feed of newly indexed assets. Filters from the regular <code>/assets</code> endpoint can be used here as well.</p>
-		<h3><code>/api/v2/licenses</code></h3>
-		<p>This endpoint returns all licenses currently featured on 3Dassets.one. It does not accept any parameters.</p>
 		<h3><code>/api/v2/types</code></h3>
 		<p>This endpoint returns all asset types currently featured on 3Dassets.one. It does not accept any parameters.</p>
 		<h3><code>/api/v2/creators</code></h3>

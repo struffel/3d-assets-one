@@ -16,7 +16,7 @@ foreach ($assets as $a) { ?>
 
 	<div class="asset-box">
 		<a target="_blank" href="/go?id=<?= $a->id ?>">
-			<img class="asset-creator-image only-hover" title="<?= $a->creator->title() ?>" width="32" height="32" src="/img/static/creator/<?= $a->creator->value ?>.png">
+			<img class="asset-creator-image only-hover" title="<?= $a->creator->title() ?>" width="32" height="32" src="/static/creator/<?= $a->creator->value ?>.png">
 			<span class="asset-name only-hover"><?= $a->title ?></span>
 			<span class="asset-icons only-hover">
 				<?php

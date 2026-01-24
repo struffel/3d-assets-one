@@ -24,8 +24,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 	calendar
 
 # Install ImageMagick PHP extension
-RUN pecl install imagick \
-	&& docker-php-ext-enable imagick
+#RUN pecl install imagick \
+#	&& docker-php-ext-enable imagick
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite

@@ -102,7 +102,7 @@ class Log
 		$output .= PHP_EOL;
 
 		if ($data) {
-			$dataJson = json_encode($data, JSON_PRETTY_PRINT) . PHP_EOL;
+			$dataJson = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
 			/*foreach (explode(PHP_EOL, $dataJson) as $line) {
 				$output .= str_repeat(" ", $outputPrefixLength) . " " . $line . PHP_EOL;
 			}*/

@@ -44,7 +44,7 @@ class StoredAsset extends Asset
 		$variation = strtoupper(implode("-", array_filter([$size, $extension, $backgroundColor])));
 		$extension = strtolower($extension);
 		$id = $this->id;
-		return "/img/thumbnail/$variation/$id.$extension";
+		return "/thumbnail/$variation/$id.$extension";
 	}
 
 	public function writeToDatabase()

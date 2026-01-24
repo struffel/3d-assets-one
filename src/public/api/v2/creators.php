@@ -12,6 +12,7 @@ foreach (Creator::cases() as $c) {
 		"id" => $c->value,
 		"slug" => $c->slug(),
 		"name" => $c->title(),
+		"license" => $c->commonLicense()->slug(),
 		"description" => $c->description(),
 	];
 }

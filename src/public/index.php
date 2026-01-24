@@ -34,24 +34,27 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			<label class="form-label" for="sort">Tags</label>
 			<input class="text-input" type="text" name="q" value="<?= preg_replace('/[^a-zA-Z0-9, ]/', '', $_GET['q'] ?? '') ?>" placeholder="tags...">
 
-			<label class="form-label" for="creator[]">Site</label>
-			<select size="<?= sizeof(Creator::cases()) ?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
-				<?php foreach (Creator::cases() as $c) { ?>
-					<option class="form-option" <?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option" value="<?= $c->slug() ?>"><?= $c->title() ?></option>
-				<?php } ?>
+			<label class="form-label" for="creator[]">Site (by License)</label>
+			<select size="<?= sizeof(Creator::cases()) + sizeof(CommonLicense::cases()) - 1 ?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
+				<?php foreach (CommonLicense::cases() as $license) : ?>
+					<optgroup label="<?= $license->name() ?>">
+						<?php foreach ($license->getCreators() as $c) : ?>
+							<option
+								class="form-option"
+								<?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option"
+								value="<?= $c->slug() ?>"
+								data-license="<?= $c->commonLicense()?->slug() ?? '' ?>">
+								<?= $c->title() ?>
+							</option>
+						<?php endforeach; ?>
+					</optgroup>
+				<?php endforeach; ?>
 			</select>
 
 			<label class="form-label" for="type[]">Type</label>
 			<select size="<?= sizeof(AssetType::cases()) ?>" class="multi-select" name="type[]" multiple>
 				<?php foreach (AssetType::cases() as $c) { ?>
 					<option class="form-option" <?= in_array($c->slug(), $_GET['type'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
-				<?php } ?>
-			</select>
-
-			<label class="form-label" for="license[]">License</label>
-			<select size="<?= sizeof(CommonLicense::cases()) ?>" class="multi-select" name="license[]" multiple>
-				<?php foreach (CommonLicense::cases() as $c) { ?>
-					<option class="form-option" <?= in_array($c->slug(), $_GET['license'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
 				<?php } ?>
 			</select>
 
@@ -62,7 +65,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 				<?php } ?>
 			</select>
 		</form>
-		<script src="/js/multi-select.js"></script>
+		<script src="/js/index.js"></script>
 		<?php FooterBlock::render(); ?>
 	</nav>
 	<main></main>

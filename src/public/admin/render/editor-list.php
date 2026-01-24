@@ -6,8 +6,13 @@ use asset\CommonLicense;
 
 use asset\AssetType;
 use blocks\EditorRow;
+use misc\Auth;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
+
+Auth::requireAuth();
+
+
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 

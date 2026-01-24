@@ -1,0 +1,48 @@
+body {
+
+	font-size: small;
+
+	.editor-header {
+		font-weight: bold;
+	}
+
+	form {
+		display: flex;
+		gap: 0.5rem;
+		padding: 0.5rem;
+		border-bottom: 1px solid #ddd;
+		flex-wrap: wrap;
+		align-items: center;
+
+		select,
+		input {
+			padding: 0.2rem 0.2rem;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 0.9rem;
+			font-family: inherit;
+		}
+
+		select:focus,
+		input:focus {
+			outline: none;
+			border-color: #666;
+		}
+
+		input[type="number"] {
+			width: 100px;
+		}
+
+		fieldset{
+			display: flex;
+			flex-direction: column;
+		}
+	}
+
+	form.editor-form {
+		position: sticky;
+		top: 0;
+		background-color: #fff;
+		z-index: 10;
+	}
+}

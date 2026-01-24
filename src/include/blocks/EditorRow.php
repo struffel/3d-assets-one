@@ -14,16 +14,15 @@ class EditorRow
 
 		<form
 			hx-ext="remove-me"
-			hx-post="/render/editor-update-asset.php"
-			hx-swap="outerHTML"
-			style="display: grid;grid-template-columns: 128px 256px 256px 256px 256px 128px 256px">
+			hx-post="/admin/render/editor-update-asset.php"
+			hx-swap="outerHTML">
 			<div>
 				<a href="https://<?= implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2)); ?>/go?id=<?= $asset->id ?>">
-					<img class="asset-image" alt="<?= $asset->title ?>" src="http://localhost:5000/img/thumbnail/64-JPG-FFFFFF/<?= $asset->id ?>.jpg">
+					<img class="asset-image" alt="<?= $asset->title ?>" src="<?= $asset->getThumbnailUrl(64, "JPG", "FFFFFF") ?>">
 				</a>
+				<input readonly type="text" name="id" value="<?= $asset->id ?>">
 			</div>
 			<div>
-				<input readonly type="text" name="id" value="<?= $asset->id ?>">
 				<input size="48" type="text" name="title" value="<?= $asset->title ?>">
 				<input size="48" type="text" name="tagString" value="<?= implode(" ", $asset->tags) ?>">
 			</div>

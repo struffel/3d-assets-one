@@ -17,7 +17,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 		<?php foreach (Creator::cases() as $c) { ?>
 			<div class="creator-box">
 				<span>
-					<img class="creator-box-image" src="/img/static/creator/<?= $c->value ?>.png">
+					<img class="creator-box-image" src="/static/creator/<?= $c->value ?>.png">
 				</span>
 				<span>
 					<h2><?= $c->title() ?></h2>

@@ -99,4 +99,6 @@ if (sizeof($newScrapedAssets) > 0) {
 	Log::write("No new updates to write to DB.");
 }
 
+Image::deleteOrphanedThumbnails();
+
 Log::stop(LogResult::OK);

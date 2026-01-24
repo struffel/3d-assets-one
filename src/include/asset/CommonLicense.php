@@ -2,8 +2,12 @@
 
 namespace asset;
 
+use creator\Creator;
+use GuzzleHttp\Promise\Create;
+
 enum CommonLicense: int
 {
+	
 	case CC0 = 1;
 		#case CC_BY = 2;
 		#case CC_BY_SA = 3;
@@ -12,10 +16,23 @@ enum CommonLicense: int
 		#case CC_BY_NC_SA = 6;
 		#case CC_BY_NC_ND = 7;
 	case APACHE_2_0 = 8;
+	case NONE = 0;
+
+	public function getCreators(): array
+	{
+		$creators = [];
+		foreach (Creator::cases() as $c) {
+			if ($c->commonLicense() === $this) {
+				$creators[] = $c;
+			}
+		}
+		return $creators;
+	}
 
 	public function slug(): string
 	{
 		return match ($this) {
+			CommonLicense::NONE => 'none',
 			CommonLicense::CC0 => 'cc-0',
 			#License::CC_BY => 'cc-by',
 			#License::CC_BY_SA => 'cc-by-sa',
@@ -30,6 +47,7 @@ enum CommonLicense: int
 	public function name(): string
 	{
 		return match ($this) {
+			CommonLicense::NONE => 'Custom License',
 			CommonLicense::CC0 => 'Creative Commons CC0',
 			#License::CC_BY => 'Creative Commons BY',
 			#License::CC_BY_SA => 'Creative Commons BY-SA',

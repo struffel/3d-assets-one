@@ -11,7 +11,10 @@ use GdImage;
 class Image
 {
 
-	private static string $thumbnailDirectory =  __DIR__ . "/../../public/img/thumbnail/";
+	private static function getThumbnailStorePath(): string
+	{
+		return __DIR__ . '/../../public/thumbnail';
+	}
 
 	private static array $thumbnailTemplate = [
 		["JPG", "FFFFFF", 32],
@@ -30,12 +33,17 @@ class Image
 	 */
 	public static function deleteOrphanedThumbnails()
 	{
+		// Do nothing if the thumbnail directory does not exist
+		if (!is_dir(self::getThumbnailStorePath())) {
+			return;
+		}
+
 		$existingIds = [];
 		$dbResult = Database::runQuery("SELECT id FROM Asset");
 		while ($row = $dbResult->fetchArray()) {
 			$existingIds[] = $row['id'];
 		}
-		$thumbnailDir = self::$thumbnailDirectory;
+		$thumbnailDir = self::getThumbnailStorePath() . "/";
 		foreach (scandir($thumbnailDir) as $variationDir) {
 			if ($variationDir === '.' || $variationDir === '..') {
 				continue;
@@ -48,7 +56,7 @@ class Image
 				$assetId = intval(pathinfo($file, PATHINFO_FILENAME));
 				if (!in_array($assetId, $existingIds)) {
 					unlink($fullVariationDir . $file);
-					Log::write("Deleted orphaned thumbnail", ["assetId" => $assetId, "fileName" => $fullVariationDir . $file]);
+					Log::write("Deleted orphaned thumbnail", $fullVariationDir . $file);
 				}
 			}
 		}
@@ -59,7 +67,7 @@ class Image
 		foreach (Image::$thumbnailTemplate as $t) {
 			$gdImage = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
 
-			$fileName = Image::$thumbnailDirectory .
+			$fileName = self::getThumbnailStorePath() . "/" .
 				strtoupper(
 					implode(
 						"-",

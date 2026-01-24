@@ -10,8 +10,11 @@ use database\Database;
 use asset\StoredAsset;
 use asset\StoredAssetStatus;
 use blocks\EditorRow;
+use misc\Auth;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
+
+Auth::requireAuth();
 
 if ($_POST['id'] ?? false) {
 

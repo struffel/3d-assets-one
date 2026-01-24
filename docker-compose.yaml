@@ -7,24 +7,8 @@ services:
     ports:
       - "5000:80"
     volumes:
-      - ./main.htpasswd:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/main.htpasswd:ro
       - ./src:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/
       - ./log:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/log
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/public
-    restart: unless-stopped
-
-  web-import:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: 3d1-web-import
-    ports:
-      - "5001:80"
-    volumes:
-      - ./main.htpasswd:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/main.htpasswd:ro
-      - ./src:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/
-      - ./log:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/log
-    environment:
-      APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/local/public-import
     restart: unless-stopped

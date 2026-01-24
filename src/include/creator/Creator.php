@@ -125,7 +125,7 @@ enum Creator: int
 		};
 	}
 
-	public function commonLicense(): ?CommonLicense
+	public function commonLicense(): CommonLicense
 	{
 		return match ($this) {
 			self::AMBIENTCG => CommonLicense::CC0,
@@ -134,7 +134,8 @@ enum Creator: int
 			self::TEXTURECAN => CommonLicense::CC0,
 			self::CGBOOKCASE => CommonLicense::CC0,
 			self::NOEMOTIONHDRS => CommonLicense::CC_BY_ND,
-			self::GPUOPENMATLIB => CommonLicense::APACHE_2_0
+			self::GPUOPENMATLIB => CommonLicense::APACHE_2_0,
+			default => CommonLicense::NONE
 		};
 	}
 

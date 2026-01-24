@@ -5,12 +5,16 @@ src/_gsdata_/*
 # Composer
 src/vendor/
 
-remote_logs/*
+# Environment files
 **.env
-dev.sql
-main.htpasswd
+**.htpasswd
 
-src/public/img/thumbnail/*
-log/*
+# Media
+src/public/thumbnail/*
+
+# SQLite database
 src/3d1.sqlite
 src/3d1.sqlite-journal
+
+# Logs
+log/*
