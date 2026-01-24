@@ -3,6 +3,7 @@
 namespace database;
 
 use asset\Asset;
+use Exception;
 use indexing\event\IndexingEvent;
 use log\Log;
 use log\LogLevel;
@@ -14,13 +15,13 @@ class Database
 
 	private static SQLite3 $connection;
 
-	private static function initializeConnection()
+	private static function initializeConnection(bool $createIfNotExists = false)
 	{
 		// Create connection
 		if (!isset(self::$connection)) {
 			Log::write("Initializing DB Connection");
 			$dbPath = $_ENV["3D1_DB_PATH"];
-			self::$connection = new SQLite3($dbPath);
+			self::$connection = new SQLite3($dbPath, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 			self::$connection->enableExceptions(true);
 			self::$connection->busyTimeout(5000);
 			Log::write("Initialized SQLite DB connection", ["database" => $dbPath]);
@@ -58,6 +59,11 @@ class Database
 			}
 		} while ($ranMigrationStep);
 		self::commitTransaction();
+
+		// Ensure that the database file is writable by everyone.
+		// This is necessary because the web server user needs write access, but the migration might be run by a different user from the CLI.
+		chmod($_ENV["3D1_DB_PATH"], 0666);
+		Log::write("Set database file permissions to 0666.");
 	}
 
 	private static function getUserVersion(): int

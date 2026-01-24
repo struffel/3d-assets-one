@@ -10,15 +10,6 @@ $assets = $query->execute();
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 
-?>
-
-<?php if ($query->offset == 0) { ?>
-
-	<div id="asset-count-text">Showing ... results</div>
-
-<?php } ?>
-
-<?php $i = 0;
 /**
  * @var StoredAsset $a */
 foreach ($assets as $a) { ?>

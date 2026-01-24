@@ -195,7 +195,7 @@ class StoredAssetQuery
 		// Prepare the final asset collection
 		$output = new StoredAssetCollection();
 
-		if (count($databaseOutput) > 0) {
+		if ($this->limit != NULL && count($databaseOutput) == $this->limit) {
 			$nextCollectionQuery = clone $this;
 			$nextCollectionQuery->offset += $nextCollectionQuery->limit;
 			$output->nextCollection = $nextCollectionQuery;

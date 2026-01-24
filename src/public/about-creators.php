@@ -1,15 +1,18 @@
 <?php
 
+use blocks\FooterBlock;
+use blocks\HeadBlock;
+use blocks\HeaderBlock;
 use creator\Creator;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 ?>
 <html>
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/head.php'; ?>
+<?php HeadBlock::render(); ?>
 
 <body>
 	<link rel="stylesheet" href="/css/page/about-creators.css">
-	<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/header.php'; ?>
+	<?php HeaderBlock::render(); ?>
 	<main>
 		<?php foreach (Creator::cases() as $c) { ?>
 			<div class="creator-box">
@@ -24,7 +27,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			</div>
 		<?php } ?>
 	</main>
-	<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/footer.php'; ?>
+	<?php FooterBlock::render(); ?>
 </body>
 
 </html>

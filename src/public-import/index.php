@@ -13,6 +13,3 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 	}
 	?>
 </ul>
-<?php
-phpinfo();
-?>

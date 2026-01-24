@@ -1,16 +1,19 @@
 <?php
 
 use asset\AssetSorting;
+use blocks\FooterBlock;
+use blocks\HeadBlock;
+use blocks\HeaderBlock;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/head.php'; ?>
+<?php HeadBlock::render(); ?>
 
 <body>
 	<link rel="stylesheet" href="/css/page/about-site.css">
-	<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/header.php'; ?>
+	<?php HeaderBlock::render(); ?>
 	<main>
 		<h2>What is 3Dassets.one?</h2>
 		<p>
@@ -116,7 +119,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 
 	</main>
-	<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/footer.php'; ?>
+	<?php FooterBlock::render(); ?>
 </body>
 
 </html>

@@ -3,6 +3,9 @@
 use asset\CommonLicense;
 use asset\AssetSorting;
 use asset\AssetType;
+use blocks\FooterBlock;
+use blocks\HeadBlock;
+use blocks\HeaderBlock;
 use creator\Creator;
 
 
@@ -10,13 +13,13 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/head.php'; ?>
+<?php HeadBlock::render(); ?>
 
 <body>
 	<link rel="stylesheet" href="/css/page/index.css">
 
 	<nav id="asset-filters">
-		<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/header.php'; ?>
+		<?php HeaderBlock::render(); ?>
 
 
 		<form
@@ -60,7 +63,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			</select>
 		</form>
 		<script src="/js/multi-select.js"></script>
-		<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/footer.php'; ?>
+		<?php FooterBlock::render(); ?>
 	</nav>
 	<main></main>
 </body>
