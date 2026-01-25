@@ -39,7 +39,7 @@ class Log
 		self::$finalized = true;
 		self::$enabled = false;
 
-		self::cleanUpLogDirectory(7);
+		self::cleanUpLogDirectory(14);
 	}
 
 
@@ -56,8 +56,6 @@ class Log
 		self::$writeToStdout = $writeToStdout;
 
 		set_exception_handler([self::class, 'exceptionHandler']);
-
-		self::cleanUpLogDirectory(30); // Delete logs older than 30 days
 
 		Log::write("Started logging", ["Name" => $logName, "Level" => $level]);
 	}
