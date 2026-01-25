@@ -11,7 +11,7 @@ use misc\Auth;
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 Auth::requireAuth();
-
+header('Cache-Control: no-store');
 
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);

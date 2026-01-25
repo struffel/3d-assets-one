@@ -13,6 +13,7 @@ use blocks\EditorRow;
 use misc\Auth;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
+header('Cache-Control: no-store');
 
 Auth::requireAuth();
 

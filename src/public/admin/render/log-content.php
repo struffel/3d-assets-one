@@ -4,6 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 use misc\Auth;
 
 Auth::requireAuth();
+header('Cache-Control: no-store');
 
 $logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
 $selectedDir = $_GET['directory'] ?? '';
