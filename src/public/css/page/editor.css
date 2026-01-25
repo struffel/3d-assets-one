@@ -1,0 +1,34 @@
+body {
+
+	font-size: small;
+
+	.editor-header {
+		font-weight: bold;
+	}
+
+
+	#editor-form {
+		position: sticky;
+		top: 0;
+		background-color: #fff;
+		z-index: 10;
+
+
+	}
+
+	main {
+		.editor-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 3fr 5fr 4fr 1fr 1fr 1fr 1fr 1fr;
+			align-items: center;
+			gap: 8px;
+			padding: 4px 0;
+			border-bottom: 1px solid #ccc;
+
+			input {
+				width: 100%;
+				box-sizing: border-box;
+			}
+		}
+	}
+}

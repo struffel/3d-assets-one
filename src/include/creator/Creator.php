@@ -2,7 +2,28 @@
 
 namespace creator;
 
-use creator\indexing\CreatorIndexer;
+use asset\CommonLicense;
+use creator\CreatorLogic;
+use creator\logic\CreatorLogicAmbientCg;
+use creator\logic\CreatorLogic3dTextures;
+use creator\logic\CreatorLogicPolyhaven;
+use creator\logic\CreatorLogicShareTextures;
+use creator\logic\CreatorLogicCgBookcase;
+use creator\logic\CreatorLogicTextureCan;
+use creator\logic\CreatorLogicNoEmotionsHdr;
+use creator\logic\CreatorLogicAmdGpuOpen;
+use creator\logic\CreatorLogicRawCatalog;
+use creator\logic\CreatorLogicHdriWorkshop;
+use creator\logic\CreatorLogicPbrPx;
+use creator\logic\CreatorLogicPoliigon;
+use creator\logic\CreatorLogicTexturesCom;
+use creator\logic\CreatorLogicCgMood;
+use creator\logic\CreatorLogicThreeDScans;
+use creator\logic\CreatorLogicLocationTextures;
+use creator\logic\CreatorLogicTwinbru;
+use creator\logic\CreatorLogicLightbeans;
+use Exception;
+use InvalidArgumentException;
 
 enum Creator: int
 {
@@ -15,8 +36,6 @@ enum Creator: int
 	case NOEMOTIONHDRS = 7;
 	case GPUOPENMATLIB = 10;
 	case RAWCATALOG = 11;
-	case HDRIWORKSHOP = 12;
-	case PBRMATERIALS = 13;
 	case POLIIGON = 14;
 	case TEXTURES_COM = 15;
 	case CGMOOD = 16;
@@ -26,26 +45,15 @@ enum Creator: int
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
 
-	public static function regularRefreshList(): array
+	public static function fromAny(mixed $value): self
 	{
-		return [
-			self::AMBIENTCG,
-			self::POLYHAVEN,
-			self::SHARETEXTURES,
-			self::THREE_D_TEXTURES,
-			self::CGBOOKCASE,
-			self::TEXTURECAN,
-			self::GPUOPENMATLIB,
-			self::RAWCATALOG,
-			self::POLIIGON,
-			self::TEXTURES_COM,
-			self::CGMOOD,
-			self::THREE_D_SCANS,
-			self::LOCATION_TEXTURES,
-			self::PBR_PX,
-			self::TWINBRU,
-			self::LIGHTBEANS
-		];
+		if (is_numeric($value)) {
+			return self::from(intval($value));
+		} elseif (is_string($value)) {
+			return self::fromSlug($value);
+		} else {
+			throw new InvalidArgumentException("Cannot convert value to Creator enum.");
+		}
 	}
 
 	public function slug(): string
@@ -60,8 +68,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'noemotionhdrs',
 			self::GPUOPENMATLIB => 'gpuopen-matlib',
 			self::RAWCATALOG => 'rawcatalog',
-			self::HDRIWORKSHOP => 'hdri-workshop',
-			self::PBRMATERIALS => 'pbrmaterials-com',
 			self::POLIIGON => 'poliigon',
 			self::TEXTURES_COM => 'textures-com',
 			self::CGMOOD => 'cgmood',
@@ -73,7 +79,7 @@ enum Creator: int
 		};
 	}
 
-	public function name(): string
+	public function title(): string
 	{
 		return match ($this) {
 			self::AMBIENTCG => 'ambientCG',
@@ -85,8 +91,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'NoEmotion HDRs',
 			self::GPUOPENMATLIB => 'AMD GPUOpen MaterialX Library',
 			self::RAWCATALOG => 'Raw Catalog',
-			self::HDRIWORKSHOP => 'HDRI Workshop',
-			self::PBRMATERIALS => 'PBRMaterials.com',
 			self::POLIIGON => 'Poliigon (Free Section)',
 			self::TEXTURES_COM => 'Textures.com (Free Section)',
 			self::CGMOOD => 'CGMood (Free Section)',
@@ -110,8 +114,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'An older website with an impressive collection of free HDRIs.',
 			self::GPUOPENMATLIB => 'A collection of high-quality materials and related textures that is available completely for free, hosted by AMD GPUOpen. (Duplicates of materials from Polyhaven are excluded.)',
 			self::RAWCATALOG => 'A unique library that includes many ready-to-use resources for creating amazing projects in the field of video games, films, animation and visualization.',
-			self::HDRIWORKSHOP => 'Royalty free, high quality HDRIs with unclipped sun, up to 29 EV range and camera background photos from the location!',
-			self::PBRMATERIALS => 'PBRMaterials.com, founded in 2022, is dedicated to providing high-end scanned and Substance Designer assets for 3D artists.',
 			self::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
 			self::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
 			self::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
@@ -123,12 +125,26 @@ enum Creator: int
 		};
 	}
 
-	public function licenseUrl(): string
+	public function commonLicense(): CommonLicense
+	{
+		return match ($this) {
+			self::AMBIENTCG => CommonLicense::CC0,
+			self::POLYHAVEN => CommonLicense::CC0,
+			self::SHARETEXTURES => CommonLicense::CC0,
+			self::TEXTURECAN => CommonLicense::CC0,
+			self::CGBOOKCASE => CommonLicense::CC0,
+			self::NOEMOTIONHDRS => CommonLicense::CC_BY_ND,
+			self::GPUOPENMATLIB => CommonLicense::APACHE_2_0,
+			default => CommonLicense::NONE
+		};
+	}
+
+	public function licenseUrl(): ?string
 	{
 		return match ($this) {
 			self::AMBIENTCG => 'https://docs.ambientcg.com/license/',
 			self::LOCATION_TEXTURES => 'https://locationtextures.com/privacy-policy/',
-			default => ""
+			default => NULL
 		};
 	}
 
@@ -144,8 +160,6 @@ enum Creator: int
 			self::NOEMOTIONHDRS => 'http://noemotionhdrs.net',
 			self::GPUOPENMATLIB => 'https://matlib.gpuopen.com/',
 			self::RAWCATALOG => 'https://rawcatalog.com',
-			self::HDRIWORKSHOP => 'https://hdri-workshop.com/',
-			self::PBRMATERIALS => 'https://pbrmaterials.com',
 			self::POLIIGON => 'https://www.poliigon.com/search/free',
 			self::TEXTURES_COM => 'https://www.textures.com/free',
 			self::CGMOOD => 'https://cgmood.com/free',
@@ -155,6 +169,31 @@ enum Creator: int
 			self::TWINBRU => 'https://textures.twinbru.com',
 			self::LIGHTBEANS => 'https://lightbeans.com'
 		};
+	}
+
+	// Additional helpers
+
+	public static function regularRefreshList(): array
+	{
+		return [
+			self::AMBIENTCG,
+			self::POLYHAVEN,
+			self::SHARETEXTURES,
+			self::THREE_D_TEXTURES,
+			self::CGBOOKCASE,
+			self::TEXTURECAN,
+			self::GPUOPENMATLIB,
+			self::RAWCATALOG,
+			self::POLIIGON,
+			self::TEXTURES_COM,
+			self::CGMOOD,
+			self::THREE_D_SCANS,
+			self::LOCATION_TEXTURES,
+			self::PBR_PX,
+			self::TWINBRU,
+			self::LIGHTBEANS,
+			self::NOEMOTIONHDRS
+		];
 	}
 
 	public static function fromSlug(string $slug): ?self
@@ -167,28 +206,27 @@ enum Creator: int
 		return null;
 	}
 
-	public function getIndexer(): ?CreatorIndexer
+	public function getLogic(): CreatorLogic
 	{
 		return match ($this) {
-			self::AMBIENTCG => new \creator\indexing\CreatorIndexerAmbientCg(),
-			self::POLYHAVEN => new \creator\indexing\CreatorIndexerPolyhaven(),
-			self::SHARETEXTURES => new \creator\indexing\CreatorIndexerShareTextures(),
-			self::THREE_D_TEXTURES => new \creator\indexing\CreatorIndexer3dTextures(),
-			self::CGBOOKCASE => new \creator\indexing\CreatorIndexerCgBookcase(),
-			self::TEXTURECAN => new \creator\indexing\CreatorIndexerTextureCan(),
-			self::NOEMOTIONHDRS => new \creator\indexing\CreatorIndexerNoEmotionsHdr(),
-			self::GPUOPENMATLIB => new \creator\indexing\CreatorIndexerAmdMaterialX(),
-			self::RAWCATALOG => new \creator\indexing\CreatorIndexerRawCatalog(),
-			self::HDRIWORKSHOP => new \creator\indexing\CreatorIndexerHdriWorkshop(),
-			self::POLIIGON => new \creator\indexing\CreatorIndexerPoliigon(),
-			self::TEXTURES_COM => new \creator\indexing\CreatorIndexerTexturesCom(),
-			self::CGMOOD => new \creator\indexing\CreatorIndexerCgMood(),
-			self::THREE_D_SCANS => new \creator\indexing\CreatorIndexerThreeDScans(),
-			self::LOCATION_TEXTURES => new \creator\indexing\CreatorIndexerLocationTextures(),
-			self::PBR_PX => new \creator\indexing\CreatorIndexerPbrPx(),
-			self::TWINBRU => new \creator\indexing\CreatorIndexerTwinbru(),
-			self::LIGHTBEANS => new \creator\indexing\CreatorIndexerLightbeans(),
-			default => null
+			self::AMBIENTCG => new CreatorLogicAmbientCg(),
+			self::POLYHAVEN => new CreatorLogicPolyhaven(),
+			self::SHARETEXTURES => new CreatorLogicShareTextures(),
+			self::THREE_D_TEXTURES => new CreatorLogic3dTextures(),
+			self::CGBOOKCASE => new CreatorLogicCgBookcase(),
+			self::TEXTURECAN => new CreatorLogicTextureCan(),
+			self::NOEMOTIONHDRS => new CreatorLogicNoEmotionsHdr(),
+			self::GPUOPENMATLIB => new CreatorLogicAmdGpuOpen(),
+			self::RAWCATALOG => new CreatorLogicRawCatalog(),
+			self::POLIIGON => new CreatorLogicPoliigon(),
+			self::TEXTURES_COM => new CreatorLogicTexturesCom(),
+			self::CGMOOD => new CreatorLogicCgMood(),
+			self::THREE_D_SCANS => new CreatorLogicThreeDScans(),
+			self::LOCATION_TEXTURES => new CreatorLogicLocationTextures(),
+			self::PBR_PX => new CreatorLogicPbrPx(),
+			self::TWINBRU => new CreatorLogicTwinbru(),
+			self::LIGHTBEANS => new CreatorLogicLightbeans(),
+			default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
 		};
 	}
 }

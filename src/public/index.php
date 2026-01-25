@@ -1,24 +1,32 @@
 <?php
 
-use asset\License;
-use asset\Sorting;
-use asset\Type;
+use asset\CommonLicense;
+use asset\AssetSorting;
+use asset\AssetType;
+use blocks\FooterBlock;
+use blocks\HeadBlock;
+use blocks\HeaderBlock;
 use creator\Creator;
-use asset\Quirk;
+use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
+
+$assetCountByCreator = [];
+$result = Database::runQuery("SELECT creatorId, COUNT(*) AS count FROM Asset GROUP BY creatorId");
+while ($row = $result->fetchArray()) {
+	$assetCountByCreator[$row['creatorId']] = $row['count'];
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/head.php'; ?>
+<?php HeadBlock::render(); ?>
 
 <body>
 	<link rel="stylesheet" href="/css/page/index.css">
 
 	<nav id="asset-filters">
-		<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/header.php'; ?>
-
-
+		<?php HeaderBlock::render(); ?>
 		<form
 			id="asset-filters-form"
 			oninput="window.scrollTo(0,0);"
@@ -31,43 +39,39 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			<label class="form-label" for="sort">Tags</label>
 			<input class="text-input" type="text" name="q" value="<?= preg_replace('/[^a-zA-Z0-9, ]/', '', $_GET['q'] ?? '') ?>" placeholder="tags...">
 
-			<label class="form-label" for="creator[]">Site</label>
-			<select size="<?= sizeof(Creator::cases()) ?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
-				<?php foreach (Creator::cases() as $c) { ?>
-					<option class="form-option" <?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option" value="<?= $c->slug() ?>"><?= $c->name() ?></option>
-				<?php } ?>
+			<label class="form-label" for="creator[]">Site (by License)</label>
+			<select size="<?= sizeof(Creator::cases()) + sizeof(CommonLicense::cases()) - 1 ?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
+				<?php foreach (CommonLicense::cases() as $license) : ?>
+					<optgroup label="<?= $license->name() ?>">
+						<?php foreach ($license->getCreators() as $c) : ?>
+							<option
+								class="form-option"
+								<?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option"
+								value="<?= $c->slug() ?>"
+								data-count="<?= $assetCountByCreator[$c->value] ?? 0 ?>">
+								<?= $c->title()  ?>
+							</option>
+						<?php endforeach; ?>
+					</optgroup>
+				<?php endforeach; ?>
 			</select>
 
 			<label class="form-label" for="type[]">Type</label>
-			<select size="<?= sizeof(Type::cases()) ?>" class="multi-select" name="type[]" multiple>
-				<?php foreach (Type::cases() as $c) { ?>
+			<select size="<?= sizeof(AssetType::cases()) ?>" class="multi-select" name="type[]" multiple>
+				<?php foreach (AssetType::cases() as $c) { ?>
 					<option class="form-option" <?= in_array($c->slug(), $_GET['type'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
-				<?php } ?>
-			</select>
-
-			<label class="form-label" for="license[]">License</label>
-			<select size="<?= sizeof(License::cases()) ?>" class="multi-select" name="license[]" multiple>
-				<?php foreach (License::cases() as $c) { ?>
-					<option class="form-option" <?= in_array($c->slug(), $_GET['license'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
-				<?php } ?>
-			</select>
-
-			<label class="form-label" for="avoid[]">Exclude</label>
-			<select size="<?= sizeof(Quirk::cases()) ?>" class="multi-select" name="avoid[]" multiple>
-				<?php foreach (Quirk::cases() as $c) { ?>
-					<option class="form-option" <?= in_array($c->slug(), $_GET['avoid'] ?? []) ? 'selected' : '' ?> value="<?= $c->slug() ?>"><?= $c->name() ?></option>
 				<?php } ?>
 			</select>
 
 			<label class="form-label" for="sort">Sort by</label>
 			<select name="sort">
-				<?php foreach ([Sorting::POPULAR, Sorting::LATEST, Sorting::OLDEST, Sorting::RANDOM] as $c) { ?>
+				<?php foreach ([AssetSorting::POPULAR, AssetSorting::LATEST, AssetSorting::OLDEST, AssetSorting::RANDOM] as $c) { ?>
 					<option class="form-option" <?= (($_GET['sort'] ?? '') === $c->value) ? 'selected' : '' ?> value="<?= $c->value ?>"><?= ucfirst($c->value) ?></option>
 				<?php } ?>
 			</select>
 		</form>
-		<script src="/js/multi-select.js"></script>
-		<?php include $_SERVER['DOCUMENT_ROOT'] . '/../components/footer.php'; ?>
+		<script src="/js/index.js"></script>
+		<?php FooterBlock::render(); ?>
 	</nav>
 	<main></main>
 </body>

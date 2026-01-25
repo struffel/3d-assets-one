@@ -22,7 +22,7 @@ class FetchedWebItem
 	 * 
 	 * @return WebItemReference[]
 	 */
-	public function parseAsSitemap(DateTime $filterNewerThan): ?array
+	public function parseAsSitemap(?DateTime $filterNewerThan = NULL): ?array
 	{
 
 		$xml = $this->parseAsSimpleXmlElement();
@@ -34,7 +34,7 @@ class FetchedWebItem
 		foreach ($xml->url as $urlEntry) {
 			$loc = (string)$urlEntry->loc;
 			$lastmod = isset($urlEntry->lastmod) ? new DateTime((string)$urlEntry->lastmod) : new DateTime();
-			if ($lastmod >= $filterNewerThan) {
+			if ($filterNewerThan === null || $lastmod >= $filterNewerThan) {
 				$urls[] = new WebItemReference(url: $loc);
 			}
 		}

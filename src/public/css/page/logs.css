@@ -1,0 +1,126 @@
+@import url('/css/base.css');
+
+body {
+	margin: 0 0;
+	padding: 0 0;
+	overflow-x: hidden;
+
+	#logs-container {
+		display: grid;
+		grid-template-columns: 450px 1fr;
+		height: 100vh;
+		gap: 0;
+
+		#logs-sidebar {
+			padding: 0.5rem;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			border-right: 1px solid #333;
+			overflow-y: auto;
+
+			#logs-header {
+				gap: 0.75rem;
+				font-weight: bold;
+				margin-bottom: 1rem;
+				padding-bottom: 0.25rem;
+				font-size: small;
+			}
+
+			label {
+				font-size: 0.85rem;
+			}
+
+			select {
+				width: 100%;
+
+				font-size: 0.9rem;
+				cursor: pointer;
+			}
+
+			select:hover {
+				border-color: #666;
+			}
+
+			#file-list {
+				flex: 1;
+				min-height: 200px;
+				font-family: monospace;
+
+				option::after {
+					content: attr(data-filesize);
+					float: right;
+					color: gray;
+					margin-left: 8px;
+					margin-right: 1px;
+				}
+			}
+		}
+	}
+
+	main {
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+
+		#log-content {
+			height: 100%;
+			overflow-y: auto;
+		}
+
+		.log-placeholder {
+			font-style: italic;
+			text-align: center;
+			margin-top: 2rem;
+		}
+
+		.log-error {
+			color: #ff6b6b;
+			font-weight: bold;
+			text-align: center;
+			margin-top: 2rem;
+		}
+
+		.log-file-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0.75rem 1rem;
+			margin-bottom: 1rem;
+		}
+
+		.log-file-size {
+			color: #444;
+			font-size: 0.85rem;
+		}
+
+		.log-content {
+			padding: 1rem;
+			font-family: monospace;
+			font-size: 0.85rem;
+			line-height: 1.5;
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			overflow-x: auto;
+			margin: 0;
+		}
+	}
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	#logs-container {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto 1fr;
+	}
+
+	#logs-sidebar {
+		border-right: none;
+		border-bottom: 1px solid #333;
+		max-height: 40vh;
+	}
+
+	#file-list {
+		max-height: 30vh;
+	}
+}

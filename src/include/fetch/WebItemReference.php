@@ -32,14 +32,19 @@ class WebItemReference
 
 		$this->options = [
 			'headers' => $this->headers,
-			'body' => $this->requestBody,
-			'form_params' => $this->queryParameters
 		];
+
+		// Add body or query parameters if provided
+		if (!empty($this->requestBody)) {
+			$this->options['body'] = $this->requestBody;
+		} elseif (!empty($this->queryParameters)) {
+			$this->options['form_params'] = $this->queryParameters;
+		}
 	}
 
 	public function fetchCookie(string $targetCookieName): ?string
 	{
-		Log::write("Fetching cookie: '$targetCookieName' for request: " . $this);
+		Log::write("Fetching cookie for request: ", ["targetCookieName" => $targetCookieName, "request" => $this]);
 
 		$client = new Client(['cookies' => true]);
 		try {
@@ -50,19 +55,19 @@ class WebItemReference
 			$cookie = $cookieJar->getCookieByName($targetCookieName)->getValue();
 			Log::write("Cookie Request successful!");
 		} catch (ClientException $e) {
-			Log::write("Cookie Request error, Status code: " . $e->getResponse()->getStatusCode(), LogLevel::ERROR);
+			Log::write("Cookie Request client error", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$cookie = NULL;
 		} catch (Exception $e) {
-			Log::write("Cookie Generic request error: " . $e->getMessage(), LogLevel::ERROR);
+			Log::write("Cookie request generic error: ", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$cookie = NULL;
 		}
 
-		Log::write("Cookie value determined: $cookie");
+		Log::write("Cookie value determined", ["cookie" => $cookie]);
 
 		return $cookie; // Return null if the target cookie was not found
 	}
 
-	public function __toString(): string
+	/*public function __toString(): string
 	{
 		return sprintf(
 			"URL: %s, Method: %s, Headers: %s, Body: %s, Parameters: %s",
@@ -72,25 +77,24 @@ class WebItemReference
 			$this->requestBody,
 			print_r($this->queryParameters, true)
 		);
-	}
+	}*/
 
 	public function fetch(): FetchedWebItem
 	{
 		$client = new Client();
-		Log::write(message: "Fetching: " . $this);
+		Log::write("Fetching: ", ["request" => $this]);
 		try {
 			$result = $client->request($this->method, $this->url, $this->options);
 			$content = $result->getBody();
-			Log::write("Request successful!");
 		} catch (ClientException $e) {
-			Log::write("Request error, Status code: " . $e->getResponse()->getStatusCode(), LogLevel::ERROR);
+			Log::write("Request client error", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$content = NULL;
 		} catch (Exception $e) {
-			Log::write("Generic request error: " . $e->getMessage(), LogLevel::ERROR);
+			Log::write("Generic request error: ", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$content = NULL;
 		}
 
-		Log::write("Content length: " . strlen($content) . "");
+		Log::write("Request completed", ["length" => strlen($content), "statusCode" => isset($result) ? $result->getStatusCode() : NULL]);
 
 		return new FetchedWebItem(
 			reference: $this,

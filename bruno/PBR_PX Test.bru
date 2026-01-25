@@ -5,23 +5,17 @@ meta {
 }
 
 post {
-  url: https://api.pbrpx.com/home/api_product/getasset?asset=1114
+  url: https://api.pbrpx.com/home/api_product/getasset
   body: json
   auth: inherit
 }
 
-params:query {
-  asset: 1114
-}
-
 headers {
-  : 
+  User-Agent: 3dassets.one / Fetching
 }
 
 body:json {
-  {
-    "asset":1114
-  }
+  {"asset":"1149"}
 }
 
 body:text {

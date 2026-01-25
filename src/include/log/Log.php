@@ -3,8 +3,11 @@
 namespace log;
 
 use Exception;
+use FilesystemIterator;
 use log\LogLevel;
 use misc\StringUtil;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Throwable;
 
 class Log
@@ -13,11 +16,40 @@ class Log
 	private static LogLevel $level = LogLevel::INFO;
 	private static bool $enabled = false;
 	private static bool $writeToStdout = false;
-
 	private static string $logName;
+
+	private static bool $finalized = false;
+
+	public static function stop(LogResult $result)
+	{
+		if (self::$finalized) {
+			throw new Exception("Logger has already been stopped.");
+		}
+		if (!self::$enabled) {
+			throw new Exception("Logger is not enabled.");
+		}
+
+		Log::write("Stopped logging");
+
+		// Move log file to dated sub-directory
+		$logFilePath = self::getLogFilePath();
+		$newLogFilePath = self::getLogFilePath($result->value);
+		rename($logFilePath, $newLogFilePath);
+
+		self::$finalized = true;
+		self::$enabled = false;
+
+		self::cleanUpLogDirectory(7);
+	}
+
 
 	public static function start(string $logName, LogLevel $level = LogLevel::INFO, bool $writeToStdout = false)
 	{
+
+		if (self::$enabled) {
+			throw new Exception("Logging has already been started.");
+		}
+
 		self::$logName = preg_replace('#[^a-zA-Z0-9/-]#', '', $logName);
 		self::$level = $level;
 		self::$enabled = true;
@@ -25,23 +57,32 @@ class Log
 
 		set_exception_handler([self::class, 'exceptionHandler']);
 
-		self::cleanUpLogDirectory(14); // Delete logs older than 14 days
+		self::cleanUpLogDirectory(30); // Delete logs older than 30 days
+
+		Log::write("Started logging", ["Name" => $logName, "Level" => $level]);
 	}
 
-	public static function exceptionHandler(Throwable $e)
+	public static function exceptionHandler(Throwable $th)
 	{
-		Log::write("Uncaught exception: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine(), LogLevel::EXCEPTION);
-		throw $e;
+		$exceptionDetails = [
+			'message' => $th->getMessage(),
+			'code' => $th->getCode(),
+			'file' => $th->getFile(),
+			'line' => $th->getLine(),
+			'trace' => explode("\n", $th->getTraceAsString()),
+		];
+
+		Log::write("Uncaught exception", $exceptionDetails, LogLevel::EXCEPTION);
+		Self::stop(LogResult::ERR);
+		throw $th;
 	}
 
-	public static function write(string $message, LogLevel $level = LogLevel::INFO)
+	public static function write(string $message, mixed $data = null, LogLevel $level = LogLevel::INFO)
 	{
 		// Return early if loging is disabled or level is too low
 		if (!self::$enabled || $level->value < self::$level->value) {
 			return;
 		}
-
-		$logFilePath = self::getLogFilePath();
 
 		$functionTrace = array_map(
 			function ($trace) {
@@ -51,16 +92,33 @@ class Log
 		);
 		$functionTrace = array_reverse($functionTrace);
 
-		$output = "> " . date('Y-m-d|H:i:s', time());
-		$output .=  "\t" . $level->displayName();
-		$output .=  "\t" . implode("->", $functionTrace);
-		$output .=  "\t"  . $message;
-		$output .= "\n";
+		$output = ">" . date('Y-m-d H:i:s', time());
+		$output .=  " " . $level->displayName();
+		$output .=  " ->" . implode("->", $functionTrace);
 
+		$outputPrefixLength = strlen($output);
+
+		$output .=  " | "  . $message;
+		$output .= PHP_EOL;
+
+		if ($data) {
+			$dataJson = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+			/*foreach (explode(PHP_EOL, $dataJson) as $line) {
+				$output .= str_repeat(" ", $outputPrefixLength) . " " . $line . PHP_EOL;
+			}*/
+			$output .= $dataJson . PHP_EOL;
+		}
+
+		self::writeRaw($output);
+	}
+
+	private static function writeRaw(string $rawMessage)
+	{
+		$logFilePath = self::getLogFilePath();
 		Log::createFileIfNotPresent($logFilePath);
-		error_log(StringUtil::removeNewline($output), 3, $logFilePath);
+		error_log($rawMessage, 3, $logFilePath);
 		if (self::$writeToStdout) {
-			echo StringUtil::removeNewline($output) . PHP_EOL;
+			echo $rawMessage;
 		}
 	}
 
@@ -69,12 +127,12 @@ class Log
 	 * Create sub-directories if the name contains slashes.
 	 * @return string 
 	 */
-	private static function getLogFilePath(): string
+	private static function getLogFilePath(string $suffix = "run"): string
 	{
 		if (!isset(self::$logName)) {
 			throw new Exception("No log name defined.");
 		}
-		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . date('Y-m-d', time()) . "/" . self::$logName . ".log";
+		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . ($suffix ? ".$suffix" : "") . ".log";
 	}
 
 	private static function createFileIfNotPresent($file)
@@ -89,8 +147,7 @@ class Log
 	}
 
 	/**
-	 * Deletes all log files older than a certain number of days from the log directory.
-	 * This happens based on the directory names (YYYY-MM-DD).
+	 * Recrusively delete all .log files older than specified days.
 	 * @param int $deleteOlderThanDays 
 	 * @return void 
 	 */
@@ -102,14 +159,18 @@ class Log
 			return;
 		}
 
-		$directories = array_diff(scandir($logDirectory, SCANDIR_SORT_DESCENDING), ['.', '..']);
-		$directoriesToDelete = array_slice($directories, $deleteOlderThanDays);
+		$files = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($logDirectory, FilesystemIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
 
-		foreach ($directoriesToDelete as $directory) {
-			$path = $logDirectory . "/" . $directory;
-			if (is_dir($path)) {
-				array_map('unlink', glob($path . "/*"));
-				rmdir($path);
+		$now = time();
+		foreach ($files as $fileinfo) {
+			if ($fileinfo->isFile() && $fileinfo->getExtension() === 'log') {
+				$fileAgeInDays = ($now - $fileinfo->getCTime()) / (60 * 60 * 24);
+				if ($fileAgeInDays > $deleteOlderThanDays) {
+					unlink($fileinfo->getRealPath());
+				}
 			}
 		}
 	}
