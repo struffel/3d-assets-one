@@ -135,6 +135,7 @@ enum Creator: int
 			self::CGBOOKCASE => CommonLicense::CC0,
 			self::NOEMOTIONHDRS => CommonLicense::CC_BY_ND,
 			self::GPUOPENMATLIB => CommonLicense::APACHE_2_0,
+			self::THREE_D_TEXTURES => CommonLicense::CC0,
 			default => CommonLicense::NONE
 		};
 	}
