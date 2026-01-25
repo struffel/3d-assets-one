@@ -191,7 +191,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES,
 			self::PBR_PX,
 			self::TWINBRU,
-			self::LIGHTBEANS
+			self::LIGHTBEANS,
+			self::NOEMOTIONHDRS
 		];
 	}
 
