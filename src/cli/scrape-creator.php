@@ -35,7 +35,7 @@ if (isset($argv[1])) {
 // Start logging and determine the official run timestamp
 $now = new DateTime();
 $timestamp = $now->format('Y-m-d\TH-i-s-v');
-Log::start(logName: "index-creator/" . $creator->slug() . "/" . $timestamp, level: LogLevel::INFO, writeToStdout: true);
+Log::start(logName: "scrape-creator/" . $creator->slug() . "/" . $timestamp, level: LogLevel::INFO, writeToStdout: true);
 
 Log::write("Selected creator:", $creator);
 

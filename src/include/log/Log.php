@@ -127,12 +127,12 @@ class Log
 	 * Create sub-directories if the name contains slashes.
 	 * @return string 
 	 */
-	private static function getLogFilePath(string $suffix = ""): string
+	private static function getLogFilePath(string $suffix = "run"): string
 	{
 		if (!isset(self::$logName)) {
 			throw new Exception("No log name defined.");
 		}
-		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . "." . $suffix . ".log";
+		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . ($suffix ? ".$suffix" : "") . ".log";
 	}
 
 	private static function createFileIfNotPresent($file)
