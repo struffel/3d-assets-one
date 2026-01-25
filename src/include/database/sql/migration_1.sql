@@ -33,14 +33,3 @@ CREATE TABLE "Tag" (
 
 CREATE INDEX "tagIndex" ON "Tag" ("tag");
 CREATE INDEX "assetIdIndex" ON "Tag" ("id");
-
-CREATE TABLE "Event" (
-	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"type" INTEGER NOT NULL,
-	"timestamp" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"affectedAssetId" INTEGER DEFAULT NULL,
-	"affectedCreatorId" INTEGER DEFAULT NULL
-);
-
-CREATE INDEX "eventTypeIndex" ON "Event" ("type");
-CREATE INDEX "eventTimestampIndex" ON "Event" ("timestamp");
