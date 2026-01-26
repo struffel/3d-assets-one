@@ -16,11 +16,11 @@ $thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {
 	default => "256-JPG-FFFFFF",
 };
 
-for ($i = 0; $i < sizeof($assets->assets); $i++) {
-	$id = $assets->assets[$i]->id;
-	$assets->assets[$i]->thumbnailUrl = $_ENV["3D1_CDN"] . "/thumbnail/$thumbnailFormat/$id.jpg";
-	unset($assets->assets[$i]->status);
-	unset($assets->assets[$i]->lastSuccessfulValidation);
+for ($i = 0; $i < sizeof($assets); $i++) {
+	$id = $assets[$i]->id;
+	$assets[$i]->thumbnailUrl = $_ENV["3D1_CDN"] . "/thumbnail/$thumbnailFormat/$id.jpg";
+	unset($assets[$i]->status);
+	unset($assets[$i]->lastSuccessfulValidation);
 }
 
 echo json_encode($assets);
