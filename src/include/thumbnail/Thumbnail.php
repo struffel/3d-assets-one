@@ -7,6 +7,7 @@ use database\Database;
 use log\Log;
 
 use GdImage;
+use RuntimeException;
 use thumbnail\ThumbnailFormat;
 
 class Thumbnail
@@ -100,6 +101,11 @@ class Thumbnail
 
 		// Read image using GD
 		$tmpImage = imagecreatefromstring($rawImageData);
+
+		if ($tmpImage === false) {
+			throw new RuntimeException("Failed to create image from data.");
+		}
+
 		$originalWidth = imagesx($tmpImage);
 		$originalHeight = imagesy($tmpImage);
 
@@ -116,17 +122,22 @@ class Thumbnail
 		$outputImage = imagecreatetruecolor($format->getSize(), $format->getSize());
 
 		if ($format->getBackgroundColor() !== NULL) {
+
 			// Fill with background color
-			$r = hexdec(substr($format->getBackgroundColor(), 0, 2));
-			$g = hexdec(substr($format->getBackgroundColor(), 2, 2));
-			$b = hexdec(substr($format->getBackgroundColor(), 4, 2));
+			$r = intval(hexdec(substr($format->getBackgroundColor(), 0, 2)));
+			$g = intval(hexdec(substr($format->getBackgroundColor(), 2, 2)));
+			$b = intval(hexdec(substr($format->getBackgroundColor(), 4, 2)));
 			$bgColor = imagecolorallocate($outputImage, $r, $g, $b);
 			imagefill($outputImage, 0, 0, $bgColor);
 		} else {
+
 			// Transparent background
 			imagealphablending($outputImage, false);
 			imagesavealpha($outputImage, true);
 			$transparent = imagecolorallocatealpha($outputImage, 0, 0, 0, 127);
+			if ($transparent === false) {
+				throw new RuntimeException("Failed to allocate transparent color.");
+			}
 			imagefill($outputImage, 0, 0, $transparent);
 			imagealphablending($outputImage, true);
 		}

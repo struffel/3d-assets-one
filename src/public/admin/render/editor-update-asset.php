@@ -26,11 +26,7 @@ if ($_POST['id'] ?? false) {
 	$assets = $query->execute();
 
 	/** @var StoredAsset $asset */
-	$asset = $assets[0];
-
-	if (!$asset) {
-		throw new Exception("The update target was not found.");
-	}
+	$asset = $assets[0] ?? throw new Exception("The update target was not found.");
 
 	// Basic parameters
 	if (isset($_POST['title'])) {
@@ -56,7 +52,11 @@ if ($_POST['id'] ?? false) {
 
 	// Arrays
 	if (isset($_POST['tagString'])) {
-		$asset->tags =  array_filter(preg_split('/[^A-Za-z0-9]/', $_POST['tagString']));
+		$tags = preg_split('/[^A-Za-z0-9]/', $_POST['tagString']);
+		if ($tags === false) {
+			$tags = [];
+		}
+		$asset->tags = array_filter($tags);
 	}
 
 	$asset->writeToDatabase();
