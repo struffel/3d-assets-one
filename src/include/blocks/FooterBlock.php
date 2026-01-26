@@ -2,13 +2,14 @@
 
 namespace blocks;
 
+use asset\StoredAssetQuery;
 use database\Database;
 
 class FooterBlock
 {
 	public static function render()
 	{
-		$assetCount = Database::runQuery("SELECT COUNT(*) AS count FROM Asset", [])->fetchArray()['count'];
+		$assetCount = StoredAssetQuery::assetCountTotal();
 
 ?>
 

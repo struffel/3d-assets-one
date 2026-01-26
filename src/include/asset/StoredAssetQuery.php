@@ -10,6 +10,22 @@ use log\Log;
 
 class StoredAssetQuery
 {
+
+	public static function assetCountTotal(): int
+	{
+		return Database::runQuery("SELECT COUNT(*) AS count FROM Asset", [])->fetchArray()['count'];
+	}
+
+	public static function assetCountByCreator(): array
+	{
+		$assetCountByCreator = [];
+		$result = Database::runQuery("SELECT creatorId, COUNT(*) AS count FROM Asset GROUP BY creatorId");
+		while ($row = $result->fetchArray()) {
+			$assetCountByCreator[$row['creatorId']] = $row['count'];
+		}
+		return $assetCountByCreator;
+	}
+
 	public function __construct(
 		// Basics
 		public ?int $offset = NULL,						// ?offset
