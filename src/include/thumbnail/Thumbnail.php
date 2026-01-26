@@ -74,7 +74,7 @@ class Thumbnail
 			match ($t->getExtension()) {
 				"JPG" => imagejpeg($gdImage, $fileName, 95),
 				"PNG" => imagepng($gdImage, $fileName, 6),
-				default => throw new \InvalidArgumentException("Unsupported image format: " . $t[0]),
+				default => throw new \InvalidArgumentException("Unsupported image format: " . $t->getExtension()),
 			};
 
 			Log::write("Saved thumbnail", ["assetId" => $assetId, "fileName" => $fileName]);
