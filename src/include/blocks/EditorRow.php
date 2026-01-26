@@ -5,6 +5,7 @@ namespace blocks;
 use asset\AssetType;
 use asset\StoredAsset;
 use asset\StoredAssetStatus;
+use thumbnail\ThumbnailFormat;
 
 class EditorRow
 {
@@ -19,7 +20,7 @@ class EditorRow
 			class="editor-row">
 
 			<div class="editor-row-thumbnail">
-				<img height="48" width="48" class="asset-image" alt="<?= $asset->title ?>" src="<?= $asset->getThumbnailUrl(64, "JPG", "FFFFFF") ?>">
+				<img height="48" width="48" class="asset-image" alt="<?= $asset->title ?>" src="<?= $asset->getThumbnailUrl(ThumbnailFormat::JPG_64_FFFFFF) ?>">
 			</div>
 			<div class="editor-row-link">
 				<a href="/go?id=<?= $asset->id ?>">
