@@ -9,19 +9,21 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Get latest code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
 
             - name: Run PHP Composer
-              uses: php-actions/composer@v6
-              with:
-                  args: -d ./src
+              run: composer install --no-progress --prefer-dist
+              working-directory: ./src
 
             - name: Run PHPStan
-              uses: php-actions/phpstan@v3
-              with:
-                  vendored_phpstan_path: ./src/vendor/bin/phpstan
-                  path: ./src/cli ./src/include ./src/public
-                  level: max
+              run: vendor/bin/phpstan analyse cli include public --level=max
+              working-directory: ./src
+
             - name: Sync files
               uses: SamKirkland/FTP-Deploy-Action@4.1.0
               with:
