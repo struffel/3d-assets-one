@@ -1,0 +1,38 @@
+on:
+    push:
+        branches: [main]
+name: Deploy website on push
+concurrency: deploy
+jobs:
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get latest code
+              uses: actions/checkout@v2
+
+            - name: Run PHP Composer
+              uses: php-actions/composer@v6
+              with:
+                  args: -d ./src
+
+            - name: Run PHPStan
+              uses: php-actions/phpstan@v3
+              with:
+                  path: ./src/cli ./src/include ./src/public
+                  level: max
+            - name: Sync files
+              uses: SamKirkland/FTP-Deploy-Action@4.1.0
+              with:
+                  server: ${{ vars.FTP_SERVER }}
+                  username: ${{ vars.FTP_USER }}
+                  password: ${{ secrets.FTP_PASSWORD }}
+                  local-dir: ./src/
+                  server-dir: /
+                  exclude: |
+                      **/.git*
+                      **/.git*/**
+                      **/node_modules/**
+                      .htaccess
+                      src/.htaccess
+                      **/.env
