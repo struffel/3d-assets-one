@@ -19,6 +19,7 @@ jobs:
             - name: Run PHPStan
               uses: php-actions/phpstan@v3
               with:
+                  vendored_phpstan_path: ./src/vendor/bin/phpstan
                   path: ./src/cli ./src/include ./src/public
                   level: max
             - name: Sync files
