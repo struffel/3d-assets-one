@@ -15,7 +15,7 @@ use DateTime;
 use fetch\WebItemReference;
 use creator\CreatorLogic;
 use log\LogLevel;
-use misc\Image;
+use thumbnail\Thumbnail;
 use log\Log;
 use Throwable;
 

@@ -1,6 +1,7 @@
 <?php
 
 use asset\StoredAssetQuery;
+use thumbnail\ThumbnailFormat;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-type: application/json");
@@ -8,19 +9,13 @@ header("content-type: application/json");
 $query = StoredAssetQuery::fromHttpGet();
 $assets = $query->execute();
 
-$thumbnailFormat = match ($_GET['thumbnail-format'] ?? "") {
-	"256-JPG-FFFFFF" => "256-JPG-FFFFFF",
-	"128-JPG-FFFFFF" => "128-JPG-FFFFFF",
-	"256-PNG" => "256-PNG",
-	"128-PNG" => "128-PNG",
-	default => "256-JPG-FFFFFF",
-};
+$output = [];
 
-for ($i = 0; $i < sizeof($assets->assets); $i++) {
-	$id = $assets->assets[$i]->id;
-	$assets->assets[$i]->thumbnailUrl = $_ENV["3D1_CDN"] . "/thumbnail/$thumbnailFormat/$id.jpg";
-	unset($assets->assets[$i]->status);
-	unset($assets->assets[$i]->lastSuccessfulValidation);
+$thumbnailFormat = ThumbnailFormat::tryFrom($_GET['thumbnailFormat'] ?? '') ?? ThumbnailFormat::PNG_256;
+
+foreach ($assets as $asset) {
+	$output[] = $asset->apiRepresentation($thumbnailFormat);
 }
 
-echo json_encode($assets);
+
+echo json_encode($output);
