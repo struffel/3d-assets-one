@@ -121,13 +121,16 @@ class Thumbnail
 		// Create output image
 		$outputImage = imagecreatetruecolor($format->getSize(), $format->getSize());
 
-		if ($format->getBackgroundColor() !== NULL) {
+		if ($format->getBackgroundColorHex() !== NULL) {
 
 			// Fill with background color
-			$r = intval(hexdec(substr($format->getBackgroundColor(), 0, 2)));
-			$g = intval(hexdec(substr($format->getBackgroundColor(), 2, 2)));
-			$b = intval(hexdec(substr($format->getBackgroundColor(), 4, 2)));
+			$r = max(min(intval(substr($format->getBackgroundColorHex(), 0, 2), 16), 255), 0);
+			$g = max(min(intval(substr($format->getBackgroundColorHex(), 2, 2), 16), 255), 0);
+			$b = max(min(intval(substr($format->getBackgroundColorHex(), 4, 2), 16), 255), 0);
 			$bgColor = imagecolorallocate($outputImage, $r, $g, $b);
+			if ($bgColor === false) {
+				throw new RuntimeException("Failed to allocate background color.");
+			}
 			imagefill($outputImage, 0, 0, $bgColor);
 		} else {
 
