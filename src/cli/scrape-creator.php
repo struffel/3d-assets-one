@@ -12,7 +12,7 @@ use log\LogLevel;
 use database\Database;
 use log\Log;
 use log\LogResult;
-use misc\Image;
+use thumbnail\Thumbnail;
 use misc\StringUtil;
 
 require_once __DIR__ . '/../include/init.php';
@@ -87,7 +87,7 @@ if (sizeof($newScrapedAssets) > 0) {
 		Database::startTransaction();
 
 		$newStoredAsset->writeToDatabase();
-		Image::saveThumbnailVariations($newStoredAsset->id, $newScrapedAsset->rawThumbnailData);
+		Thumbnail::saveThumbnailVariations($newStoredAsset->id, $newScrapedAsset->rawThumbnailData);
 		Log::write("Saved thumbnail for asset ", $newStoredAsset->id);
 
 		Database::commitTransaction();
@@ -99,6 +99,6 @@ if (sizeof($newScrapedAssets) > 0) {
 	Log::write("No new updates to write to DB.");
 }
 
-Image::deleteOrphanedThumbnails();
+Thumbnail::deleteOrphanedThumbnails();
 
 Log::stop(LogResult::OK);

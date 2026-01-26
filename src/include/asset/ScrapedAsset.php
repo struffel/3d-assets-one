@@ -19,10 +19,9 @@ class ScrapedAsset extends Asset
 		DateTime $date,
 		AssetType $type,
 		Creator $creator,
-		array $tags = [],
-
-		public ?string $rawThumbnailData = NULL,
 		public ScrapedAssetStatus $status,
+		array $tags = [],
+		public ?string $rawThumbnailData = NULL,
 	) {
 		parent::__construct(
 			id: $id,
