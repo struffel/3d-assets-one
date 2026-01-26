@@ -8,6 +8,7 @@ use log\Log;
 
 use GdImage;
 use RuntimeException;
+use SQLite3Result;
 use thumbnail\ThumbnailFormat;
 
 class Thumbnail
@@ -29,11 +30,15 @@ class Thumbnail
 			return;
 		}
 
+		// Get all existing asset IDs from the database
 		$existingIds = [];
 		$dbResult = Database::runQuery("SELECT id FROM Asset");
+		assert($dbResult instanceof SQLite3Result);
 		while ($row = $dbResult->fetchArray()) {
 			$existingIds[] = $row['id'];
 		}
+
+
 		$thumbnailDir = self::getThumbnailStorePath() . "/";
 		foreach (scandir($thumbnailDir) as $variationDir) {
 			if ($variationDir === '.' || $variationDir === '..') {
@@ -53,12 +58,11 @@ class Thumbnail
 		}
 	}
 
-	public static function saveThumbnailVariations(int $assetId, string $originalImageData)
+	public static function saveThumbnailVariations(int $assetId, string $originalImageData): void
 	{
-		/**
-		 * @var ThumbnailFormat $t
-		 */
+
 		foreach (ThumbnailFormat::cases() as $t) {
+
 			$gdImage = Thumbnail::createThumbnailFromImageData($originalImageData, $t);
 
 			$fileName = self::getThumbnailStorePath() . "/" .

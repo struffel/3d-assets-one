@@ -4,7 +4,12 @@ namespace misc;
 
 class StringUtil
 {
-	public static function filterTagArray(array $inputArray)
+	/**
+	 * 
+	 * @param string[] $inputArray 
+	 * @return string[] 
+	 */
+	public static function filterTagArray(array $inputArray): array
 	{
 		// Initialize an empty result array
 		$resultArray = array();
