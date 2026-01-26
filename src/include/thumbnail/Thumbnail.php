@@ -17,17 +17,6 @@ class Thumbnail
 		return __DIR__ . '/../../public/thumbnail';
 	}
 
-	private static array $thumbnailTemplate = [
-		["JPG", "FFFFFF", 32],
-		["JPG", "FFFFFF", 64],
-		["JPG", "FFFFFF", 128],
-		["JPG", "FFFFFF", 256],
-		["PNG", NULL, 32],
-		["PNG", NULL, 64],
-		["PNG", NULL, 128],
-		["PNG", NULL, 256]
-	];
-
 	/**
 	 * Deletes all thumbnail variations carrying asset ids no longer in the database.
 	 * @return void 
@@ -65,16 +54,14 @@ class Thumbnail
 
 	public static function saveThumbnailVariations(int $assetId, string $originalImageData)
 	{
+		/**
+		 * @var ThumbnailFormat $t
+		 */
 		foreach (ThumbnailFormat::cases() as $t) {
-			$gdImage = Thumbnail::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
+			$gdImage = Thumbnail::createThumbnailFromImageData($originalImageData, $t);
 
 			$fileName = self::getThumbnailStorePath() . "/" .
-				strtoupper(
-					implode(
-						"-",
-						array_filter([$t[2], $t[0], $t[1]])
-					)
-				) . "/$assetId." . strtolower($t[0]);
+				$t->value . "/$assetId." . strtolower($t->getExtension());
 
 			// Create directory if it does not exist
 			$directory = dirname($fileName);
@@ -83,7 +70,7 @@ class Thumbnail
 			}
 
 			// Save image
-			match ($t[0]) {
+			match ($t->getExtension()) {
 				"JPG" => imagejpeg($gdImage, $fileName, 95),
 				"PNG" => imagepng($gdImage, $fileName, 6),
 				default => throw new \InvalidArgumentException("Unsupported image format: " . $t[0]),
