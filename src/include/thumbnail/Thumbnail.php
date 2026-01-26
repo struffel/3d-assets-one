@@ -1,14 +1,15 @@
 <?php
 
-namespace misc;
+namespace thumbnail;
 
 use asset\Asset;
 use database\Database;
 use log\Log;
 
 use GdImage;
+use thumbnail\ThumbnailFormat;
 
-class Image
+class Thumbnail
 {
 
 	private static function getThumbnailStorePath(): string
@@ -64,8 +65,8 @@ class Image
 
 	public static function saveThumbnailVariations(int $assetId, string $originalImageData)
 	{
-		foreach (Image::$thumbnailTemplate as $t) {
-			$gdImage = Image::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
+		foreach (ThumbnailFormat::cases() as $t) {
+			$gdImage = Thumbnail::createThumbnailFromImageData($originalImageData, $t[2], $t[0], $t[1] ?? "");
 
 			$fileName = self::getThumbnailStorePath() . "/" .
 				strtoupper(
@@ -92,10 +93,10 @@ class Image
 		}
 	}
 
-	public static function createThumbnailFromImageData(string $rawImageData, int $size, string $extension, string $backgroundColor): GdImage
+	public static function createThumbnailFromImageData(string $rawImageData, ThumbnailFormat $format): GdImage
 	{
 
-		Log::write("Building variation", ["size" => $size, "extension" => $extension, "backgroundColor" => $backgroundColor]);
+		Log::write("Building variation " . $format->value);
 
 		// Read image using GD
 		$tmpImage = imagecreatefromstring($rawImageData);
@@ -103,22 +104,22 @@ class Image
 		$originalHeight = imagesy($tmpImage);
 
 		// Calculate new dimensions maintaining aspect ratio
-		$ratio = min($size / $originalWidth, $size / $originalHeight);
+		$ratio = min($format->getSize() / $originalWidth, $format->getSize() / $originalHeight);
 		$newWidth = (int)($originalWidth * $ratio);
 		$newHeight = (int)($originalHeight * $ratio);
 
 		// Calculate offsets to center the image
-		$offsetX = (int)(($size - $newWidth) / 2);
-		$offsetY = (int)(($size - $newHeight) / 2);
+		$offsetX = (int)(($format->getSize() - $newWidth) / 2);
+		$offsetY = (int)(($format->getSize() - $newHeight) / 2);
 
 		// Create output image
-		$outputImage = imagecreatetruecolor($size, $size);
+		$outputImage = imagecreatetruecolor($format->getSize(), $format->getSize());
 
-		if ($backgroundColor ?? "" != "") {
+		if ($format->getBackgroundColor() !== NULL) {
 			// Fill with background color
-			$r = hexdec(substr($backgroundColor, 0, 2));
-			$g = hexdec(substr($backgroundColor, 2, 2));
-			$b = hexdec(substr($backgroundColor, 4, 2));
+			$r = hexdec(substr($format->getBackgroundColor(), 0, 2));
+			$g = hexdec(substr($format->getBackgroundColor(), 2, 2));
+			$b = hexdec(substr($format->getBackgroundColor(), 4, 2));
 			$bgColor = imagecolorallocate($outputImage, $r, $g, $b);
 			imagefill($outputImage, 0, 0, $bgColor);
 		} else {

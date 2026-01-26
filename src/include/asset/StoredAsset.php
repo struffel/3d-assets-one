@@ -7,6 +7,8 @@ use DateTime;
 use Exception;
 use log\Log;
 use database\Database;
+use thumbnail\ThumbnailFormat;
+use JsonSerializable;
 
 /**
  * The main asset class.
@@ -39,12 +41,31 @@ class StoredAsset extends Asset
 		);
 	}
 
-	public function getThumbnailUrl(int $size, string $extension, ?string $backgroundColor): string
+	public function getThumbnailUrl(ThumbnailFormat $format, bool $fullUrl = false): string
 	{
-		$variation = strtoupper(implode("-", array_filter([$size, $extension, $backgroundColor])));
-		$extension = strtolower($extension);
+		$variation = $format->value;
+		$extension = strtolower($format->getExtension());
 		$id = $this->id;
-		return "/thumbnail/$variation/$id.$extension";
+
+		$url = $fullUrl ? ($_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST']) : "";
+		$url .= "/thumbnail/$variation/$id.$extension";
+
+		return  $url;
+	}
+
+	public function apiRepresentation(ThumbnailFormat $thumbnailFormat): array
+	{
+		return [
+			"id" => $this->id,
+			"creatorGivenId" => $this->creatorGivenId,
+			"title" => $this->title,
+			"url" => $this->url,
+			"date" => $this->date->format(DateTime::ATOM),
+			"type" => $this->type->slug(),
+			"creator" => $this->creator->slug(),
+			"tags" => $this->tags,
+			"thumbnail" => $this->getThumbnailUrl($thumbnailFormat, true)
+		];
 	}
 
 	public function writeToDatabase()

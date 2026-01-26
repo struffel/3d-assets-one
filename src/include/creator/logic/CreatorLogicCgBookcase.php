@@ -12,7 +12,7 @@ use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
 use fetch\WebItemReference;
-use misc\Image;
+use thumbnail\Thumbnail;
 use misc\StringUtil;
 use Rct567\DomQuery\DomQuery;
 
