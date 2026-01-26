@@ -25,7 +25,7 @@ $fullPath = $logDirectory . DIRECTORY_SEPARATOR . $selectedDir . DIRECTORY_SEPAR
 $realLogDir = realpath($logDirectory);
 $realFilePath = realpath($fullPath);
 
-if ($realFilePath === false || strpos($realFilePath, $realLogDir) !== 0) {
+if ($realFilePath === false || $realLogDir === false || strpos($realFilePath, $realLogDir) !== 0) {
 	echo '<p class="log-error">Invalid file path.</p>';
 	exit;
 }
