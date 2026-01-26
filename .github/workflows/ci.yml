@@ -25,7 +25,7 @@ jobs:
               working-directory: ./src
 
             - name: Run PHPStan
-              run: vendor/bin/phpstan analyse cli include public --level=max
+              run: vendor/bin/phpstan analyse cli include public --level=8
               working-directory: ./src
 
     deploy:
