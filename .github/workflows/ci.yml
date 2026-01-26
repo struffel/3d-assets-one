@@ -1,11 +1,15 @@
+name: CI
 on:
     push:
-        branches: [main]
-name: Deploy website on push
-concurrency: deploy
+    pull_request:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
-    deploy:
-        name: Deploy
+    build:
+        name: Build & Test
         runs-on: ubuntu-latest
         steps:
             - name: Get latest code
@@ -23,6 +27,15 @@ jobs:
             - name: Run PHPStan
               run: vendor/bin/phpstan analyse cli include public --level=max
               working-directory: ./src
+
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+        needs: build
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        steps:
+            - name: Get latest code
+              uses: actions/checkout@v4
 
             - name: Sync files
               uses: SamKirkland/FTP-Deploy-Action@4.1.0
