@@ -3,6 +3,7 @@
 use asset\CommonLicense;
 use asset\AssetSorting;
 use asset\AssetType;
+use asset\StoredAssetQuery;
 use blocks\FooterBlock;
 use blocks\HeadBlock;
 use blocks\HeaderBlock;
@@ -11,11 +12,7 @@ use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
-$assetCountByCreator = [];
-$result = Database::runQuery("SELECT creatorId, COUNT(*) AS count FROM Asset GROUP BY creatorId");
-while ($row = $result->fetchArray()) {
-	$assetCountByCreator[$row['creatorId']] = $row['count'];
-}
+$assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 
 ?>
 <!DOCTYPE html>

@@ -15,7 +15,7 @@ class Database
 
 	private static SQLite3 $connection;
 
-	private static function initializeConnection(bool $createIfNotExists = false)
+	private static function initializeConnection(bool $createIfNotExists = false): void
 	{
 		// Create connection
 		if (!isset(self::$connection)) {
@@ -37,7 +37,7 @@ class Database
 	 * Reads the content of `./sql` and runs all .sql files whose name is greater than the current user version of the database in order and updates the user version.
 	 * @return void 
 	 */
-	public static function migrate()
+	public static function migrate(): void
 	{
 
 		self::startTransaction();
@@ -51,6 +51,9 @@ class Database
 			if (file_exists($potentialNextPath)) {
 				Log::write("Running migration step " . $potentialNextVersion);
 				$sql = file_get_contents($potentialNextPath);
+				if ($sql === false) {
+					throw new Exception("Failed to read migration file at " . $potentialNextPath);
+				}
 				self::$connection->exec($sql);
 				self::runQuery("PRAGMA user_version = " . $potentialNextVersion . ";");
 				$ranMigrationStep = true;
@@ -75,7 +78,12 @@ class Database
 		return intval($result);
 	}
 
-	public static function generatePlaceholder(array $array)
+	/**
+	 * 
+	 * @param array<mixed> $array 
+	 * @return string 
+	 */
+	public static function generatePlaceholder(array $array): string
 	{
 		if (sizeof($array) < 1) {
 			return "";
@@ -84,20 +92,26 @@ class Database
 		}
 	}
 
-	public static function startTransaction()
+	public static function startTransaction(): void
 	{
 		self::initializeConnection();
 		Log::write("Start transaction...");
 		self::$connection->exec("BEGIN TRANSACTION;");
 	}
 
-	public static function commitTransaction()
+	public static function commitTransaction(): void
 	{
 		self::initializeConnection();
 		Log::write("Commit transaction...");
 		self::$connection->exec("COMMIT;");
 	}
 
+	/**
+	 * 
+	 * @param string $sql 
+	 * @param array<int, mixed> $parameters 
+	 * @return SQLite3Result|bool 
+	 */
 	public static function runQuery(string $sql, array $parameters = []): SQLite3Result|bool
 	{
 		Log::write("Received SQL query to run: ", ["sql" => $sql, "parameters" => $parameters]);
@@ -119,6 +133,10 @@ class Database
 			}
 
 			$stmt = self::$connection->prepare($sql);
+
+			if ($stmt === false) {
+				throw new Exception("Failed to prepare SQL statement: " . $sql);
+			}
 
 			// Bind parameters (SQLite3 uses 1-based index for positional parameters)
 			foreach ($parameters as $index => $value) {
@@ -152,7 +170,7 @@ class Database
 		}
 	}
 
-	public static function addAssetClickById(int $assetId)
+	public static function addAssetClickById(int $assetId): void
 	{
 		$sql = "UPDATE Asset SET clicks = clicks + 1 WHERE id = ?;";
 		Database::runQuery($sql, [$assetId]);

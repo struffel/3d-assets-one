@@ -13,6 +13,7 @@ use creator\CreatorLogic;
 use DateTime;
 use fetch\WebItemReference;
 use log\Log;
+use RuntimeException;
 
 // lightbeans
 
@@ -25,6 +26,11 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 	private string $sitemapUrl = "https://lightbeans.com/sitemap.xml";
 	private string $sitemapUrlMustContain = "lightbeans.com/en/texture/";
+
+	/**
+	 * 
+	 * @var array<string>
+	 */
 	private array $bannedTags = [
 		"Lightbeans",
 		"|",
@@ -39,16 +45,15 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 		$tmpCollection = new ScrapedAssetCollection();
 
-		$rawSitemapXml = (new WebItemReference($this->sitemapUrl))->fetch()->content;
+		$sitemap = (new WebItemReference($this->sitemapUrl))->fetch()->parseAsSitemap();
 
-		if ($rawSitemapXml) {
+		if ($sitemap) {
 
-			$sitemap = simplexml_load_string($rawSitemapXml);
 			$newUrls = [];
 
-			foreach ($sitemap->url as $url) {
-				if (!$existingAssets->containsUrl((string) $url->loc) && str_contains($url->loc, $this->sitemapUrlMustContain)) {
-					$newUrls[] = (string) $url->loc;
+			foreach ($sitemap as $site) {
+				if (!$existingAssets->containsUrl((string) $site->url) && str_contains($site->url, $this->sitemapUrlMustContain)) {
+					$newUrls[] = (string) $site->url;
 				}
 				if (sizeof($newUrls) >= $this->maxAssetsPerRun) {
 					break;
@@ -96,18 +101,28 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 		// Load the image
 		$imageData = (new WebItemReference($url))->fetch()->content;
+
+		if ($imageData === null) {
+			throw new RuntimeException("Failed to fetch image from URL: " . $url);
+		}
+
 		$image = imagecreatefromstring($imageData);
+
+		if ($image === false) {
+			throw new RuntimeException("Failed to load image from fetched data.");
+		}
 
 		// Get the dimensions of the original image
 		$width = imagesx($image);
 		$height = imagesy($image);
 
 		// Calculate 65% of the smallest dimension to keep the crop square
-		$cropSize = (int)(min($width, $height) * 0.65);
+		/** @var int<1, max> $cropSize */
+		$cropSize = (int)max(min($width, $height) * 0.65, 1);
 
 		// Calculate the coordinates for the (near-)center crop
-		$x = (int)(($width - $cropSize) / 2);
-		$y = (int)(($height - $cropSize) / 1.5);
+		$x = (int) (($width - $cropSize) / 2);
+		$y = (int) (($height - $cropSize) / 1.5);
 
 		// Create a new image for the cropped result
 		$croppedImage = imagecreatetruecolor($cropSize, $cropSize);
@@ -119,6 +134,10 @@ class CreatorLogicLightbeans extends CreatorLogic
 		ob_start();
 		imagepng($croppedImage);
 		$result = ob_get_clean();
+
+		if ($result === false) {
+			throw new RuntimeException("Failed to capture cropped image output.");
+		}
 
 		return $result;
 	}

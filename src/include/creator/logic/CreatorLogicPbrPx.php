@@ -35,20 +35,29 @@ class CreatorLogicPbrPx extends CreatorLogic
 	{
 
 		// Extract the id from the url and compose the query
-		$assetDetailsBody = ['asset' => end(explode("=", strtok($asset->url, '_')))];
+		$urlToken = strtok($asset->url, '_');
+		if ($urlToken === false) {
+			return false;
+		}
+		$urlParts = explode("=", $urlToken);
+		$assetDetailsBody = ['asset' => end($urlParts)];
+		$requestBody = json_encode($assetDetailsBody);
+		if ($requestBody === false) {
+			return false;
+		}
 
 		try {
 			$response = new WebItemReference(
 				url: $this->assetApiBaseUrl,
 				method: 'POST',
-				requestBody: json_encode($assetDetailsBody),
+				requestBody: $requestBody,
 				headers: [
 					'Content-Type' => 'application/json'
 				]
-			);
+			)->fetch()->parseAsJson();
 
 			// Test if there is an errno and if it is 0
-			return isset($response['errno']) && $response['errno'] == 0;
+			return is_array($response) && isset($response['errno']) && $response['errno'] == 0;
 		} catch (Throwable $e) {
 			return false;
 		}
@@ -69,6 +78,9 @@ class CreatorLogicPbrPx extends CreatorLogic
 				url: $this->indexingApiBaseUrl . $page
 			)->fetch()->parseAsJson();
 
+			if (!is_array($assetListRaw) || !isset($assetListRaw['data']['data'])) {
+				break;
+			}
 			$assetList = $assetListRaw['data']['data'];
 
 			foreach ($assetList as $pbrPxAsset) {
@@ -80,12 +92,16 @@ class CreatorLogicPbrPx extends CreatorLogic
 				if (!$existingAssets->containsUrl($assetUrl)) {
 
 					// Fetch asset details
+					$requestBody = json_encode([
+						'asset' => strval($pbrPxAsset['id'])
+					]);
+					if ($requestBody === false) {
+						continue;
+					}
 					$pbrPxAssetDetailsRaw = new WebItemReference(
 						url: $this->assetApiBaseUrl,
 						method: 'POST',
-						requestBody: json_encode([
-							'asset' => strval($pbrPxAsset['id'])
-						]),
+						requestBody: $requestBody,
 						headers: [
 							'Content-Type' => 'application/json'
 						]
@@ -93,10 +109,14 @@ class CreatorLogicPbrPx extends CreatorLogic
 
 					Log::write("PBR PX Asset Details:", $pbrPxAssetDetailsRaw, LogLevel::INFO);
 
+					if (!is_array($pbrPxAssetDetailsRaw) || !isset($pbrPxAssetDetailsRaw['data'][0])) {
+						continue;
+					}
 					$pbrPxAssetDetails = $pbrPxAssetDetailsRaw['data'][0];
 
 					// Extract information from response
-					$tags = array_filter(preg_split('/[^A-Za-z0-9]/', $pbrPxAssetDetails['ename']));
+					$tagsSplit = preg_split('/[^A-Za-z0-9]/', $pbrPxAssetDetails['ename']);
+					$tags = $tagsSplit !== false ? array_filter($tagsSplit) : [];
 
 					$type = AssetType::OTHER;
 					if (str_starts_with($pbrPxAssetDetails['zips'], "HDRI")) {

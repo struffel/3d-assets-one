@@ -11,6 +11,18 @@ use DateTime;
  */
 abstract class Asset
 {
+	/**
+	 * 
+	 * @param null|int $id 
+	 * @param null|string $creatorGivenId 
+	 * @param string $title 
+	 * @param string $url 
+	 * @param DateTime $date 
+	 * @param AssetType $type 
+	 * @param Creator $creator 
+	 * @param array<string> $tags 
+	 * @return void 
+	 */
 	public function __construct(
 		public ?int $id,
 		public ?string $creatorGivenId,

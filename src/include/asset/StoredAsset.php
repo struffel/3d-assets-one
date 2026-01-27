@@ -7,6 +7,8 @@ use DateTime;
 use Exception;
 use log\Log;
 use database\Database;
+use thumbnail\ThumbnailFormat;
+use JsonSerializable;
 
 /**
  * The main asset class.
@@ -14,6 +16,21 @@ use database\Database;
  */
 class StoredAsset extends Asset
 {
+
+	/**
+	 * 
+	 * @param null|int $id 
+	 * @param null|string $creatorGivenId 
+	 * @param string $title 
+	 * @param string $url 
+	 * @param DateTime $date 
+	 * @param AssetType $type 
+	 * @param Creator $creator 
+	 * @param array<string> $tags 
+	 * @param StoredAssetStatus $status 
+	 * @param null|DateTime $lastSuccessfulValidation 
+	 * @return void 
+	 */
 	public function __construct(
 		?int $id,
 		?string $creatorGivenId,
@@ -39,15 +56,39 @@ class StoredAsset extends Asset
 		);
 	}
 
-	public function getThumbnailUrl(int $size, string $extension, ?string $backgroundColor): string
+	public function getThumbnailUrl(ThumbnailFormat $format, bool $fullUrl = false): string
 	{
-		$variation = strtoupper(implode("-", array_filter([$size, $extension, $backgroundColor])));
-		$extension = strtolower($extension);
+		$variation = $format->value;
+		$extension = strtolower($format->getExtension());
 		$id = $this->id;
-		return "/thumbnail/$variation/$id.$extension";
+
+		$url = $fullUrl ? ($_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST']) : "";
+		$url .= "/thumbnail/$variation/$id.$extension";
+
+		return  $url;
 	}
 
-	public function writeToDatabase()
+	/**
+	 * 
+	 * @param ThumbnailFormat $thumbnailFormat 
+	 * @return array<string, mixed> 
+	 */
+	public function apiRepresentation(ThumbnailFormat $thumbnailFormat): array
+	{
+		return [
+			"id" => $this->id,
+			"creatorGivenId" => $this->creatorGivenId,
+			"title" => $this->title,
+			"url" => $this->url,
+			"date" => $this->date->format(DateTime::ATOM),
+			"type" => $this->type->slug(),
+			"creator" => $this->creator->slug(),
+			"tags" => $this->tags,
+			"thumbnail" => $this->getThumbnailUrl($thumbnailFormat, true)
+		];
+	}
+
+	public function writeToDatabase(): void
 	{
 
 		if ($this->id) {
@@ -74,10 +115,11 @@ class StoredAsset extends Asset
 			Database::runQuery($sql, $parameters);
 
 			// Add the missing id to the asset object
-			$this->id = Database::runQuery("SELECT id FROM Asset WHERE url = ?;", [$this->url])->fetchArray()['id'];
-			if (!$this->id) {
+			$result = Database::runQuery("SELECT id FROM Asset WHERE url = ?;", [$this->url]);
+			if (is_bool($result)) {
 				throw new Exception("Failed to retrieve ID of newly inserted asset with URL " . $this->url);
 			}
+			$this->id = $result->fetchArray()['id'] ?? throw new Exception("Failed to retrieve ID of newly inserted asset with URL " . $this->url);
 
 			// Tags
 			foreach ($this->tags as $tag) {

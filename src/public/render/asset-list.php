@@ -2,6 +2,7 @@
 
 use asset\StoredAssetQuery;
 use asset\StoredAsset;
+use thumbnail\ThumbnailFormat;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
@@ -23,7 +24,7 @@ foreach ($assets as $a) { ?>
 				//<span title="<?= $a->creator->commonLicense()->name() ?? "" "><img src="/svg/license/<?= $a->creator->commonLicense()->value .svg" width="32" height="32"></span>
 				?>
 			</span>
-			<img class="asset-image" alt="<?= $a->title ?>" src="<?= $a->getThumbnailUrl(256, "JPG", "FFFFFF") ?>">
+			<img class="asset-image" alt="<?= $a->title ?>" src="<?= $a->getThumbnailUrl(ThumbnailFormat::JPG_256_FFFFFF) ?>">
 		</a>
 	</div>
 

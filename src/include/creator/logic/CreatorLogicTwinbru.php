@@ -26,6 +26,11 @@ class CreatorLogicTwinbru extends CreatorLogic
 
 	// Configuration for indexing products
 	private string $indexingBaseUrl = "https://textures.twinbru.com/api/ods/products";
+
+	/**
+	 * 
+	 * @var array<string,mixed>
+	 */
 	private array $indexingBaseParameters = [
 		'pageSize' => 50,
 		'sortAttribute' => 'launch',
@@ -41,19 +46,30 @@ class CreatorLogicTwinbru extends CreatorLogic
 	private string $thumbnailBaseUrl = 'https://cdn.twinbru.com/ods/assets/';
 
 
-	private function extractTags(array|string $input)
+	/**
+	 * 
+	 * @param array<string>|string $input 
+	 * @return array<string>
+	 */
+	private function extractTags(array|string $input): array
 	{
 		if (is_array($input)) {
 			return array_merge(
 				...array_map(
-					fn($a) => preg_split($this->tagRegex, $a),
+					fn($a) => preg_split($this->tagRegex, $a) ?: [],
 					array_values(
 						$input
 					)
 				)
 			);
+		} else {
+			$result = preg_split($this->tagRegex, $input);
+			if ($result === false) {
+				return [];
+			} else {
+				return $result;
+			}
 		}
-		return preg_split($this->tagRegex, $input);
 	}
 
 	public function postprocessUrl(string $url): string
@@ -71,7 +87,7 @@ class CreatorLogicTwinbru extends CreatorLogic
 		$tmpCollection = new ScrapedAssetCollection();
 
 		// Determine current API page to scrape
-		$page = $this->getCreatorState("page") ?? 1;
+		$page = intval($this->getCreatorState("page") ?? 1);
 
 		// Fetch the raw list from the API
 		$requestBody = $this->indexingBaseParameters;
@@ -109,9 +125,15 @@ class CreatorLogicTwinbru extends CreatorLogic
 						)->fetch()->parseAsJson();
 
 						// If we found a result, build the thumbnail URL and stop trying
-						if (sizeof($thumbnailQueryResponse['results']) > 0) {
+						if (
+							$thumbnailQueryResponse !== null
+							&& key_exists('results', $thumbnailQueryResponse)
+							&& sizeof($thumbnailQueryResponse['results']) > 0
+						) {
 							$thumbnailUrl = $this->thumbnailBaseUrl . $thumbnailQueryResponse['results'][0]['item']['assetId'] . "/Thumbnail.jpg";
 							break;
+						} else {
+							Log::write("Failed to fetch thumbnail data for render scene $renderScene", null, LogLevel::WARNING);
 						}
 					}
 

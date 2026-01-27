@@ -90,27 +90,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			</tr>
 
 		</table>
-		<h3><code>/api/v2/assets_rss</code></h3>
+		<h3><code>/api/v2/assets-rss</code></h3>
 		<p>This endpoint generates a customizable RSS feed of newly indexed assets. Filters from the regular <code>/assets</code> endpoint can be used here as well.</p>
 		<h3><code>/api/v2/types</code></h3>
 		<p>This endpoint returns all asset types currently featured on 3Dassets.one. It does not accept any parameters.</p>
 		<h3><code>/api/v2/creators</code></h3>
 		<p>This endpoint returns all creators currently featured on 3Dassets.one. It does not accept any parameters.</p>
-
-		<h2>Creative Commons Attributions</h2>
-		<h3>Icons</h3>
-		<ul>
-			<li>Calendar by Iconika from <a href="https://thenounproject.com/browse/icons/term/calendar/" target="_blank" title="Calendar Icons">Noun Project</a> (CC BY 3.0)</li>
-			<li>feather by Monjin Friends from <a href="https://thenounproject.com/browse/icons/term/feather/" target="_blank" title="feather Icons">Noun Project</a> (CC BY 3.0)</li>
-			<li>storage by Cuputo from <a href="https://thenounproject.com/browse/icons/term/storage/" target="_blank" title="storage Icons">Noun Project</a> (CC BY 3.0)</li>
-			<li>user login by JS from <a href="https://thenounproject.com/browse/icons/term/user-login/" target="_blank" title="user login Icons">Noun Project</a> (CC BY 3.0)</li>
-			<li>ads by DinosoftLabs from <a href="https://thenounproject.com/browse/icons/term/ads/" target="_blank" title="ads Icons">Noun Project</a> (CC BY 3.0)</li>
-			<li>pop up by kumakamu from <a href="https://thenounproject.com/browse/icons/term/pop-up/" target="_blank" title="pop up Icons">Noun Project</a> (CC BY 3.0)</li>
-			<li>bundle by Mark Jayvee Pabilonia from <a href="https://thenounproject.com/browse/icons/term/bundle/" target="_blank" title="bundle Icons">Noun Project</a> (CC BY 3.0)</li>
-			<li>network check by Justin Blake from <a href="https://thenounproject.com/browse/icons/term/network-check/" target="_blank" title="network check Icons">Noun Project</a> (CC BY 3.0)</li>
-		</ul>
-
-
 
 	</main>
 	<?php FooterBlock::render(); ?>

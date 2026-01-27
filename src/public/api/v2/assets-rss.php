@@ -3,6 +3,7 @@
 use asset\StoredAssetQuery;
 use asset\AssetSorting;
 use asset\StoredAsset;
+use thumbnail\ThumbnailFormat;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 header("content-Type: application/rss+xml");
@@ -23,14 +24,16 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
 			The selection of assets shown on this feed can be customized using the same search parameters as the main site.
 		</description>
 
-		<?php /* @var StoredAsset $a */ foreach ($assetCollection as $a) { ?>
+		<?php
+		/** @var StoredAsset $a */
+		foreach ($assetCollection as $a) { ?>
 			<item>
-				<title><?= htmlspecialchars($a->name) ?></title>
-				<media:thumbnail url="<?= $_ENV["3D1_CDN"] ?>/thumbnail/256-JPG-FFFFFF/<?= $a->id ?>.jpg" height="256" width="256" />
-				<description><?= htmlspecialchars($a->name) ?> by <?= $a->creator->name() ?> / Type: <?= $a->type->name() ?> / License: <?= $a->creator->commonLicense()->name() ?> / Tags: <?= implode(",", $a->tags) ?></description>
+				<title><?= htmlspecialchars($a->title) ?></title>
+				<media:thumbnail url="<?= $a->getThumbnailUrl(ThumbnailFormat::JPG_256_FFFFFF, true) ?>" height="256" width="256" />
+				<description><?= htmlspecialchars($a->title) ?> by <?= $a->creator->name ?> / Type: <?= $a->type->name() ?> / License: <?= $a->creator->commonLicense()->name() ?> / Tags: <?= implode(",", $a->tags) ?></description>
 				<link>https://<?= $_SERVER['HTTP_HOST'] ?>/go?id=<?= $a->id ?></link>
 				<guid isPermaLink="false">3D1-<?= $a->id ?></guid>
-				<pubDate><?= (new DateTime($a->date))->format(DateTime::RFC822) ?></pubDate>
+				<pubDate><?= $a->date->format(DateTime::RFC822) ?></pubDate>
 			</item>
 		<?php } ?>
 

@@ -21,7 +21,9 @@ foreach ($iterator as $file) {
 		// Get relative path from base directory
 		$relativePath = str_replace($logDirectory . DIRECTORY_SEPARATOR, '', $file->getPathname());
 		$relativePath = str_replace(DIRECTORY_SEPARATOR, '/', $relativePath);
-		$directories[] = $relativePath;
+		if (is_string($relativePath)) {
+			$directories[] = $relativePath;
+		}
 	}
 }
 

@@ -12,7 +12,7 @@ use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
 use fetch\WebItemReference;
-use misc\Image;
+use thumbnail\Thumbnail;
 use misc\StringUtil;
 use Rct567\DomQuery\DomQuery;
 
@@ -47,6 +47,10 @@ class CreatorLogicCgBookcase extends CreatorLogic
 			if (!$existingAssets->containsUrl($url)) {
 
 				$metaTags = (new WebItemReference($url))->fetch()->parseHtmlMetaTags();
+
+				if ($metaTags === null || !isset($metaTags['tex1:name'], $metaTags['tex1:release-date'], $metaTags['tex1:tags'], $metaTags['tex1:type'], $metaTags['tex1:preview-image'])) {
+					continue;
+				}
 
 				$tmpAsset = new ScrapedAsset(
 					id: NULL,

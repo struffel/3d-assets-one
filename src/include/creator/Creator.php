@@ -45,7 +45,7 @@ enum Creator: int
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
 
-	public static function fromAny(mixed $value): self
+	public static function fromAny(mixed $value): ?self
 	{
 		if (is_numeric($value)) {
 			return self::from(intval($value));
@@ -174,6 +174,10 @@ enum Creator: int
 
 	// Additional helpers
 
+	/**
+	 * 
+	 * @return array<self>
+	 */
 	public static function regularRefreshList(): array
 	{
 		return [
@@ -227,7 +231,8 @@ enum Creator: int
 			self::PBR_PX => new CreatorLogicPbrPx(),
 			self::TWINBRU => new CreatorLogicTwinbru(),
 			self::LIGHTBEANS => new CreatorLogicLightbeans(),
-			default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
+			// This becomes relevant when new creators are added without logic
+			//default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
 		};
 	}
 }

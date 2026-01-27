@@ -11,6 +11,20 @@ use DateTime;
  */
 class ScrapedAsset extends Asset
 {
+	/**
+	 * 
+	 * @param null|int $id 
+	 * @param null|string $creatorGivenId 
+	 * @param string $title 
+	 * @param string $url 
+	 * @param DateTime $date 
+	 * @param AssetType $type 
+	 * @param Creator $creator 
+	 * @param ScrapedAssetStatus $status 
+	 * @param array<string> $tags 
+	 * @param null|string $rawThumbnailData 
+	 * @return void 
+	 */
 	public function __construct(
 		?int $id,
 		?string $creatorGivenId,
@@ -19,10 +33,9 @@ class ScrapedAsset extends Asset
 		DateTime $date,
 		AssetType $type,
 		Creator $creator,
-		array $tags = [],
-
-		public ?string $rawThumbnailData = NULL,
 		public ScrapedAssetStatus $status,
+		array $tags = [],
+		public ?string $rawThumbnailData = NULL,
 	) {
 		parent::__construct(
 			id: $id,
