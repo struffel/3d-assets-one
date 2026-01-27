@@ -27,7 +27,7 @@ abstract class CreatorLogic
 	protected final function getCreatorState(string $key): int|string|null
 	{
 		$result = Database::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?", [$this->creator->value, $key]);
-		if ($result === false) {
+		if (is_bool($result)) {
 			return null;
 		}
 		return $result->fetchArray()['stateValue'] ?? NULL;

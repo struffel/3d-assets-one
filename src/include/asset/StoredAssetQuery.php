@@ -13,30 +13,44 @@ class StoredAssetQuery
 
 	public static function assetCountTotal(): int
 	{
-		return Database::runQuery("SELECT COUNT(*) AS count FROM Asset", [])->fetchArray()['count'];
+		$result = Database::runQuery("SELECT COUNT(*) AS count FROM Asset", []);
+		if (is_bool($result)) {
+			return 0;
+		}
+		return $result->fetchArray()['count'] ?? 0;
 	}
 
+	/** @return array<int, int> */
 	public static function assetCountByCreator(): array
 	{
 		$assetCountByCreator = [];
 		$result = Database::runQuery("SELECT creatorId, COUNT(*) AS count FROM Asset GROUP BY creatorId");
+		if (is_bool($result)) {
+			return $assetCountByCreator;
+		}
 		while ($row = $result->fetchArray()) {
 			$assetCountByCreator[$row['creatorId']] = $row['count'];
 		}
 		return $assetCountByCreator;
 	}
 
+	/**
+	 * @param list<int> $filterAssetId
+	 * @param list<string> $filterTag
+	 * @param list<Creator> $filterCreator
+	 * @param list<AssetType> $filterType
+	 */
 	public function __construct(
 		// Basics
 		public ?int $offset = NULL,						// ?offset
 		public ?int $limit = NULL,						// ?limit
-		public ?AssetSorting $sort = AssetSorting::LATEST,		// ?sort
+		public AssetSorting $sort = AssetSorting::LATEST,		// ?sort
 
 		// Filters
-		public ?array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
-		public ?array $filterTag = [],			// ?tags, Assets must have ALL tags in the array in order to be included.
-		public ?array $filterCreator = [],		// ?creator, limits the search to certain creators.
-		public ?array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
+		public array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
+		public array $filterTag = [],			// ?tags, Assets must have ALL tags in the array in order to be included.
+		public array $filterCreator = [],		// ?creator, limits the search to certain creators.
+		public array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
 		public ?StoredAssetStatus $filterStatus = StoredAssetStatus::ACTIVE,				// NULL => Any status
 
 	) {}
@@ -59,7 +73,7 @@ class StoredAssetQuery
 		$output['type'] = array_map($enumToSlugConverter, $this->filterType);
 
 		if ($includeStatus) {
-			$output['status'] = $this->filterStatus->value ?? NULL;
+			$output['status'] = $this->filterStatus?->value;
 		}
 
 		return http_build_query($output);
@@ -83,29 +97,33 @@ class StoredAssetQuery
 		foreach ($_GET['id'] ?? [] as $assetId) {
 			$filterAssetId[] = intval($assetId);
 		}
-		$filterAssetId = array_filter($filterAssetId);
+		$filterAssetId = array_values(array_filter($filterAssetId));
 
 		// creator filter
 		$filterCreator = [];
 		foreach ($_GET['creator'] ?? [] as $creatorSlug) {
-			$filterCreator[] = Creator::fromSlug($creatorSlug);
+			$creator = Creator::fromSlug($creatorSlug);
+			if ($creator !== null) {
+				$filterCreator[] = $creator;
+			}
 		}
-		$filterCreator = array_filter($filterCreator);
 
 		// type filter
 		$filterType = [];
 		foreach ($_GET['type'] ?? [] as $typeSlug) {
 			$filterType[] = AssetType::fromSlug($typeSlug);
 		}
-		$filterType = array_filter($filterType);
 
+
+		$splitTags = preg_split('/\s|,/', $_GET['q'] ?? "");
+		$filterTag = $splitTags !== false ? array_values(array_filter(array_map('trim', $splitTags))) : [];
 
 		return new StoredAssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
 			limit: min(intval($_GET['limit'] ?? 150), 500),
 			sort: AssetSorting::fromAnyString($_GET['sort'] ?? "latest"),
 			filterAssetId: $filterAssetId,
-			filterTag: array_map('trim', array_filter(preg_split('/\s|,/', $_GET['q'] ?? ""))),
+			filterTag: $filterTag,
 			filterCreator: $filterCreator,
 			filterType: $filterType,
 			filterStatus: $filterStatus
@@ -134,19 +152,19 @@ class StoredAssetQuery
 		}
 
 
-		if (sizeof($this->filterAssetId) > 0) {
+		if (count($this->filterAssetId) > 0) {
 			$ph = Database::generatePlaceholder($this->filterAssetId);
 			$sqlCommand .= " AND id IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $this->filterAssetId);
 		}
 
-		if (sizeof($this->filterType ?? []) > 0) {
+		if (count($this->filterType) > 0) {
 			$ph = Database::generatePlaceholder($this->filterType);
 			$sqlCommand .= " AND typeId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $this->filterType);
 		}
 
-		if (sizeof($this->filterCreator ?? []) > 0) {
+		if (count($this->filterCreator) > 0) {
 			$ph = Database::generatePlaceholder($this->filterCreator);
 			$sqlCommand .= " AND creatorId IN ($ph) ";
 			$sqlValues = array_merge($sqlValues, $this->filterCreator);
@@ -189,8 +207,10 @@ class StoredAssetQuery
 		// Fetch data from DB
 		$databaseResult = Database::runQuery($sqlCommand, $sqlValues);
 		$databaseOutput = [];
-		while ($row = $databaseResult->fetchArray(SQLITE3_ASSOC)) {
-			$databaseOutput[] = $row;
+		if (!is_bool($databaseResult)) {
+			while ($row = $databaseResult->fetchArray(SQLITE3_ASSOC)) {
+				$databaseOutput[] = $row;
+			}
 		}
 
 		// Prepare the final asset collection

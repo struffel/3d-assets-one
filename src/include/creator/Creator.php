@@ -231,7 +231,8 @@ enum Creator: int
 			self::PBR_PX => new CreatorLogicPbrPx(),
 			self::TWINBRU => new CreatorLogicTwinbru(),
 			self::LIGHTBEANS => new CreatorLogicLightbeans(),
-			default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
+			// This becomes relevant when new creators are added without logic
+			//default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
 		};
 	}
 }

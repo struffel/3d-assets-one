@@ -9,7 +9,7 @@ use thumbnail\ThumbnailFormat;
 
 class EditorRow
 {
-	public static function render(StoredAsset $asset, bool $updated = false)
+	public static function render(StoredAsset $asset, bool $updated = false): void
 	{
 ?>
 

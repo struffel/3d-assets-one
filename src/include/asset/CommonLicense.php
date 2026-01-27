@@ -3,11 +3,10 @@
 namespace asset;
 
 use creator\Creator;
-use GuzzleHttp\Promise\Create;
 
 enum CommonLicense: int
 {
-	
+
 	case CC0 = 1;
 		#case CC_BY = 2;
 		#case CC_BY_SA = 3;
@@ -18,6 +17,10 @@ enum CommonLicense: int
 	case APACHE_2_0 = 8;
 	case NONE = 0;
 
+	/**
+	 * 
+	 * @return array<Creator>
+	 */
 	public function getCreators(): array
 	{
 		$creators = [];

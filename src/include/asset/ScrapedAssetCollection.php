@@ -8,9 +8,14 @@ use InvalidArgumentException;
 /**
  * A collection of `Asset`s.
  * It is used for pagination.
+ *
+ * @extends ArrayObject<int, ScrapedAsset>
  */
 class ScrapedAssetCollection extends ArrayObject
 {
+	/**
+	 * @param array<int, ScrapedAsset> $assets
+	 */
 	public function __construct(
 		array $assets = array(),
 		public ?int $pendingToBeScrapedCount = NULL

@@ -3,7 +3,7 @@
 use asset\ScrapedAsset;
 use asset\StoredAssetQuery;
 use creator\Creator;
-use indexing\CreatorLogic;
+use creator\CreatorLogic;
 use log\LogLevel;
 use database\Database;
 use log\Log;
@@ -12,8 +12,6 @@ use thumbnail\Thumbnail;
 use misc\StringUtil;
 
 require_once __DIR__ . '/../include/init.php';
-
-
 
 // Pick a target creator
 if (isset($argv[1])) {
@@ -53,11 +51,17 @@ Log::write("Found " . sizeof($existingAssets) . " existing assets for creator.")
 $newScrapedAssets = $creatorLogic->scrapeAssets($existingAssets);
 
 // Perform post-processing on the results
-for ($i = 0; $i < sizeof($newScrapedAssets); $i++) {
+foreach ($newScrapedAssets as $scrapedAsset) {
+	if ($scrapedAsset === null) {
+		continue;
+	}
 	// Expand and clean up the tag array
-	$newScrapedAssets[$i]->tags = array_merge($newScrapedAssets[$i]->tags, preg_split('/\s+/', $newScrapedAssets[$i]->title));
-	$newScrapedAssets[$i]->tags[] = $creator->slug();
-	$newScrapedAssets[$i]->tags = StringUtil::filterTagArray($newScrapedAssets[$i]->tags);
+	$titleWords = preg_split('/\s+/', $scrapedAsset->title);
+	if ($titleWords !== false) {
+		$scrapedAsset->tags = array_merge($scrapedAsset->tags, $titleWords);
+	}
+	$scrapedAsset->tags[] = $creator->slug();
+	$scrapedAsset->tags = StringUtil::filterTagArray($scrapedAsset->tags);
 }
 
 Log::write("Found " . sizeof($newScrapedAssets) . " new assets", $newScrapedAssets);
@@ -83,8 +87,10 @@ if (sizeof($newScrapedAssets) > 0) {
 		Database::startTransaction();
 
 		$newStoredAsset->writeToDatabase();
-		Thumbnail::saveThumbnailVariations($newStoredAsset->id, $newScrapedAsset->rawThumbnailData);
-		Log::write("Saved thumbnail for asset ", $newStoredAsset->id);
+		if ($newStoredAsset->id !== null && $newScrapedAsset->rawThumbnailData !== null) {
+			Thumbnail::saveThumbnailVariations($newStoredAsset->id, $newScrapedAsset->rawThumbnailData);
+			Log::write("Saved thumbnail for asset ", $newStoredAsset->id);
+		}
 
 		Database::commitTransaction();
 

@@ -16,6 +16,21 @@ use JsonSerializable;
  */
 class StoredAsset extends Asset
 {
+
+	/**
+	 * 
+	 * @param null|int $id 
+	 * @param null|string $creatorGivenId 
+	 * @param string $title 
+	 * @param string $url 
+	 * @param DateTime $date 
+	 * @param AssetType $type 
+	 * @param Creator $creator 
+	 * @param array<string> $tags 
+	 * @param StoredAssetStatus $status 
+	 * @param null|DateTime $lastSuccessfulValidation 
+	 * @return void 
+	 */
 	public function __construct(
 		?int $id,
 		?string $creatorGivenId,
@@ -53,6 +68,11 @@ class StoredAsset extends Asset
 		return  $url;
 	}
 
+	/**
+	 * 
+	 * @param ThumbnailFormat $thumbnailFormat 
+	 * @return array<string, mixed> 
+	 */
 	public function apiRepresentation(ThumbnailFormat $thumbnailFormat): array
 	{
 		return [
@@ -68,7 +88,7 @@ class StoredAsset extends Asset
 		];
 	}
 
-	public function writeToDatabase()
+	public function writeToDatabase(): void
 	{
 
 		if ($this->id) {
@@ -95,10 +115,11 @@ class StoredAsset extends Asset
 			Database::runQuery($sql, $parameters);
 
 			// Add the missing id to the asset object
-			$this->id = Database::runQuery("SELECT id FROM Asset WHERE url = ?;", [$this->url])->fetchArray()['id'];
-			if (!$this->id) {
+			$result = Database::runQuery("SELECT id FROM Asset WHERE url = ?;", [$this->url]);
+			if (is_bool($result)) {
 				throw new Exception("Failed to retrieve ID of newly inserted asset with URL " . $this->url);
 			}
+			$this->id = $result->fetchArray()['id'] ?? throw new Exception("Failed to retrieve ID of newly inserted asset with URL " . $this->url);
 
 			// Tags
 			foreach ($this->tags as $tag) {
