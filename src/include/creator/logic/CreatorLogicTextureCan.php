@@ -11,6 +11,7 @@ use asset\StoredAssetCollection;
 use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
+use Exception;
 use fetch\WebItemReference;
 use thumbnail\Thumbnail;
 use misc\StringUtil;
@@ -38,10 +39,10 @@ class CreatorLogicTextureCan extends CreatorLogic
 				$tmpAsset = new ScrapedAsset(
 					id: NULL,
 					creatorGivenId: null,
-					title: $metaTags['tex1:name'],
+					title: $metaTags['tex1:name'] ?? throw new Exception("Could not resolve title from meta tags."),
 					url: $url,
-					date: new DateTime($metaTags['tex1:release-date']),
-					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags']),
+					date: new DateTime($metaTags['tex1:release-date'] ?? date('Y-m-d')),
+					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags'] ?? throw new Exception("Could not resolve tags from meta tags.")),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
 					creator: Creator::TEXTURECAN,
 					rawThumbnailData: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->content,

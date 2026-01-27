@@ -12,15 +12,29 @@ use log\LogLevel;
 class WebItemReference
 {
 
-	// Static
+	/**
+	 * @var array<string, string>
+	 */
 	private static array $defaultHeaders = [
 		"User-Agent" => "3dassets.one / Fetching"
 	];
 
 
-	// Non-static
+	/**
+	 * 
+	 * @var array<string,mixed>
+	 */
 	private array $options = [];
 
+	/**
+	 * 
+	 * @param string $url 
+	 * @param string $method 
+	 * @param array<string,string> $headers 
+	 * @param string $requestBody 
+	 * @param array<string,string> $queryParameters 
+	 * @return void 
+	 */
 	public function __construct(
 		public string $url,
 		public string $method = 'GET',
@@ -67,18 +81,6 @@ class WebItemReference
 		return $cookie; // Return null if the target cookie was not found
 	}
 
-	/*public function __toString(): string
-	{
-		return sprintf(
-			"URL: %s, Method: %s, Headers: %s, Body: %s, Parameters: %s",
-			$this->url,
-			$this->method,
-			print_r($this->headers, true),
-			$this->requestBody,
-			print_r($this->queryParameters, true)
-		);
-	}*/
-
 	public function fetch(): FetchedWebItem
 	{
 		$client = new Client();
@@ -94,7 +96,7 @@ class WebItemReference
 			$content = NULL;
 		}
 
-		Log::write("Request completed", ["length" => strlen($content), "statusCode" => isset($result) ? $result->getStatusCode() : NULL]);
+		Log::write("Request completed", ["length" => strlen($content ?? ""), "statusCode" => isset($result) ? $result->getStatusCode() : NULL]);
 
 		return new FetchedWebItem(
 			reference: $this,

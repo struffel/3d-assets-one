@@ -13,6 +13,10 @@ enum ThumbnailFormat: string
 	case PNG_128 = "128-PNG";
 	case PNG_256 = "256-PNG";
 
+	/**
+	 * 
+	 * @return int<1, max> Size in pixels 
+	 */
 	public function getSize(): int
 	{
 		return match ($this) {
@@ -31,7 +35,7 @@ enum ThumbnailFormat: string
 		};
 	}
 
-	public function getBackgroundColor(): ?string
+	public function getBackgroundColorHex(): ?string
 	{
 		return match ($this) {
 			self::JPG_32_FFFFFF, self::JPG_64_FFFFFF, self::JPG_128_FFFFFF, self::JPG_256_FFFFFF => "FFFFFF",

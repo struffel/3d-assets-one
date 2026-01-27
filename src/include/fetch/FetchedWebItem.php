@@ -42,10 +42,14 @@ class FetchedWebItem
 		return $urls;
 	}
 
-	public function parseAsCommaSeparatedList(): ?array
+	/**
+	 * 
+	 * @return array<string> 
+	 */
+	public function parseAsCommaSeparatedList(): array
 	{
 		if ($this->content === null) {
-			return null;
+			return [];
 		}
 
 		$content = str_replace("\n", "", $this->content);
@@ -57,6 +61,10 @@ class FetchedWebItem
 		return $contentArray;
 	}
 
+	/**
+	 * 
+	 * @return null|array<mixed,mixed>
+	 */
 	public function parseAsJson(): ?array
 	{
 		if ($this->content === null) {
@@ -87,7 +95,11 @@ class FetchedWebItem
 		return $document;
 	}
 
-	public  function parseHtmlMetaTags(): ?array
+	/**
+	 * 
+	 * @return null|array<string,string>
+	 */
+	public function parseHtmlMetaTags(): ?array
 	{
 		$output = [];
 		$document = $this->parseAsDomDocument();
@@ -97,29 +109,17 @@ class FetchedWebItem
 
 		$metaTags = $document->getElementsByTagName('meta');
 		foreach ($metaTags as $tag) {
-			if ($tag->getAttribute('name') ?? "" != "") {
+			if ($tag->getAttribute('name') != "") {
 				$output[$tag->getAttribute('name')] = $tag->getAttribute('content');
-			} elseif ($tag->getAttribute('property') ?? "" != "") {
+			} elseif ($tag->getAttribute('property')  != "") {
 				$output[$tag->getAttribute('property')] = $tag->getAttribute('content');
 			}
 		}
 		return $output;
 	}
 
-	public function parseHtmlElementsByClassName($className, $startAtNode = NULL): ?DOMNodeList
-	{
-		$dom = $this->parseAsDomDocument();
-		if ($dom === null) {
-			return null;
-		}
-		// https://stackoverflow.com/a/6366390
-		$finder = new DOMXPath($dom);
-		$nodes = $finder->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' $className ')]", $startAtNode);
-		return $nodes;
-	}
-
 	/*public function parseAsWordpressApiPosts()
 	{
-		$wpJson = $this->parseAsJson();
+		// Not implemented yet
 	}*/
 }

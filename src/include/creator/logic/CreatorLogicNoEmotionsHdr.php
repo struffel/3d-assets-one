@@ -38,7 +38,12 @@ class CreatorLogicNoEmotionsHdr extends CreatorLogic
 					id: NULL,
 					creatorGivenId: null,
 					title: $name,
-					date: new DateTime("2010-" . preg_split('/=|_/', urldecode($url))[1]),
+					date: new DateTime("2010-" . (
+						preg_split(
+							'/=|_/',
+							urldecode($url)
+						)
+						?: array("", "01-01"))[1]),
 					url: $url,
 					tags: ['Sky', $category],
 					type: AssetType::HDRI,
@@ -54,6 +59,11 @@ class CreatorLogicNoEmotionsHdr extends CreatorLogic
 
 		return $tmpCollection;
 	}
+
+	/**
+	 * 
+	 * @var array<string>
+	 */
 	private array $urlList = [
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FH",
 		"http://noemotionhdrs.net/hdrday.html#:~:text=06%2D07%5FDay%5FG",

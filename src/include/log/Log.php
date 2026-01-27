@@ -20,7 +20,7 @@ class Log
 
 	private static bool $finalized = false;
 
-	public static function stop(LogResult $result)
+	public static function stop(LogResult $result): void
 	{
 		if (self::$finalized) {
 			throw new Exception("Logger has already been stopped.");
@@ -43,14 +43,14 @@ class Log
 	}
 
 
-	public static function start(string $logName, LogLevel $level = LogLevel::INFO, bool $writeToStdout = false)
+	public static function start(string $logName, LogLevel $level = LogLevel::INFO, bool $writeToStdout = false): void
 	{
 
 		if (self::$enabled) {
 			throw new Exception("Logging has already been started.");
 		}
 
-		self::$logName = preg_replace('#[^a-zA-Z0-9/-]#', '', $logName);
+		self::$logName = preg_replace('#[^a-zA-Z0-9/-]#', '', $logName) ?? throw new Exception("Invalid log name.");
 		self::$level = $level;
 		self::$enabled = true;
 		self::$writeToStdout = $writeToStdout;
@@ -60,7 +60,7 @@ class Log
 		Log::write("Started logging", ["Name" => $logName, "Level" => $level]);
 	}
 
-	public static function exceptionHandler(Throwable $th)
+	public static function exceptionHandler(Throwable $th): never
 	{
 		$exceptionDetails = [
 			'message' => $th->getMessage(),
@@ -75,7 +75,7 @@ class Log
 		throw $th;
 	}
 
-	public static function write(string $message, mixed $data = null, LogLevel $level = LogLevel::INFO)
+	public static function write(string $message, mixed $data = null, LogLevel $level = LogLevel::INFO): void
 	{
 		// Return early if loging is disabled or level is too low
 		if (!self::$enabled || $level->value < self::$level->value) {
@@ -84,33 +84,29 @@ class Log
 
 		$functionTrace = array_map(
 			function ($trace) {
-				return  $trace['function'] ?? '';
+				return  $trace['function'];
 			},
 			array_slice(debug_backtrace(), 1)
 		);
+
 		$functionTrace = array_reverse($functionTrace);
 
 		$output = ">" . date('Y-m-d H:i:s', time());
 		$output .=  " " . $level->displayName();
 		$output .=  " ->" . implode("->", $functionTrace);
 
-		$outputPrefixLength = strlen($output);
-
 		$output .=  " | "  . $message;
 		$output .= PHP_EOL;
 
 		if ($data) {
 			$dataJson = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-			/*foreach (explode(PHP_EOL, $dataJson) as $line) {
-				$output .= str_repeat(" ", $outputPrefixLength) . " " . $line . PHP_EOL;
-			}*/
 			$output .= $dataJson . PHP_EOL;
 		}
 
 		self::writeRaw($output);
 	}
 
-	private static function writeRaw(string $rawMessage)
+	private static function writeRaw(string $rawMessage): void
 	{
 		$logFilePath = self::getLogFilePath();
 		Log::createFileIfNotPresent($logFilePath);
@@ -133,7 +129,7 @@ class Log
 		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . ($suffix ? ".$suffix" : "") . ".log";
 	}
 
-	private static function createFileIfNotPresent($file)
+	private static function createFileIfNotPresent(string $file): void
 	{
 		$logDir = dirname($file) . "/";
 		if (!is_dir($logDir)) {
@@ -149,7 +145,7 @@ class Log
 	 * @param int $deleteOlderThanDays 
 	 * @return void 
 	 */
-	private static function cleanUpLogDirectory($deleteOlderThanDays = 14)
+	private static function cleanUpLogDirectory($deleteOlderThanDays = 14): void
 	{
 		$logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
 

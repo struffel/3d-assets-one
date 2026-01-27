@@ -11,7 +11,9 @@ use asset\StoredAssetCollection;
 use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
+use Exception;
 use fetch\WebItemReference;
+use RuntimeException;
 
 // rawcatalog
 
@@ -21,6 +23,11 @@ class CreatorLogicRawCatalog extends CreatorLogic
 	protected int $maxAssetsPerRun = 25;
 
 	private string $apiUrl = "https://rawcatalog.com/freeset.xml";
+
+	/**
+	 * 
+	 * @var array<string,AssetType>
+	 */
 	private array $typeMatching = [
 		"blueprints" => AssetType::OTHER,
 		"materials" => AssetType::PBR_MATERIAL,
@@ -38,11 +45,20 @@ class CreatorLogicRawCatalog extends CreatorLogic
 
 		$sourceData = new WebItemReference($targetUrl)->fetch()->parseAsSimpleXmlElement();
 
+		if ($sourceData === null) {
+			throw new RuntimeException("Could not fetch or parse RawCatalog source data from $targetUrl");
+		}
+
 		$countAssets = 0;
 		foreach ($this->typeMatching as $xPathPrefix => $type) {
 
-			foreach ($sourceData->xpath("$xPathPrefix//file") as $rawCatalogAsset) {
+			$assetList = $sourceData->xpath("$xPathPrefix//file");
 
+			if ($assetList === null || $assetList === false) {
+				$assetList = [];
+			}
+
+			foreach ($assetList as $rawCatalogAsset) {
 				$url = (string) $rawCatalogAsset->url;
 
 				if ($countAssets < $this->maxAssetsPerRun && !$existingAssets->containsUrl($url)) {

@@ -4,7 +4,7 @@ namespace misc;
 
 class Auth
 {
-	public static function requireAuth()
+	public static function requireAuth(): void
 	{
 		$authUser = 'admin';
 		$authPass = $_ENV["3D1_ADMIN_TOKEN"];

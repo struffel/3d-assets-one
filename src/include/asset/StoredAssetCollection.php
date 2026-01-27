@@ -8,9 +8,16 @@ use InvalidArgumentException;
 /**
  * A collection of `Asset`s.
  * It is used for pagination.
+ * @extends ArrayObject<int, StoredAsset>
  */
 class StoredAssetCollection extends ArrayObject
 {
+
+	/**
+	 * @param array<mixed> $assets 
+	 * @param null|StoredAssetQuery $nextCollection 
+	 * @throws InvalidArgumentException 
+	 */
 	public function __construct(
 		array $assets = array(),
 		public ?StoredAssetQuery $nextCollection = NULL
@@ -20,6 +27,7 @@ class StoredAssetCollection extends ArrayObject
 				throw new InvalidArgumentException('All elements must be of type StoredAsset');
 			}
 		}
+		/** @var array<StoredAsset> $assets */
 		parent::__construct($assets);
 	}
 
