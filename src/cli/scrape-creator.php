@@ -1,12 +1,8 @@
 <?php
 
 use asset\ScrapedAsset;
-use asset\ScrapedAssetCollection;
-use asset\Asset;
 use asset\StoredAssetQuery;
 use creator\Creator;
-use indexing\event\IndexingEvent;
-use indexing\event\IndexingEventType;
 use indexing\CreatorLogic;
 use log\LogLevel;
 use database\Database;
