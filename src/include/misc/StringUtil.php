@@ -2,6 +2,8 @@
 
 namespace misc;
 
+use InvalidArgumentException;
+
 class StringUtil
 {
 	/**
@@ -22,6 +24,10 @@ class StringUtil
 			// Split the element into multiple elements by space
 			$splitElements = preg_split('/\s+/', $filteredElement);
 
+			if ($splitElements === false) {
+				$splitElements = [];
+			}
+
 			// Loop through the split elements and remove non-alphanumeric characters
 			foreach ($splitElements as $splitElement) {
 				// Remove non-alphanumeric characters using a regular expression
@@ -36,42 +42,74 @@ class StringUtil
 
 		return array_unique($resultArray);
 	}
-	public static function onlySmallLetters(string $input)
+	public static function onlySmallLetters(string $input): string
 	{
 		$output = strtolower($input);
-		$output = preg_replace('/[^a-z]/', '', $output);
+		$output = preg_replace('/[^a-z]/', '', $output) ?? "";
 		return $output;
 	}
-	public static function onlyNumbers(string $input)
+	public static function onlyNumbers(string $input): string
 	{
-		$output = preg_replace('/[^0-9]/', '', $input);
+		$output = preg_replace('/[^0-9]/', '', $input) ?? "";
 		return $output;
 	}
-	public static function removeNewline($string)
+	public static function removeNewline(string $string): string
 	{
 		return str_replace(array("\n\r", "\n", "\r"), '', $string);
 	}
-	public static function explodeFilterTrim(string $separator, string $string)
+
+	/**
+	 * 
+	 * @param string $separator 
+	 * @param string $string 
+	 * @return string[] 
+	 */
+	public static function explodeFilterTrim(string $separator, string $string): array
 	{
+		if (empty($separator)) {
+			throw new InvalidArgumentException("Separator string cannot be empty");
+		}
 		return array_filter(array_map('trim', explode($separator, $string)));
 	}
 
+
+	/**
+	 * 
+	 * @param string $url 
+	 * @param array<string, string> $newParameters 
+	 * @return string 
+	 */
 	public static function addHttpParameters(string $url, array $newParameters): string
 	{
-		$url_parts = parse_url($url);
-		// If URL doesn't have a query string.
-		if (isset($url_parts['query'])) { // Avoid 'Undefined index: query'
-			parse_str($url_parts['query'], $params);
+		$urlParts = parse_url($url);
+
+		if ($urlParts === false) {
+			throw new InvalidArgumentException("Invalid URL provided");
+		}
+
+		if (isset($urlParts['query'])) {
+			parse_str($urlParts['query'], $params);
 		} else {
 			$params = array();
 		}
 
 		$params = array_merge($params, $newParameters);
 
-		// Note that this will url_encode all values
-		$url_parts['query'] = http_build_query($params);
+		$query = http_build_query($params);
 
-		// If not
-		return $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'] . '?' . $url_parts['query'];
+		$scheme = $urlParts['scheme'] ?? 'http';
+		$host = $urlParts['host'] ?? '';
+		$path = $urlParts['path'] ?? '';
+
+		// Build the final URL
+		$output = $query;
+		if ($path) {
+			$output = $path . '?' . $output;
+		}
+		if ($host) {
+			$output = $scheme . '://' . $host . $output;
+		}
+
+		return $output;
 	}
 }
