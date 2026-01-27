@@ -25,12 +25,12 @@ abstract class CreatorLogic
 
 	// General functions
 
-	protected final function getCreatorState(string $key): ?string
+	protected final function getCreatorState(string $key): int|string|null
 	{
 		return Database::runQuery("SELECT * FROM FetchingState WHERE creatorId = ? AND stateKey = ?", [$this->creator->value, $key])->fetchArray()['stateValue'] ?? NULL;
 	}
 
-	protected final function setCreatorState(string $key, string $value): void
+	protected final function setCreatorState(string $key, string|int $value): void
 	{
 		Database::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [$this->creator->value, $key, $value]);
 	}
