@@ -20,6 +20,7 @@ class CreatorLogicAmbientCg extends CreatorLogic
 
 	protected Creator $creator = Creator::AMBIENTCG;
 	private string $apiUrl = "https://ambientcg.com/api/v2/full_json";
+	/** @var array<string, int|string> */
 	private array $initialParameters = [
 		"limit" => 100,
 		"offset" => 0,
@@ -28,6 +29,7 @@ class CreatorLogicAmbientCg extends CreatorLogic
 
 	private int $maxAssetsPerRun = 25;
 
+	/** @var array<string, AssetType> */
 	private array $typeMapping = [
 		"Material" => AssetType::PBR_MATERIAL,
 		"Decal" => AssetType::PBR_MATERIAL,
@@ -53,6 +55,10 @@ class CreatorLogicAmbientCg extends CreatorLogic
 
 		while ($targetUrl != "" && sizeof($newAssets) < $this->maxAssetsPerRun) {
 			$result = new WebItemReference($targetUrl)->fetch()->parseAsJson();
+
+			if ($result === null || !isset($result['foundAssets'])) {
+				break;
+			}
 
 			// Iterate through result
 			foreach ($result['foundAssets'] as $acgAsset) {

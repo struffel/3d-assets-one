@@ -11,6 +11,7 @@ use asset\StoredAssetCollection;
 use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
+use Exception;
 use fetch\WebItemReference;
 use thumbnail\Thumbnail;
 
@@ -36,6 +37,9 @@ class CreatorLogicAmdGpuOpen extends CreatorLogic
 		// Limit number of assets to avoid excessive calls to the tag API
 		do {
 			$apiJson = new WebItemReference($targetUrl)->fetch()->parseAsJson();
+			if ($apiJson === null || !isset($apiJson['results'])) {
+				throw new Exception("Failed to fetch or parse API data.");
+			}
 			foreach ($apiJson['results'] as $amdAsset) {
 				if (sizeof($tmpCollection) < $this->maxAssetsPerRun && !preg_match($this->excludeTitleRegex, $amdAsset['title'])) {
 
@@ -45,7 +49,8 @@ class CreatorLogicAmdGpuOpen extends CreatorLogic
 						$tags = [];
 
 						foreach ($amdAsset['tags'] as $t) {
-							$tags[] = new WebItemReference($this->tagApiUrl . $t)->fetch()->parseAsJson()['title'];
+							$tagJson = new WebItemReference($this->tagApiUrl . $t)->fetch()->parseAsJson();
+							$tags[] = $tagJson['title'] ?? '';
 						}
 
 						$tmpAsset = new ScrapedAsset(

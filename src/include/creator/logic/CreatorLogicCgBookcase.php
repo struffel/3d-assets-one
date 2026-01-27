@@ -48,6 +48,10 @@ class CreatorLogicCgBookcase extends CreatorLogic
 
 				$metaTags = (new WebItemReference($url))->fetch()->parseHtmlMetaTags();
 
+				if ($metaTags === null || !isset($metaTags['tex1:name'], $metaTags['tex1:release-date'], $metaTags['tex1:tags'], $metaTags['tex1:type'], $metaTags['tex1:preview-image'])) {
+					continue;
+				}
+
 				$tmpAsset = new ScrapedAsset(
 					id: NULL,
 					creatorGivenId: null,

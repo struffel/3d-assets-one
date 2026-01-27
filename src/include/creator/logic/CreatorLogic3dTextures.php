@@ -17,7 +17,6 @@ use creator\CreatorLogic;
 use log\LogLevel;
 use thumbnail\Thumbnail;
 use log\Log;
-use Throwable;
 
 class CreatorLogic3dTextures extends CreatorLogic
 {
@@ -58,35 +57,29 @@ class CreatorLogic3dTextures extends CreatorLogic
 
 						// Thumbnail
 
-						$oldErrorReportingLevel = error_reporting();
-						error_reporting(E_ERROR | E_PARSE);
+						$tmpThumbnail = null;
 
 						// 1st attempt
-						try {
-							$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['square']['source_url'];
-						} catch (Throwable $e) {
-							Log::write("1st attempt failed", [$wpPost['link'], $e], LogLevel::WARNING);
+						$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['media_details']['sizes']['square']['source_url'] ?? null;
+						if ($tmpThumbnail === null) {
+							Log::write("1st attempt failed", [$wpPost['link']], LogLevel::WARNING);
 						}
 
 						// 2nd attempt
-						if (!isset($tmpThumbnail)) {
-							try {
-								$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'];
-							} catch (Throwable $e) {
-								Log::write("2nd attempt failed", [$wpPost['link'], $e], LogLevel::WARNING);
+						if ($tmpThumbnail === null) {
+							$tmpThumbnail = $wpPost['_embedded']['wp:featuredmedia'][0]['source_url'] ?? null;
+							if ($tmpThumbnail === null) {
+								Log::write("2nd attempt failed", [$wpPost['link']], LogLevel::WARNING);
 							}
 						}
 
 						// 3rd attempt
-						if (!isset($tmpThumbnail)) {
-							try {
-								$tmpThumbnail = $wpPost['jetpack_featured_media_url'];
-							} catch (Throwable $e) {
-								Log::write("3rd attempt failed", [$wpPost['link'], $e], LogLevel::WARNING);
+						if ($tmpThumbnail === null) {
+							$tmpThumbnail = $wpPost['jetpack_featured_media_url'] ?? null;
+							if ($tmpThumbnail === null) {
+								Log::write("3rd attempt failed", [$wpPost['link']], LogLevel::WARNING);
 							}
 						}
-
-						error_reporting($oldErrorReportingLevel);
 
 						// Test if any attempt worked
 						if (!isset($tmpThumbnail)) {

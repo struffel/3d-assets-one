@@ -27,6 +27,7 @@ class CreatorLogicCgMood extends CreatorLogic
 	protected int $maxAssetsPerRun = 3;
 
 	private string $indexingBaseUrl = "https://cgmood.com/free?page=";
+	/** @var array<string, AssetType> */
 	private array $urlTypeRegex = [
 		"#/3d-model/#" => AssetType::MODEL_3D,
 		"#/material/#" => AssetType::PBR_MATERIAL
@@ -46,7 +47,8 @@ class CreatorLogicCgMood extends CreatorLogic
 
 		if (sizeof($downloadButtonCandidates) > 0) {
 			$downloadButton = $downloadButtonCandidates[0];
-			return preg_match('/.*Free download.*/', $downloadButton->text());
+			$buttonText = (string) $downloadButton->text();
+			return preg_match('/.*Free download.*/', $buttonText) === 1;
 		} else {
 			return false;
 		}
@@ -80,13 +82,16 @@ class CreatorLogicCgMood extends CreatorLogic
 					Log::write("Skipping URL because it does not match the URL schema.", $assetImageElement->attr('data-product-url'), LogLevel::WARNING);
 				} elseif (!$existingAssets->containsUrl($assetImageElement->attr('data-product-url'))) {
 
+					$titleParts = preg_split('/[^A-Za-z0-9]/', $assetImageElement->attr('data-product-title'));
+					$tags = $titleParts !== false ? array_filter($titleParts) : [];
+
 					$tmpCollection[] = new ScrapedAsset(
 						id: NULL,
 						creatorGivenId: null,
 						title: $assetImageElement->attr('data-product-title'),
 						url: $assetImageElement->attr('data-product-url'),
 						date: new DateTime(),
-						tags: array_filter(preg_split('/[^A-Za-z0-9]/', $assetImageElement->attr('data-product-title'))),
+						tags: array_values($tags),
 						type: $type,
 
 						creator: Creator::CGMOOD,
