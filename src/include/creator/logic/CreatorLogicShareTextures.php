@@ -11,6 +11,7 @@ use asset\StoredAssetCollection;
 use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
+use Exception;
 use fetch\WebItemReference;
 use thumbnail\Thumbnail;
 
@@ -38,14 +39,14 @@ class CreatorLogicShareTextures extends CreatorLogic
 				$tmpAsset = new ScrapedAsset(
 					id: NULL,
 					creatorGivenId: null,
-					title: $metaTags['og:title'],
+					title: $metaTags['og:title'] ?? throw new Exception("Could not resolve title from meta tags."),
 					url: $url,
-					date: new DateTime($metaTags['tex1:release-date']),
+					date: new DateTime($metaTags['tex1:release-date'] ?? date('Y-m-d')),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
 					creator: $this->creator,
 					rawThumbnailData: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->content,
 					status: ScrapedAssetStatus::NEWLY_FOUND,
-					tags: explode(",", $metaTags['tex1:tags']),
+					tags: explode(",", $metaTags['tex1:tags'] ?? throw new Exception("Could not resolve tags from meta tags.")),
 				);
 
 				$tmpCollection[] = $tmpAsset;
