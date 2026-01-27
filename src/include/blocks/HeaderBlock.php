@@ -6,7 +6,7 @@ use database\Database;
 
 class HeaderBlock
 {
-	public static function render()
+	public static function render(): void
 	{
 
 ?>

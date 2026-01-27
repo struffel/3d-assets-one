@@ -4,7 +4,7 @@ namespace blocks;
 
 class HeadBlock
 {
-	public static function render()
+	public static function render(): void
 	{ ?>
 
 		<head>

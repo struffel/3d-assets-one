@@ -7,7 +7,7 @@ use database\Database;
 
 class FooterBlock
 {
-	public static function render()
+	public static function render(): void
 	{
 		$assetCount = StoredAssetQuery::assetCountTotal();
 
