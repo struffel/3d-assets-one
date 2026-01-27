@@ -37,6 +37,10 @@ jobs:
             - name: Get latest code
               uses: actions/checkout@v4
 
+            - name: Run PHP Composer
+              run: composer install --no-progress --prefer-dist
+              working-directory: ./src
+
             - name: Sync files
               uses: SamKirkland/FTP-Deploy-Action@4.1.0
               with:
