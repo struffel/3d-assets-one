@@ -66,12 +66,12 @@ class CreatorLogicLocationTextures extends CreatorLogic
 							date: new DateTime(),
 							tags: array_merge(
 								array_filter(
-									preg_split('/[^A-Za-z0-9]/', $assetImageElement->attr('title'))
+									preg_split('/[^A-Za-z0-9]/', $assetImageElement->attr('title')) ?: []
 								),
 								$tags
 							),
 							type: AssetType::HDRI,
-				
+
 							creator: $this->creator,
 							status: ScrapedAssetStatus::NEWLY_FOUND,
 							rawThumbnailData: new WebItemReference(
