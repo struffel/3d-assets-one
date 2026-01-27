@@ -15,6 +15,7 @@ use creator\CreatorLogic;
 use DateTime;
 use fetch\WebItemReference;
 use Rct567\DomQuery\DomQuery;
+use RuntimeException;
 
 class CreatorLogicPoliigon extends CreatorLogic
 {
@@ -23,6 +24,7 @@ class CreatorLogicPoliigon extends CreatorLogic
 
 	private string $baseUrl = "https://www.poliigon.com";
 	private string $searchBaseUrl = "https://www.poliigon.com/free?sort=newest&page=";
+	/** @var array<string, AssetType> */
 	private array $urlTypeRegex = [
 		'/\/texture\//i' => AssetType::PBR_MATERIAL,
 		'/\/model\//i' => AssetType::MODEL_3D,
@@ -31,12 +33,13 @@ class CreatorLogicPoliigon extends CreatorLogic
 
 	protected int $maxAssetsPerRun = 100;
 
-	private function extractId($url)
+	private function extractId(string $url): string
 	{
-		return end(explode('/', rtrim($url, '/')));
+		$parts = explode('/', rtrim($url, '/'));
+		return end($parts) ?: '';
 	}
 
-	private function isInExistingAssets($url, StoredAssetCollection $existingAssets)
+	private function isInExistingAssets(string $url, StoredAssetCollection $existingAssets): bool
 	{
 		// Extracting ID from the input link
 		$id = $this->extractId($url);
@@ -93,13 +96,14 @@ class CreatorLogicPoliigon extends CreatorLogic
 						throw new Exception("Could not find type from urlPath '$urlPath'");
 					}
 
+					$tags = preg_split('/\s|,/', $name) ?: throw new RuntimeException("Failed to split tags from name '$name'");
 					$tmpCollection[] = new ScrapedAsset(
 						id: NULL,
 						creatorGivenId: null,
 						title: $name,
 						url: $url,
 						date: new DateTime(),
-						tags: preg_split('/\s|,/', $name),
+						tags: $tags,
 						type: $type,
 
 						creator: Creator::POLIIGON,
