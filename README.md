@@ -9,9 +9,10 @@ Browse thousands of free assets and filter for asset type, vendor or license and
 
 ## Planned Features
 
-- Finding and adding more high-quality vendors to the index.
-- Improving keyword-based search by using image-to-text systems (AI/ML) to generate keywords based on the thumbnail images. This is necessary because not all sites provide the same quality and style of tagging on their assets.
+- Finding and adding more high-quality creators to the index.
 - Adding a system for detecting inactive asset links, for example because an asset has been removed from the creator's site.
+- Better insight into the scraping status for each creator on the web console.
+- Graceful backoff and retrying for creators that are unreachable/broken.
 
 ## Contributing
 See [contributing.md](contributing.md) for information on how to run 3Dassets.one locally and how to add new creators.
