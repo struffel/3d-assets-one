@@ -50,7 +50,15 @@ class CreatorLogicThreeDScans extends CreatorLogic
 							title: $assetLinkElement->attr('title'),
 							url: $assetLinkElement->attr('href'),
 							date: new DateTime($date),
-							tags: array_merge(array_filter(preg_split('/[^A-Za-z0-9]/', $assetLinkElement->attr('title'))), ['statue', 'sculpture']),
+							tags: array_merge(
+								array_filter(
+									preg_split(
+										'/[^A-Za-z0-9]/',
+										$assetLinkElement->attr('title')
+									) ?: []
+								),
+								['statue', 'sculpture']
+							),
 							type: AssetType::MODEL_3D,
 							creator: $this->creator,
 							status: ScrapedAssetStatus::NEWLY_FOUND,
