@@ -37,6 +37,11 @@ jobs:
             - name: Get latest code
               uses: actions/checkout@v4
 
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.4"
+
             - name: Run PHP Composer
               run: composer install --no-progress --prefer-dist
               working-directory: ./src
