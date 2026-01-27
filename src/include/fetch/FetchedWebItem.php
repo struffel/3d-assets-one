@@ -44,12 +44,12 @@ class FetchedWebItem
 
 	/**
 	 * 
-	 * @return null|array<string> 
+	 * @return array<string> 
 	 */
-	public function parseAsCommaSeparatedList(): ?array
+	public function parseAsCommaSeparatedList(): array
 	{
 		if ($this->content === null) {
-			return null;
+			return [];
 		}
 
 		$content = str_replace("\n", "", $this->content);
