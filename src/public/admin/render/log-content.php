@@ -1,6 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
+use log\Log;
+use log\LogLevel;
 use misc\Auth;
 
 Auth::requireAuth();
@@ -8,6 +10,7 @@ header('Cache-Control: no-store');
 
 $logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
 $selectedFile = $_GET['file'] ?? '';
+$minLevel = (int)($_GET['level'] ?? 2); // Default to INFO level
 
 // Sanitize path - remove directory traversal attempts
 $selectedFile = str_replace(['..', "\0"], '', $selectedFile);
@@ -33,11 +36,48 @@ if (!is_file($realFilePath)) {
 	exit;
 }
 
-// Read and display file contents
+// Read file contents
 $content = file_get_contents($realFilePath);
 if ($content === false) {
 	echo '<p class="log-error">Unable to read file.</p>';
 	exit;
 }
+
+// Parse and filter log entries by level
+$lines = explode("\n", $content);
+$filteredLines = [];
+
+foreach ($lines as $line) {
+	$line = trim($line);
+	if (empty($line)) {
+		continue;
+	}
+
+	$entry = json_decode($line, true);
+	if ($entry === null) {
+		// Non-JSON line, include it if showing DEBUG level
+		if ($minLevel <= LogLevel::DEBUG->value) {
+			$filteredLines[] = $line;
+		}
+		continue;
+	}
+
+	$entryLevel = LogLevel::fromName($entry['level'] ?? null);
+	if ($entryLevel === null) {
+		// Unknown level, include if showing DEBUG
+		if ($minLevel <= LogLevel::DEBUG->value) {
+			$filteredLines[] = $line;
+		}
+		continue;
+	}
+
+	// Include entry if its level meets minimum threshold
+	if ($entryLevel->value >= $minLevel) {
+		$filteredLines[] = $line;
+	}
+}
+
 ?>
-<pre class="log-content"><?= htmlspecialchars($content) ?></pre>
+<pre class="log-content">
+<?php echo htmlspecialchars(implode("\n", $filteredLines)); ?>
+</pre>

@@ -36,7 +36,7 @@ class Log
 
 		set_exception_handler([self::class, 'exceptionHandler']);
 
-		Log::write("Started logging", ["Name" => $logName, "Level" => $level]);
+		Log::write("Started logging", ["Name" => $logName, "Level" => $level], LogLevel::SYSTEM);
 	}
 
 	public static function exceptionHandler(Throwable $th): never
@@ -49,58 +49,22 @@ class Log
 			'trace' => explode("\n", $th->getTraceAsString()),
 		];
 
-		Log::write("Uncaught exception", $exceptionDetails, LogLevel::FINISH_FAILED);
+		Log::write("Uncaught exception", $exceptionDetails, LogLevel::EXCEPTION);
+		Log::stop(false);
 		throw $th;
 	}
 
 	public static function logIsSuccessful(string $logFilePath): ?bool
 	{
+		if (str_ends_with($logFilePath, '.ok.log')) {
+			return true;
+		}
 
-		$file = new SplFileObject($logFilePath, 'r');
-		$file->seek(PHP_INT_MAX);
-		$totalLines = $file->key();
-		if ($totalLines <= 1) {
+		if (str_ends_with($logFilePath, '.err.log')) {
 			return false;
 		}
 
-		// Read the last 10 lines to find FINISH_OK or FINISH_FAILED
-		$reader = new LimitIterator($file, max(0, $totalLines - 10));
-
-		foreach ($reader as $line) {
-			$entry = json_decode($line, true);
-			if (isset($entry['level'])) {
-				if ($entry['level'] === LogLevel::FINISH_OK->name) {
-					return true;
-				} elseif ($entry['level'] === LogLevel::FINISH_FAILED->name) {
-					return false;
-				}
-			}
-		}
-
-
-
 		return null;
-	}
-
-	public static function read(string $logFilePath): array
-	{
-		if (!is_file($logFilePath)) {
-			throw new Exception("Log file not found: " . $logFilePath);
-		}
-
-		$lines = file($logFilePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-		$entries = array_map(
-			function ($line) {
-				return json_decode($line, true);
-			},
-			$lines
-		);
-
-		$entries = array_filter($entries, function ($entry) {
-			return $entry !== null;
-		});
-
-		return $entries;
 	}
 
 	public static function write(string $message, mixed $data = null, LogLevel $level = LogLevel::INFO): void
@@ -135,14 +99,30 @@ class Log
 
 		// Generate a log row as JSON (without newlines)
 		$output = json_encode($outputData,  JSON_UNESCAPED_SLASHES) . PHP_EOL;
-
 		self::writeRaw($output);
+	}
 
-		if ($level === LogLevel::FINISH_OK || $level === LogLevel::FINISH_FAILED) {
-			self::$finalized = true;
-			self::$enabled = false;
-			self::cleanUpLogDirectory(14);
+	public static function stop(bool $successful = true)
+	{
+
+		if (self::$finalized) {
+			throw new Exception("Logger has already been stopped.");
 		}
+
+		Log::write("Stopping logging", ["Successful" => $successful], LogLevel::SYSTEM);
+
+		// Move the log file based on success or failure
+		$newFilePath = self::getLogFilePath();
+		$newFilePath = str_replace(".log", $successful ? ".ok.log" : ".err.log", $newFilePath);
+
+		Log::write("Moving log", $newFilePath, LogLevel::INFO);
+
+		rename(self::getLogFilePath(), $newFilePath);
+
+		self::$finalized = true;
+		self::$enabled = false;
+
+		self::cleanUpLogDirectory(3);
 	}
 
 	private static function writeRaw(string $rawMessage): void
@@ -184,7 +164,7 @@ class Log
 	 * @param int $deleteOlderThanDays 
 	 * @return void 
 	 */
-	private static function cleanUpLogDirectory($deleteOlderThanDays = 14): void
+	private static function cleanUpLogDirectory(int $deleteOlderThanDays): void
 	{
 		$logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
 

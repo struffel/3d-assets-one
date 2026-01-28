@@ -29,7 +29,7 @@ if (isset($argv[1])) {
 // Start logging and determine the official run timestamp
 $now = new DateTime();
 $timestamp = $now->format('Y-m-d\TH-i-s-v');
-Log::start(logName: "scrape-creator/" . $creator->slug() . "/" . $timestamp, level: LogLevel::INFO, writeToStdout: true);
+Log::start(logName: "scrape-creator/"  . $timestamp . "_" . $creator->slug(), level: LogLevel::INFO, writeToStdout: true);
 
 Log::write("Selected creator:", $creator);
 
@@ -103,7 +103,4 @@ if (sizeof($newScrapedAssets) > 0) {
 
 Thumbnail::deleteOrphanedThumbnails();
 
-Log::write("Finished creator scrape.", [
-	"Creator" => $creator->slug(),
-	"NewAssetsCount" => sizeof($newScrapedAssets)
-], LogLevel::FINISH_OK);
+Log::stop(true);

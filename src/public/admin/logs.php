@@ -4,6 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 use blocks\HeadBlock;
 use blocks\LogoBlock;
 use log\Log;
+use log\LogLevel;
 use misc\Auth;
 
 Auth::requireAuth();
@@ -91,15 +92,32 @@ unset($files);
 				Log Viewer
 			</div>
 
+			<!-- Log level filter -->
+			<label for="level-select">Minimum Log Level:</label>
+			<select
+				id="level-select"
+				name="level"
+				hx-trigger="change"
+				hx-get="/admin/render/log-content.php"
+				hx-target="main"
+				hx-include="#file-list"
+				hx-swap="innerHTML">
+				<option value="<?= LogLevel::DEBUG->value ?>"><?= LogLevel::DEBUG->name ?> (Everything)</option>
+				<option value="<?= LogLevel::INFO->value ?>" selected><?= LogLevel::INFO->name ?></option>
+				<option value="<?= LogLevel::WARNING->value ?>"><?= LogLevel::WARNING->name ?></option>
+				<option value="<?= LogLevel::ERROR->value ?>"><?= LogLevel::ERROR->name ?></option>
+			</select>
+
 			<!-- Log file selector -->
-			<label for="file-select">Log File:</label>
+			<label for="file-list">Log File:</label>
 			<select
 				id="file-list"
 				name="file"
 				size="20"
 				hx-get="/admin/render/log-content.php"
-				hx-target="#log-content"
+				hx-target="main"
 				hx-trigger="change"
+				hx-include="#level-select"
 				hx-swap="innerHTML">
 				<?php foreach ($filesByDirectory as $dir => $files) { ?>
 					<optgroup label="<?= htmlspecialchars($dir ?: '(root)') ?>">
@@ -118,9 +136,6 @@ unset($files);
 
 		<!-- Main content area -->
 		<main>
-			<div id="log-content">
-				<p class="log-placeholder">Select a log file to view its contents.</p>
-			</div>
 		</main>
 	</div>
 </body>

@@ -11,4 +11,4 @@ Log::start(logName: "migrate/" . (new DateTime())->format('Y-m-d\TH-i-s-v'), lev
 
 Database::migrate();
 
-Log::write("Finished migration.", [], LogLevel::FINISH_OK);
+Log::stop(true);
