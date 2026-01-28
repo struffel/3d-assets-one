@@ -7,19 +7,17 @@ Auth::requireAuth();
 header('Cache-Control: no-store');
 
 $logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
-$selectedDir = $_GET['directory'] ?? '';
 $selectedFile = $_GET['file'] ?? '';
 
-// Sanitize paths
-$selectedDir = str_replace(['..', "\0"], '', $selectedDir);
-$selectedFile = str_replace(['..', "\0", '/', '\\'], '', $selectedFile);
+// Sanitize path - remove directory traversal attempts
+$selectedFile = str_replace(['..', "\0"], '', $selectedFile);
 
 if (empty($selectedFile)) {
 	echo '<p class="log-placeholder">Select a log file to view its contents.</p>';
 	exit;
 }
 
-$fullPath = $logDirectory . DIRECTORY_SEPARATOR . $selectedDir . DIRECTORY_SEPARATOR . $selectedFile;
+$fullPath = $logDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $selectedFile);
 
 // Validate file exists and is within log directory
 $realLogDir = realpath($logDirectory);
@@ -42,8 +40,4 @@ if ($content === false) {
 	exit;
 }
 ?>
-
-<div class="log-file-header">
-	<strong><?= htmlspecialchars($selectedDir . '/' . $selectedFile) ?></strong>
-</div>
 <pre class="log-content"><?= htmlspecialchars($content) ?></pre>

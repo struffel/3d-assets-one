@@ -103,4 +103,7 @@ if (sizeof($newScrapedAssets) > 0) {
 
 Thumbnail::deleteOrphanedThumbnails();
 
-Log::stop(LogResult::OK);
+Log::write("Finished creator scrape.", [
+	"Creator" => $creator->slug(),
+	"NewAssetsCount" => sizeof($newScrapedAssets)
+], LogLevel::FINISH_OK);

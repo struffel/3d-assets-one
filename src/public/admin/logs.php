@@ -3,32 +3,77 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 use blocks\HeadBlock;
 use blocks\LogoBlock;
+use log\Log;
 use misc\Auth;
 
 Auth::requireAuth();
 
 $logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
 
-// Get all subdirectories recursively as flat list
-$directories = [];
-$iterator = new RecursiveIteratorIterator(
-	new RecursiveDirectoryIterator($logDirectory, RecursiveDirectoryIterator::SKIP_DOTS),
-	RecursiveIteratorIterator::SELF_FIRST
-);
+// Get all log files recursively, grouped by directory
+$filesByDirectory = [];
 
-foreach ($iterator as $file) {
-	if ($file->isDir()) {
-		// Get relative path from base directory
-		$relativePath = str_replace($logDirectory . DIRECTORY_SEPARATOR, '', $file->getPathname());
-		$relativePath = str_replace(DIRECTORY_SEPARATOR, '/', $relativePath);
-		if (is_string($relativePath)) {
-			$directories[] = $relativePath;
+if (is_dir($logDirectory)) {
+	$iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator($logDirectory, RecursiveDirectoryIterator::SKIP_DOTS),
+		RecursiveIteratorIterator::LEAVES_ONLY
+	);
+
+	$baseDirLength = strlen($logDirectory) + 1; // +1 for the separator
+
+	foreach ($iterator as $file) {
+
+		if ($file->isFile()) {
+			// Get relative path from base directory
+			$fullPath = $file->getPathname();
+			$relativePath = substr($fullPath, $baseDirLength);
+			// Normalize to forward slashes
+			$relativePath = str_replace('\\', '/', $relativePath);
+
+			// Split into directory and filename
+			$lastSlash = strrpos($relativePath, '/');
+			if ($lastSlash !== false) {
+				$dir = substr($relativePath, 0, $lastSlash);
+				$filename = substr($relativePath, $lastSlash + 1);
+			} else {
+				$dir = '';
+				$filename = $relativePath;
+			}
+
+			if (!isset($filesByDirectory[$dir])) {
+				$filesByDirectory[$dir] = [];
+			}
+
+			$newFile = [
+				'name' => $filename,
+				'path' => $relativePath,
+				'size' => $file->getSize(),
+			];
+
+			$successful = Log::logIsSuccessful($fullPath);
+
+			if ($successful !== null) {
+				$newFile['successful'] = $successful ? 1 : 0;
+			} else {
+				$newFile['successful'] = "";
+			}
+
+			$filesByDirectory[$dir][] = $newFile;
 		}
 	}
+} else {
+	echo '<p class="log-error">Log directory not found.</p>';
+	exit;
 }
 
-sort($directories);
+// Sort directories
+ksort($filesByDirectory);
 
+// Sort files within each directory (newest first by name)
+foreach ($filesByDirectory as &$files) {
+	usort($files, fn($a, $b) => strcmp($b['name'], $a['name']));
+}
+unset($files);
 
 ?>
 
@@ -46,34 +91,28 @@ sort($directories);
 				Log Viewer
 			</div>
 
-			<!-- Directory selector -->
-			<label for="directory-select">Directory:</label>
-			<select
-				id="directory-select"
-				name="directory"
-				hx-get="/admin/render/log-files.php"
-				hx-target="#file-list"
-				hx-trigger="change, load"
-				hx-swap="innerHTML">
-				<?php foreach ($directories as $dir) { ?>
-					<option value="<?= htmlspecialchars($dir) ?>">
-						<?= htmlspecialchars($dir) ?>
-					</option>
-				<?php } ?>
-			</select>
-
-			<!-- File listing -->
+			<!-- Log file selector -->
 			<label for="file-select">Log File:</label>
 			<select
 				id="file-list"
 				name="file"
-				size="10"
+				size="20"
 				hx-get="/admin/render/log-content.php"
 				hx-target="#log-content"
 				hx-trigger="change"
-				hx-include="#directory-select"
 				hx-swap="innerHTML">
-				<option value="">Select a directory first...</option>
+				<?php foreach ($filesByDirectory as $dir => $files) { ?>
+					<optgroup label="<?= htmlspecialchars($dir ?: '(root)') ?>">
+						<?php foreach ($files as $file) { ?>
+							<option
+								value="<?= htmlspecialchars($file['path']) ?>"
+								data-successful="<?= $file['successful']  ?>"
+								data-filesize="<?= round($file['size'] / 1024, 2) ?> KiB">
+								<?= htmlspecialchars($file['name']) ?>
+							</option>
+						<?php } ?>
+					</optgroup>
+				<?php } ?>
 			</select>
 		</aside>
 

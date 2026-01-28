@@ -7,7 +7,7 @@ body {
 
 	#logs-container {
 		display: grid;
-		grid-template-columns: 450px 1fr;
+		grid-template-columns: 550px 1fr;
 		height: 100vh;
 		gap: 0;
 
@@ -46,6 +46,21 @@ body {
 				flex: 1;
 				min-height: 200px;
 				font-family: monospace;
+
+				option[data-successful="1"]::before {
+					content: '● ';
+					color: green;
+				}
+
+				option[data-successful="0"]::before {
+					content: '● ';
+					color: red;
+				}
+
+				option[data-successful=""]::before {
+					content: '● ';
+					color: gray;
+				}
 
 				option::after {
 					content: attr(data-filesize);
@@ -104,23 +119,5 @@ body {
 			overflow-x: auto;
 			margin: 0;
 		}
-	}
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-	#logs-container {
-		grid-template-columns: 1fr;
-		grid-template-rows: auto 1fr;
-	}
-
-	#logs-sidebar {
-		border-right: none;
-		border-bottom: 1px solid #333;
-		max-height: 40vh;
-	}
-
-	#file-list {
-		max-height: 30vh;
 	}
 }

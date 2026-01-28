@@ -8,16 +8,6 @@ enum LogLevel: int
 	case INFO = 2;
 	case WARNING = 3;
 	case ERROR = 4;
-	case EXCEPTION = 5;
-
-	public function displayName(): string
-	{
-		return match ($this) {
-			LogLevel::DEBUG => "DEBUG",
-			LogLevel::INFO => "INFO",
-			LogLevel::WARNING => "WARNING",
-			LogLevel::ERROR => "ERROR",
-			LogLevel::EXCEPTION => "EXCEPTION",
-		};
-	}
+	case FINISH_OK = 5;
+	case FINISH_FAILED = 6;
 }
