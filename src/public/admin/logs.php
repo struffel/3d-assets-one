@@ -102,8 +102,8 @@ unset($files);
 				hx-target="main"
 				hx-include="#file-list"
 				hx-swap="innerHTML">
-				<option value="<?= LogLevel::DEBUG->value ?>"><?= LogLevel::DEBUG->name ?> (Everything)</option>
-				<option value="<?= LogLevel::INFO->value ?>" selected><?= LogLevel::INFO->name ?></option>
+				<option value="<?= LogLevel::DEBUG->value ?>" selected><?= LogLevel::DEBUG->name ?> (Everything)</option>
+				<option value="<?= LogLevel::INFO->value ?>"><?= LogLevel::INFO->name ?></option>
 				<option value="<?= LogLevel::WARNING->value ?>"><?= LogLevel::WARNING->name ?></option>
 				<option value="<?= LogLevel::ERROR->value ?>"><?= LogLevel::ERROR->name ?></option>
 			</select>
