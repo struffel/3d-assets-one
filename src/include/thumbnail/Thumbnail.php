@@ -7,6 +7,7 @@ use database\Database;
 use log\Log;
 
 use GdImage;
+use log\LogLevel;
 use RuntimeException;
 use SQLite3Result;
 use thumbnail\ThumbnailFormat;
@@ -52,7 +53,7 @@ class Thumbnail
 				$assetId = intval(pathinfo($file, PATHINFO_FILENAME));
 				if (!in_array($assetId, $existingIds)) {
 					unlink($fullVariationDir . $file);
-					Log::write("Deleted orphaned thumbnail", $fullVariationDir . $file);
+					Log::write("Deleted orphaned thumbnail", $fullVariationDir . $file, LogLevel::DEBUG);
 				}
 			}
 		}
@@ -81,14 +82,14 @@ class Thumbnail
 				default => throw new \InvalidArgumentException("Unsupported image format: " . $t->getExtension()),
 			};
 
-			Log::write("Saved thumbnail", ["assetId" => $assetId, "fileName" => $fileName]);
+			Log::write("Saved thumbnail", ["assetId" => $assetId, "fileName" => $fileName], LogLevel::DEBUG);
 		}
 	}
 
 	public static function createThumbnailFromImageData(string $rawImageData, ThumbnailFormat $format): GdImage
 	{
 
-		Log::write("Building variation " . $format->value);
+		Log::write("Building variation " . $format->value, LogLevel::DEBUG);
 
 		// Read image using GD
 		$tmpImage = imagecreatefromstring($rawImageData);

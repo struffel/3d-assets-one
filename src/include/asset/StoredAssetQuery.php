@@ -7,6 +7,7 @@ use creator\Creator;
 use DateTime;
 use database\Database;
 use log\Log;
+use log\LogLevel;
 
 class StoredAssetQuery
 {
@@ -133,7 +134,7 @@ class StoredAssetQuery
 	public function execute(): StoredAssetCollection
 	{
 
-		Log::write("Loading assets based on this query", $this);
+		Log::write("Loading assets based on this query", $this, LogLevel::DEBUG);
 
 		// Begin defining SQL string and parameters for prepared statement
 		$sqlCommand = " SELECT id,url,title,state,date,clicks,lastSuccessfulValidation,typeId,creatorId,tags FROM Asset ";
@@ -241,7 +242,7 @@ class StoredAssetQuery
 			);
 		}
 
-		Log::write("Loaded assets", ["count" => count($output), "nextCollection" => $output->nextCollection]);
+		Log::write("Loaded assets", ["count" => count($output), "nextCollection" => $output->nextCollection], LogLevel::DEBUG);
 
 		return $output;
 	}

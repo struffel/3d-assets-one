@@ -142,7 +142,7 @@ class CreatorLogicTwinbru extends CreatorLogic
 						continue;
 					}
 
-					Log::write("Resolved thumbnail $thumbnailUrl");
+					Log::write("Resolved thumbnail ", $thumbnailUrl, LogLevel::DEBUG);
 
 
 					// Tags
@@ -167,7 +167,7 @@ class CreatorLogicTwinbru extends CreatorLogic
 						)
 					);
 
-					Log::write("Resolved tags", $tags, LogLevel::INFO);
+					Log::write("Resolved tags", $tags, LogLevel::DEBUG);
 
 					// Type
 					$type = ($odsProduct['has3dTexture'] ?? true) ? AssetType::PBR_MATERIAL : AssetType::OTHER;

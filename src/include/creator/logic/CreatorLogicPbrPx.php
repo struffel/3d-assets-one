@@ -107,7 +107,7 @@ class CreatorLogicPbrPx extends CreatorLogic
 						]
 					)->fetch()->parseAsJson();
 
-					Log::write("PBR PX Asset Details:", $pbrPxAssetDetailsRaw, LogLevel::INFO);
+					Log::write("PBR PX Asset Details:", $pbrPxAssetDetailsRaw, LogLevel::DEBUG);
 
 					if (!is_array($pbrPxAssetDetailsRaw) || !isset($pbrPxAssetDetailsRaw['data'][0])) {
 						continue;
@@ -136,7 +136,7 @@ class CreatorLogicPbrPx extends CreatorLogic
 						}
 					}
 
-					Log::write("PBR PX Asset found", ["details" => $pbrPxAssetDetails, "type" => $type, "url" => $assetUrl], LogLevel::INFO);
+					Log::write("PBR PX Asset found", ["details" => $pbrPxAssetDetails, "type" => $type, "url" => $assetUrl], LogLevel::DEBUG);
 
 					// Build asset
 					$tmpCollection[] = new ScrapedAsset(
@@ -162,7 +162,7 @@ class CreatorLogicPbrPx extends CreatorLogic
 			}
 
 			$page += 1;
-			Log::write("Processed page $page, found $assetsFoundThisIteration assets this iteration.", LogLevel::INFO);
+			Log::write("Processed page $page, found $assetsFoundThisIteration assets this iteration.", LogLevel::DEBUG);
 		} while ($assetsFoundThisIteration > 0 && $processedAssets < $maxAssets);
 
 		return $tmpCollection;

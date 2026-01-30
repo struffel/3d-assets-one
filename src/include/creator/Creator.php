@@ -27,6 +27,7 @@ use DateTime;
 use Exception;
 use InvalidArgumentException;
 use log\Log;
+use log\LogLevel;
 
 enum Creator: int
 {
@@ -211,7 +212,7 @@ enum Creator: int
 			}
 		} while ($considerAvailability && !$target->isAvailableForScrape());
 
-		Log::write("Selected creator for scraping: ", $target);
+		Log::write("Selected creator for scraping: ", $target, LogLevel::INFO);
 		return $target;
 	}
 
@@ -281,13 +282,13 @@ enum Creator: int
 					"failedAttempts" => $failedAttempts,
 					"lastChecked" => $lastChecked->format(DateTime::ATOM),
 					"nextCheckTime" => $nextCheckTime->format(DateTime::ATOM)
-				]);
+				], LogLevel::WARNING);
 				return false;
 			}
 		}
 
 		// No entry yet or check has passed, assume available
-		Log::write("Creator is available for scraping.", ["creator" => $this]);
+		Log::write("Creator is available for scraping.", ["creator" => $this], LogLevel::INFO);
 		return true;
 	}
 

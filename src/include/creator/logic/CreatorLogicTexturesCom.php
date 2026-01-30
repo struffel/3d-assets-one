@@ -72,7 +72,7 @@ class CreatorLogicTexturesCom extends CreatorLogic
 
 				if (!$existingAssets->containsUrl($url)) {
 
-					Log::write("Found new asset ", ["categoryId" => $texComAsset['defaultCategoryId'], "title" => $texComAsset['defaultPhotoSet']['titleThumbnail']]);
+					Log::write("Found new asset ", ["categoryId" => $texComAsset['defaultCategoryId'], "title" => $texComAsset['defaultPhotoSet']['titleThumbnail']], LogLevel::DEBUG);
 
 					$tmpCollection[] = new ScrapedAsset(
 						id: NULL,

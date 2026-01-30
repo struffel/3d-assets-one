@@ -13,6 +13,7 @@ use creator\CreatorLogic;
 use DateTime;
 use fetch\WebItemReference;
 use log\Log;
+use log\LogLevel;
 use RuntimeException;
 
 // lightbeans
@@ -71,7 +72,7 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 				$tags = explode(' ', $title);
 				$tags = array_filter($tags, fn($tag) => !in_array($tag, $this->bannedTags));
-				Log::write("Resolved tags ",  $tags);
+				Log::write("Resolved tags ",  $tags, LogLevel::DEBUG);
 
 				// Type
 				$type = AssetType::PBR_MATERIAL;

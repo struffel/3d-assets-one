@@ -58,7 +58,7 @@ class WebItemReference
 
 	public function fetchCookie(string $targetCookieName): ?string
 	{
-		Log::write("Fetching cookie for request: ", ["targetCookieName" => $targetCookieName, "request" => $this]);
+		Log::write("Fetching cookie for request: ", ["targetCookieName" => $targetCookieName, "request" => $this], LogLevel::DEBUG);
 
 		$client = new Client(['cookies' => true]);
 		try {
@@ -67,7 +67,7 @@ class WebItemReference
 			// https://github.com/guzzle/guzzle/issues/3114#issuecomment-1627228395
 			$cookieJar = $client->getConfig('cookies');
 			$cookie = $cookieJar->getCookieByName($targetCookieName)->getValue();
-			Log::write("Cookie Request successful!");
+			Log::write("Cookie Request successful!", LogLevel::DEBUG);
 		} catch (ClientException $e) {
 			Log::write("Cookie Request client error", [$e->getCode(), $e->getMessage()], LogLevel::ERROR);
 			$cookie = NULL;
@@ -76,7 +76,7 @@ class WebItemReference
 			$cookie = NULL;
 		}
 
-		Log::write("Cookie value determined", ["cookie" => $cookie]);
+		Log::write("Cookie value determined", ["cookie" => $cookie], LogLevel::DEBUG);
 
 		return $cookie; // Return null if the target cookie was not found
 	}
@@ -84,7 +84,7 @@ class WebItemReference
 	public function fetch(): FetchedWebItem
 	{
 		$client = new Client();
-		Log::write("Fetching: ", ["request" => $this]);
+		Log::write("Fetching: ", ["request" => $this], LogLevel::DEBUG);
 		try {
 			$result = $client->request($this->method, $this->url, $this->options);
 			$content = $result->getBody();
@@ -96,7 +96,7 @@ class WebItemReference
 			$content = NULL;
 		}
 
-		Log::write("Request completed", ["length" => strlen($content ?? ""), "statusCode" => isset($result) ? $result->getStatusCode() : NULL]);
+		Log::write("Request completed", ["length" => strlen($content ?? ""), "statusCode" => isset($result) ? $result->getStatusCode() : NULL], LogLevel::INFO);
 
 		return new FetchedWebItem(
 			reference: $this,

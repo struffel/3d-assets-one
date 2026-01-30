@@ -19,15 +19,15 @@ class Database
 	{
 		// Create connection
 		if (!isset(self::$connection)) {
-			Log::write("Initializing DB Connection");
+			Log::write("Initializing DB Connection", LogLevel::DEBUG);
 			$dbPath = $_ENV["3D1_DB_PATH"];
 			self::$connection = new SQLite3($dbPath, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 			self::$connection->enableExceptions(true);
 			self::$connection->busyTimeout(5000);
-			Log::write("Initialized SQLite DB connection", ["database" => $dbPath]);
+			Log::write("Initialized SQLite DB connection", ["database" => $dbPath], LogLevel::DEBUG);
 
 			if (self::getUserVersion() == 0) {
-				Log::write("Database user version is 0, running initial migration.");
+				Log::write("Database user version is 0, running initial migration.", LogLevel::WARNING);
 				self::migrate();
 			}
 		}
@@ -49,7 +49,7 @@ class Database
 			$potentialNextPath = __DIR__ . "/sql/migration_" . $potentialNextVersion . ".sql";
 
 			if (file_exists($potentialNextPath)) {
-				Log::write("Running migration step " . $potentialNextVersion);
+				Log::write("Running migration step " . $potentialNextVersion, LogLevel::INFO);
 				$sql = file_get_contents($potentialNextPath);
 				if ($sql === false) {
 					throw new Exception("Failed to read migration file at " . $potentialNextPath);
@@ -58,7 +58,7 @@ class Database
 				self::runQuery("PRAGMA user_version = " . $potentialNextVersion . ";");
 				$ranMigrationStep = true;
 			} else {
-				Log::write("No migration step found for version " . $potentialNextVersion . ", stopping migrations.");
+				Log::write("No migration step found for version " . $potentialNextVersion . ", stopping migrations.", LogLevel::INFO);
 			}
 		} while ($ranMigrationStep);
 		self::commitTransaction();
@@ -66,7 +66,7 @@ class Database
 		// Ensure that the database file is writable by everyone.
 		// This is necessary because the web server user needs write access, but the migration might be run by a different user from the CLI.
 		chmod($_ENV["3D1_DB_PATH"], 0666);
-		Log::write("Set database file permissions to 0666.");
+		Log::write("Set database file permissions to 0666.", LogLevel::DEBUG);
 	}
 
 	private static function getUserVersion(): int
@@ -95,26 +95,25 @@ class Database
 	public static function startTransaction(): void
 	{
 		self::initializeConnection();
-		Log::write("Start transaction...");
+		Log::write("Start transaction...", LogLevel::DEBUG);
 		self::$connection->exec("BEGIN TRANSACTION;");
 	}
 
 	public static function commitTransaction(): void
 	{
 		self::initializeConnection();
-		Log::write("Commit transaction...");
+		Log::write("Commit transaction...", LogLevel::DEBUG);
 		self::$connection->exec("COMMIT;");
 	}
 
 	/**
-	 * 
 	 * @param string $sql 
 	 * @param array<int, mixed> $parameters 
 	 * @return SQLite3Result|bool 
 	 */
 	public static function runQuery(string $sql, array $parameters = []): SQLite3Result|bool
 	{
-		Log::write("Received SQL query to run: ", ["sql" => $sql, "parameters" => $parameters]);
+		Log::write("Received SQL query to run: ", ["sql" => $sql, "parameters" => $parameters], LogLevel::DEBUG);
 		self::initializeConnection();
 
 

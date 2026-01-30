@@ -28,7 +28,7 @@ Log::start(logName: "scrape-creator/"  . $timestamp, level: LogLevel::INFO, writ
 
 // Determine backoff behavior
 $force = isset($argv[2]) && strtolower($argv[2]) === 'force';
-Log::write("Forceful mode?", $force);
+Log::write("Forceful mode?", $force, LogLevel::DEBUG);
 
 // Pick a target creator
 if (isset($argv[1])) {
@@ -41,7 +41,7 @@ if (isset($argv[1])) {
  * @var Creator $creator
  * @var CreatorLogic $creatorLogic */
 $creatorLogic = $creator->getLogic();
-Log::write("Loaded logic and starting to scrape for creator", $creator->name);
+Log::write("Loaded logic and starting to scrape for creator", $creator->name, LogLevel::INFO);
 
 // Increment failure counter (will be reset on success)
 $creator->incrementFailedAttempts($now);
@@ -52,7 +52,7 @@ $query->filterCreator = [$creator];
 $query->filterStatus = NULL;
 $query->limit = NULL;
 $existingAssets = $query->execute();
-Log::write("Found " . sizeof($existingAssets) . " existing assets for creator.");
+Log::write("Found " . sizeof($existingAssets) . " existing assets for creator.", LogLevel::INFO);
 
 // Get new assets using creator-specific method
 // Passing in the list of existing URLs and
@@ -72,7 +72,7 @@ foreach ($newScrapedAssets as $scrapedAsset) {
 	$scrapedAsset->tags = StringUtil::filterTagArray($scrapedAsset->tags);
 }
 
-Log::write("Found " . sizeof($newScrapedAssets) . " new assets", $newScrapedAssets);
+Log::write("Found " . sizeof($newScrapedAssets) . " new assets", $newScrapedAssets, LogLevel::INFO);
 
 // Save new assets to DB
 if (sizeof($newScrapedAssets) > 0) {
@@ -102,11 +102,11 @@ if (sizeof($newScrapedAssets) > 0) {
 
 		Database::commitTransaction();
 
-		Log::write("Committed new asset to DB", $newStoredAsset);
+		Log::write("Committed new asset to DB", $newStoredAsset, LogLevel::INFO);
 	}
-	Log::write("Wrote " . sizeof($newScrapedAssets) . " new assets.");
+	Log::write("Wrote " . sizeof($newScrapedAssets) . " new assets.", LogLevel::INFO);
 } else {
-	Log::write("No new updates to write to DB.");
+	Log::write("No new updates to write to DB.", LogLevel::INFO);
 }
 
 $creator->resetFailedAttempts($now);

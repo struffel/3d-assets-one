@@ -9,6 +9,7 @@ use log\Log;
 use database\Database;
 use thumbnail\ThumbnailFormat;
 use JsonSerializable;
+use log\LogLevel;
 
 /**
  * The main asset class.
@@ -92,7 +93,7 @@ class StoredAsset extends Asset
 	{
 
 		if ($this->id) {
-			Log::write("Updating asset", $this);
+			Log::write("Updating asset", $this, LogLevel::DEBUG);
 
 			// Save base asset
 			$sql = "UPDATE Asset SET creatorGivenId=?, title=?,state=?,url=?,date=?,typeId=?,creatorId=?,lastSuccessfulValidation=? WHERE id = ?";
@@ -107,7 +108,7 @@ class StoredAsset extends Asset
 				Database::runQuery($sql, $parameters);
 			}
 		} else {
-			Log::write("Inserting new asset", $this);
+			Log::write("Inserting new asset", $this, LogLevel::DEBUG);
 
 			// Base Asset
 			$sql = "INSERT INTO Asset (id,creatorGivenId, state, title, url, date, clicks, typeId, creatorId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);";
