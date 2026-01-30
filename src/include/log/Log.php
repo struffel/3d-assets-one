@@ -15,14 +15,13 @@ use Throwable;
 class Log
 {
 
-	private static LogLevel $level = LogLevel::INFO;
 	private static bool $enabled = false;
 	private static bool $writeToStdout = false;
 	private static string $logName;
 	private static bool $finalized = false;
 
 
-	public static function start(string $logName, LogLevel $level = LogLevel::INFO, bool $writeToStdout = false): void
+	public static function start(string $logName,  bool $writeToStdout = false): void
 	{
 
 		if (self::$enabled) {
@@ -30,13 +29,12 @@ class Log
 		}
 
 		self::$logName = preg_replace('#[^a-zA-Z0-9/_-]#', '', $logName) ?? throw new Exception("Invalid log name.");
-		self::$level = $level;
 		self::$enabled = true;
 		self::$writeToStdout = $writeToStdout;
 
 		set_exception_handler([self::class, 'exceptionHandler']);
 
-		Log::write("Started logging", ["Name" => $logName, "Level" => $level], LogLevel::SYSTEM);
+		Log::write("Started logging", ["Name" => $logName], LogLevel::SYSTEM);
 	}
 
 	public static function exceptionHandler(Throwable $th): never
@@ -75,7 +73,7 @@ class Log
 		}
 
 		// Return early if loging is disabled or level is too low
-		if (!self::$enabled || $level->value < self::$level->value) {
+		if (!self::$enabled) {
 			return;
 		}
 

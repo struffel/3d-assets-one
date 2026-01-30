@@ -24,7 +24,7 @@ The force argument disables graceful backoff on errors.\n";
 // Start logging and determine the official run timestamp
 $now = new DateTime();
 $timestamp = $now->format('Y-m-d\TH-i-s-v');
-Log::start(logName: "scrape-creator/"  . $timestamp, level: LogLevel::INFO, writeToStdout: true);
+Log::start(logName: "scrape-creator/"  . $timestamp, writeToStdout: true);
 
 // Determine backoff behavior
 $force = isset($argv[2]) && strtolower($argv[2]) === 'force';
