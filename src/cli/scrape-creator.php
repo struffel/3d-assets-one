@@ -41,7 +41,7 @@ if (isset($argv[1])) {
  * @var Creator $creator
  * @var CreatorLogic $creatorLogic */
 $creatorLogic = $creator->getLogic();
-Log::write("Loaded logic and starting to scrape for creator", $creator);
+Log::write("Loaded logic and starting to scrape for creator", $creator->name);
 
 // Increment failure counter (will be reset on success)
 $creator->incrementFailedAttempts($now);
