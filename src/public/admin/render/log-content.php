@@ -79,5 +79,5 @@ foreach ($lines as $line) {
 
 ?>
 <pre class="log-content">
-<?php echo htmlspecialchars(implode("\n", $filteredLines)); ?>
+<?php echo highlight_string(implode("\n", $filteredLines), true); ?>
 </pre>

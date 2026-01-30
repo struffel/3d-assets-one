@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
+use blocks\AdminHeaderBlock;
 use blocks\HeadBlock;
 use blocks\LogoBlock;
 use log\Log;
@@ -84,6 +85,7 @@ unset($files);
 <link rel="stylesheet" href="/css/page/logs.css">
 
 <body>
+	<?php AdminHeaderBlock::render(); ?>
 	<div id="logs-container">
 		<!-- Left sidebar -->
 		<aside id="logs-sidebar">

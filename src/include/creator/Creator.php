@@ -22,8 +22,11 @@ use creator\logic\CreatorLogicThreeDScans;
 use creator\logic\CreatorLogicLocationTextures;
 use creator\logic\CreatorLogicTwinbru;
 use creator\logic\CreatorLogicLightbeans;
+use database\Database;
+use DateTime;
 use Exception;
 use InvalidArgumentException;
+use log\Log;
 
 enum Creator: int
 {
@@ -178,9 +181,9 @@ enum Creator: int
 	 * 
 	 * @return array<self>
 	 */
-	public static function regularRefreshList(): array
+	public static function randomScrapingTarget(bool $considerAvailability): self
 	{
-		return [
+		$regularTargets = [
 			self::AMBIENTCG,
 			self::POLYHAVEN,
 			self::SHARETEXTURES,
@@ -196,9 +199,91 @@ enum Creator: int
 			self::LOCATION_TEXTURES,
 			self::PBR_PX,
 			self::TWINBRU,
-			self::LIGHTBEANS,
-			self::NOEMOTIONHDRS
+			self::LIGHTBEANS
 		];
+
+		do {
+			if (sizeof($regularTargets) === 0) {
+				throw new Exception("No available creators for scraping.");
+			} else {
+				$target = $regularTargets[array_rand($regularTargets)];
+				unset($regularTargets[array_search($target, $regularTargets)]);
+			}
+		} while ($considerAvailability && !$target->isAvailableForScrape());
+
+		Log::write("Selected creator for scraping: ", $target);
+		return $target;
+	}
+
+	public function incrementFailedAttempts(DateTime $now): void
+	{
+		$nowStr = $now->format('Y-m-d H:i:s');
+		$sql = "INSERT INTO CreatorAvailability (creatorId, lastChecked, lastAvailable, failedAttempts) 
+				VALUES (?, ?, NULL, 1)
+				ON CONFLICT(creatorId) DO UPDATE SET 
+					lastChecked = ?,
+					failedAttempts = failedAttempts + 1;";
+		$parameters = [$this->value, $nowStr, $nowStr];
+		$result = Database::runQuery($sql, $parameters);
+
+		if ($result === false) {
+			throw new Exception("Database query failed when incrementing failed attempts for creator.");
+		}
+	}
+
+	public function resetFailedAttempts(DateTime $now): void
+	{
+		$nowStr = $now->format('Y-m-d H:i:s');
+		$sql = "INSERT INTO CreatorAvailability (creatorId, lastChecked, lastAvailable, failedAttempts) 
+				VALUES (?, ?, ?, 0)
+				ON CONFLICT(creatorId) DO UPDATE SET 
+					lastChecked = ?,
+					lastAvailable = ?,
+					failedAttempts = 0;";
+		$parameters = [$this->value, $nowStr, $nowStr, $nowStr, $nowStr];
+		$result = Database::runQuery($sql, $parameters);
+
+		if ($result === false) {
+			throw new Exception("Database query failed when resetting failed attempts for creator.");
+		}
+	}
+
+	private function isAvailableForScrape(): bool
+	{
+
+		// Get availability state from DB
+		$sql = "SELECT creatorId,lastChecked,lastAvailable,failedAttempts FROM CreatorAvailability WHERE creatorId = ?";
+		$parameters = [$this->value];
+		$result = Database::runQuery($sql, $parameters);
+
+		if ($result === false) {
+			throw new Exception("Database query failed when checking creator availability.");
+		}
+
+		if ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+			$failedAttempts = (int)$row['failedAttempts'];
+			$lastChecked = new DateTime($row['lastChecked']);
+			$lastAvailable = new DateTime($row['lastAvailable']);
+
+			// Rule: Creator is available if the difference between now and lastChecked is bigger than 2^failedAttempts minutes
+			$now = new DateTime();
+			$backoffMinutes = pow(2, $failedAttempts);
+			$nextCheckTime = clone $lastChecked;
+			$nextCheckTime->modify("+$backoffMinutes minutes");
+			if ($now < $nextCheckTime) {
+				Log::write("Creator not available for scraping yet due to backoff.", [
+					"creator" => $this,
+					"failedAttempts" => $failedAttempts,
+					"lastChecked" => $lastChecked->format(DateTime::ATOM),
+					"nextCheckTime" => $nextCheckTime->format(DateTime::ATOM)
+				]);
+				return false;
+			}
+		}
+
+		// No entry yet or check has passed, assume available
+		Log::write("Creator is available for scraping.", ["creator" => $this]);
+		return true;
 	}
 
 	public static function fromSlug(string $slug): ?self
