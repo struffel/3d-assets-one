@@ -13,30 +13,38 @@ use misc\StringUtil;
 
 require_once __DIR__ . '/../include/init.php';
 
-// Pick a target creator
-if (isset($argv[1])) {
-	$creator = Creator::fromAny($argv[1]);
-} else {
-	$randomTargets = Creator::regularRefreshList();
-	$randomIndex = array_rand($randomTargets);
-	$creator = $randomTargets[$randomIndex];
+// Show CLI syntax
+if ($argc > 2 || in_array($argv[1] ?? '', ['-h', '--help', 'help', "h"])) {
+	echo "Usage: php scrape-creator.php [creator-slug|creator-id] [force]
+Not setting a creator will pick a random one from the regular scraping targets.
+The force argument disables graceful backoff on errors.\n";
+	exit(1);
 }
-
-/**
- * @var Creator $creator
- */
 
 // Start logging and determine the official run timestamp
 $now = new DateTime();
 $timestamp = $now->format('Y-m-d\TH-i-s-v');
-Log::start(logName: "scrape-creator/" . $creator->slug() . "/" . $timestamp, level: LogLevel::INFO, writeToStdout: true);
+Log::start(logName: "scrape-creator/"  . $timestamp, level: LogLevel::INFO, writeToStdout: true);
 
-Log::write("Selected creator:", $creator);
+// Determine backoff behavior
+$force = isset($argv[2]) && strtolower($argv[2]) === 'force';
+Log::write("Forceful mode:", $force ? "Enabled" : "Disabled");
 
-/** @var CreatorLogic $creatorLogic */
+// Pick a target creator
+if (isset($argv[1])) {
+	$creator = Creator::fromAny($argv[1]);
+} else {
+	$creator = Creator::randomScrapingTarget(!$force);
+}
+
+/** 
+ * @var Creator $creator
+ * @var CreatorLogic $creatorLogic */
 $creatorLogic = $creator->getLogic();
+Log::write("Loaded logic and starting to scrape for creator", $creator);
 
-Log::write("Running update for creator", $creator);
+// Increment failure counter (will be reset on success)
+$creator->incrementFailedAttempts($now);
 
 // Get existing assets to provide a comparison
 $query = new StoredAssetQuery();
@@ -101,6 +109,8 @@ if (sizeof($newScrapedAssets) > 0) {
 	Log::write("No new updates to write to DB.");
 }
 
+$creator->resetFailedAttempts($now);
+
 Thumbnail::deleteOrphanedThumbnails();
 
-Log::stop(LogResult::OK);
+Log::stop(true);

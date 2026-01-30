@@ -4,10 +4,12 @@ namespace log;
 
 use Exception;
 use FilesystemIterator;
+use LimitIterator;
 use log\LogLevel;
 use misc\StringUtil;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use SplFileObject;
 use Throwable;
 
 class Log
@@ -17,30 +19,7 @@ class Log
 	private static bool $enabled = false;
 	private static bool $writeToStdout = false;
 	private static string $logName;
-
 	private static bool $finalized = false;
-
-	public static function stop(LogResult $result): void
-	{
-		if (self::$finalized) {
-			throw new Exception("Logger has already been stopped.");
-		}
-		if (!self::$enabled) {
-			throw new Exception("Logger is not enabled.");
-		}
-
-		Log::write("Stopped logging");
-
-		// Move log file to dated sub-directory
-		$logFilePath = self::getLogFilePath();
-		$newLogFilePath = self::getLogFilePath($result->value);
-		rename($logFilePath, $newLogFilePath);
-
-		self::$finalized = true;
-		self::$enabled = false;
-
-		self::cleanUpLogDirectory(14);
-	}
 
 
 	public static function start(string $logName, LogLevel $level = LogLevel::INFO, bool $writeToStdout = false): void
@@ -50,14 +29,14 @@ class Log
 			throw new Exception("Logging has already been started.");
 		}
 
-		self::$logName = preg_replace('#[^a-zA-Z0-9/-]#', '', $logName) ?? throw new Exception("Invalid log name.");
+		self::$logName = preg_replace('#[^a-zA-Z0-9/_-]#', '', $logName) ?? throw new Exception("Invalid log name.");
 		self::$level = $level;
 		self::$enabled = true;
 		self::$writeToStdout = $writeToStdout;
 
 		set_exception_handler([self::class, 'exceptionHandler']);
 
-		Log::write("Started logging", ["Name" => $logName, "Level" => $level]);
+		Log::write("Started logging", ["Name" => $logName, "Level" => $level], LogLevel::SYSTEM);
 	}
 
 	public static function exceptionHandler(Throwable $th): never
@@ -71,12 +50,30 @@ class Log
 		];
 
 		Log::write("Uncaught exception", $exceptionDetails, LogLevel::EXCEPTION);
-		Self::stop(LogResult::ERR);
+		Log::stop(false);
 		throw $th;
+	}
+
+	public static function logIsSuccessful(string $logFilePath): ?bool
+	{
+		if (str_ends_with($logFilePath, '.ok.log')) {
+			return true;
+		}
+
+		if (str_ends_with($logFilePath, '.err.log')) {
+			return false;
+		}
+
+		return null;
 	}
 
 	public static function write(string $message, mixed $data = null, LogLevel $level = LogLevel::INFO): void
 	{
+
+		if (self::$finalized) {
+			throw new Exception("Logger has already been stopped.");
+		}
+
 		// Return early if loging is disabled or level is too low
 		if (!self::$enabled || $level->value < self::$level->value) {
 			return;
@@ -91,19 +88,41 @@ class Log
 
 		$functionTrace = array_reverse($functionTrace);
 
-		$output = ">" . date('Y-m-d H:i:s', time());
-		$output .=  " " . $level->displayName();
-		$output .=  " ->" . implode("->", $functionTrace);
+		// Prepare log entry
+		$outputData = [
+			'time' => date('Y-m-d H:i:s', time()),
+			'level' => $level->name,
+			'functions' => $functionTrace,
+			'message' => $message,
+			'data' => $data,
+		];
 
-		$output .=  " | "  . $message;
-		$output .= PHP_EOL;
+		// Generate a log row as JSON (without newlines)
+		$output = json_encode($outputData,  JSON_UNESCAPED_SLASHES) . PHP_EOL;
+		self::writeRaw($output);
+	}
 
-		if ($data) {
-			$dataJson = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-			$output .= $dataJson . PHP_EOL;
+	public static function stop(bool $successful = true): void
+	{
+
+		if (self::$finalized) {
+			throw new Exception("Logger has already been stopped.");
 		}
 
-		self::writeRaw($output);
+		Log::write("Stopping logging", ["Successful" => $successful], LogLevel::SYSTEM);
+
+		// Move the log file based on success or failure
+		$newFilePath = self::getLogFilePath();
+		$newFilePath = str_replace(".log", $successful ? ".ok.log" : ".err.log", $newFilePath);
+
+		Log::write("Moving log", $newFilePath, LogLevel::INFO);
+
+		rename(self::getLogFilePath(), $newFilePath);
+
+		self::$finalized = true;
+		self::$enabled = false;
+
+		self::cleanUpLogDirectory(3);
 	}
 
 	private static function writeRaw(string $rawMessage): void
@@ -121,19 +140,19 @@ class Log
 	 * Create sub-directories if the name contains slashes.
 	 * @return string 
 	 */
-	private static function getLogFilePath(string $suffix = "run"): string
+	private static function getLogFilePath(): string
 	{
 		if (!isset(self::$logName)) {
 			throw new Exception("No log name defined.");
 		}
-		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . ($suffix ? ".$suffix" : "") . ".log";
+		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . ".log";
 	}
 
 	private static function createFileIfNotPresent(string $file): void
 	{
 		$logDir = dirname($file) . "/";
 		if (!is_dir($logDir)) {
-			mkdir($logDir, 0744, true);
+			mkdir($logDir, 0755, true);
 		}
 		if (!is_file($file)) {
 			file_put_contents($file, "");
@@ -145,7 +164,7 @@ class Log
 	 * @param int $deleteOlderThanDays 
 	 * @return void 
 	 */
-	private static function cleanUpLogDirectory($deleteOlderThanDays = 14): void
+	private static function cleanUpLogDirectory(int $deleteOlderThanDays): void
 	{
 		$logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
 

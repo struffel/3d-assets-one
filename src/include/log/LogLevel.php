@@ -9,15 +9,18 @@ enum LogLevel: int
 	case WARNING = 3;
 	case ERROR = 4;
 	case EXCEPTION = 5;
+	case SYSTEM = 6;
 
-	public function displayName(): string
+	public static function fromName(?string $name): ?LogLevel
 	{
-		return match ($this) {
-			LogLevel::DEBUG => "DEBUG",
-			LogLevel::INFO => "INFO",
-			LogLevel::WARNING => "WARNING",
-			LogLevel::ERROR => "ERROR",
-			LogLevel::EXCEPTION => "EXCEPTION",
+		return match (strtoupper($name ?? '')) {
+			'DEBUG' => LogLevel::DEBUG,
+			'INFO' => LogLevel::INFO,
+			'WARNING' => LogLevel::WARNING,
+			'ERROR' => LogLevel::ERROR,
+			'EXCEPTION' => LogLevel::EXCEPTION,
+			'SYSTEM' => LogLevel::SYSTEM,
+			default => null,
 		};
 	}
 }

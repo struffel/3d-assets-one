@@ -4,6 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 use asset\ScrapedAssetStatus;
 use asset\AssetSorting;
 use asset\StoredAssetStatus;
+use blocks\AdminHeaderBlock;
 use blocks\HeadBlock;
 use blocks\LogoBlock;
 use creator\Creator;
@@ -15,22 +16,16 @@ Auth::requireAuth();
 <!DOCTYPE html>
 <html lang="en">
 <?php HeadBlock::render(); ?>
-<link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/page/editor.css">
 
 <body>
+	<?php AdminHeaderBlock::render(); ?>
 
 	<form id="editor-form"
 		hx-get="/admin/render/editor-list.php"
 		hx-target="main"
 		hx-trigger="submit,change,load,input delay:200ms"
 		hx-swap="innerHTML">
-
-		<!-- Title -->
-		<div class="editor-header">
-			<?php LogoBlock::render(); ?>
-			Asset Editor
-		</div>
 
 		<!-- Creator -->
 		<label for="creator-select">Creator:</label>
