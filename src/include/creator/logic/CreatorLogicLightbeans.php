@@ -77,6 +77,13 @@ class CreatorLogicLightbeans extends CreatorLogic
 				// Type
 				$type = AssetType::PBR_MATERIAL;
 
+				// Thumbnail
+				$thumbnail = $this->fetchThumbnailImage($thumbnailUrl);
+
+				if ($thumbnail === null) {
+					Log::write("Failed to fetch thumbnail for URL (skipping asset): ", $newUrl, LogLevel::WARNING);
+				}
+
 				// Build asset
 				$tmpCollection[] = new ScrapedAsset(
 					id: NULL,
@@ -89,7 +96,7 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 					creator: $this->creator,
 					status: ScrapedAssetStatus::NEWLY_FOUND,
-					rawThumbnailData: $this->fetchThumbnailImage($thumbnailUrl)
+					rawThumbnailData: $thumbnail
 				);
 			}
 		}
@@ -97,14 +104,14 @@ class CreatorLogicLightbeans extends CreatorLogic
 		return $tmpCollection;
 	}
 
-	private function fetchThumbnailImage(string $url): string
+	private function fetchThumbnailImage(string $url): ?string
 	{
 
 		// Load the image
 		$imageData = (new WebItemReference($url))->fetch()->content;
 
 		if ($imageData === null) {
-			throw new RuntimeException("Failed to fetch image from URL: " . $url);
+			return null;
 		}
 
 		$image = imagecreatefromstring($imageData);
