@@ -8,7 +8,7 @@ body {
 	#logs-container {
 		display: grid;
 		grid-template-columns: 550px 1fr;
-		height: 100vh;
+		height: 95vh;
 		gap: 0;
 
 		#logs-sidebar {
@@ -16,7 +16,6 @@ body {
 			display: flex;
 			flex-direction: column;
 			gap: 0.5rem;
-			border-right: 1px solid #333;
 			overflow-y: auto;
 
 			#logs-header {
@@ -71,51 +70,53 @@ body {
 				}
 			}
 		}
-	}
 
-	main {
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-
-		#log-content {}
-
-		.log-placeholder {
-			font-style: italic;
-			text-align: center;
-			margin-top: 2rem;
-		}
-
-		.log-error {
-			color: #ff6b6b;
-			font-weight: bold;
-			text-align: center;
-			margin-top: 2rem;
-		}
-
-		.log-file-header {
+		main {
+			overflow: hidden;
 			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 0.75rem 1rem;
-			margin-bottom: 1rem;
-		}
+			flex-direction: column;
 
-		.log-file-size {
-			color: #444;
-			font-size: 0.85rem;
-		}
+			#log-content {}
 
-		.log-content {
-			height: 100%;
-			overflow-y: auto;
-			padding: 1rem;
-			font-family: monospace;
-			font-size: 0.85rem;
-			line-height: 1.5;
-			word-wrap: break-word;
-			overflow-x: auto;
-			margin: 0;
+			.log-placeholder {
+				font-style: italic;
+				text-align: center;
+				margin-top: 2rem;
+			}
+
+			.log-error {
+				color: #ff6b6b;
+				font-weight: bold;
+				text-align: center;
+				margin-top: 2rem;
+			}
+
+			.log-file-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0.75rem 1rem;
+				margin-bottom: 1rem;
+			}
+
+			.log-file-size {
+				color: #444;
+				font-size: 0.85rem;
+			}
+
+			.log-content {
+				height: 100%;
+				overflow-y: auto;
+				padding: 1rem;
+				font-family: monospace;
+				font-size: 0.85rem;
+				line-height: 1.5;
+				word-wrap: break-word;
+				overflow-x: auto;
+				margin: 0;
+			}
 		}
 	}
+
+
 }

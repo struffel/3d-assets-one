@@ -2,6 +2,7 @@ header {
 	font-size: medium;
 	padding: 10px;
 	margin: auto;
+	height: 5vh;
 
 	.logo {
 		font-family: 'Red Hat Display', sans-serif;
