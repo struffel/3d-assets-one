@@ -89,10 +89,6 @@ unset($files);
 	<div id="logs-container">
 		<!-- Left sidebar -->
 		<aside id="logs-sidebar">
-			<div id="logs-header">
-				<?php LogoBlock::render(); ?>
-				Log Viewer
-			</div>
 
 			<!-- Log level filter -->
 			<label for="level-select">Minimum Log Level:</label>
