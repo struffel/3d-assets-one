@@ -102,7 +102,7 @@ class Log
 		self::writeRaw($output);
 	}
 
-	public static function stop(bool $successful = true)
+	public static function stop(bool $successful = true): void
 	{
 
 		if (self::$finalized) {
