@@ -223,6 +223,7 @@ enum Creator: int
 				VALUES (?, ?, NULL, 1)
 				ON CONFLICT(creatorId) DO UPDATE SET 
 					lastChecked = ?,
+					lastAvailable = lastAvailable,
 					failedAttempts = failedAttempts + 1;";
 		$parameters = [$this->value, $nowStr, $nowStr];
 		$result = Database::runQuery($sql, $parameters);
