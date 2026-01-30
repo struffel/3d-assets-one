@@ -28,7 +28,7 @@ Log::start(logName: "scrape-creator/"  . $timestamp, level: LogLevel::INFO, writ
 
 // Determine backoff behavior
 $force = isset($argv[2]) && strtolower($argv[2]) === 'force';
-Log::write("Forceful mode:", $force ? "Enabled" : "Disabled");
+Log::write("Forceful mode?", $force);
 
 // Pick a target creator
 if (isset($argv[1])) {
