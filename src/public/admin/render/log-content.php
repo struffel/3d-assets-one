@@ -20,7 +20,7 @@ if (empty($selectedFile)) {
 	exit;
 }
 
-$fullPath = $logDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $selectedFile);
+$fullPath = $logDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, (string)$selectedFile);
 
 // Validate file exists and is within log directory
 $realLogDir = realpath($logDirectory);

@@ -15,6 +15,11 @@ $availabilityData = [];
 $sql = "SELECT creatorId,lastChecked,lastAvailable,failedAttempts FROM CreatorAvailability ORDER BY failedAttempts DESC;";
 $result = Database::runQuery($sql);
 
+if (is_bool($result)) {
+	echo "<p>Error retrieving availability data.</p>";
+	exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

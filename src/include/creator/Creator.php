@@ -179,7 +179,7 @@ enum Creator: int
 
 	/**
 	 * 
-	 * @return array<self>
+	 * @return self
 	 */
 	public static function randomScrapingTarget(bool $considerAvailability): self
 	{
@@ -260,7 +260,12 @@ enum Creator: int
 			throw new Exception("Database query failed when checking creator availability.");
 		}
 
-		if ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+		// Empty
+		if ($result === true) {
+			return true;
+		}
+
+		if ($row = $result->fetchArray(SQLITE3_ASSOC) ?: null) {
 			$failedAttempts = (int)$row['failedAttempts'];
 			$lastChecked = new DateTime($row['lastChecked']);
 			$lastAvailable = new DateTime($row['lastAvailable']);
