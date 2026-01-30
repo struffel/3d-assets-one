@@ -16,9 +16,9 @@ class FooterBlock
 		<link rel="stylesheet" href="/css/component/footer.css">
 		<footer>
 			<p>
-				by <a class="subtle-link" href="https://ambientCG.com">ambientCG.com</a>
-				&nbsp;•&nbsp;
 				<a class="subtle-link" href="https://patreon.com/ambientCG">Patreon</a>
+				&nbsp;•&nbsp;
+				<a class="subtle-link" href="https://github.com/struffel/3d-assets-one">GitHub</a>
 				&nbsp;•&nbsp;
 				<a class="subtle-link" href="https://docs.ambientCG.com/legal">Imprint</a>
 			</p>

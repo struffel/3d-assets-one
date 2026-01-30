@@ -17,7 +17,8 @@ class HeaderBlock
 				<?php LogoBlock::render(); ?>
 			</div>
 			<div class="logo-slogan">
-				The 3D Asset Search Engine
+				The 3D Asset Search Engine<br>
+				by <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>
 			</div>
 			<nav class="navbar">
 				<a class="prominent-link" href="/">Assets</a>
