@@ -58,7 +58,7 @@ class WebItemReference
 
 	public function fetchCookie(string $targetCookieName): ?string
 	{
-		Log::write("Fetching cookie for request: ", ["targetCookieName" => $targetCookieName, "request" => $this], LogLevel::DEBUG);
+		Log::write("Fetching cookie for request: ", ["targetCookieName" => $targetCookieName, "request" => $this], LogLevel::INFO);
 
 		$client = new Client(['cookies' => true]);
 		try {
@@ -84,7 +84,7 @@ class WebItemReference
 	public function fetch(): FetchedWebItem
 	{
 		$client = new Client();
-		Log::write("Fetching: ", ["request" => $this], LogLevel::DEBUG);
+		Log::write("Fetching: ", ["request" => $this], LogLevel::INFO);
 		try {
 			$result = $client->request($this->method, $this->url, $this->options);
 			$content = $result->getBody();
