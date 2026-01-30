@@ -80,7 +80,7 @@ class CreatorLogicPoliigon extends CreatorLogic
 				$url = $this->baseUrl . $urlPath;
 
 				// Check if already exists
-				if (!$this->isInExistingAssets($url, $existingAssets)) {
+				if (!$existingAssets->containsUrl($url)) {
 
 					// Get the name
 					$name = $assetBox->find('.asset-box__item-title-name')->text();

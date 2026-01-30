@@ -22,6 +22,7 @@ use creator\logic\CreatorLogicThreeDScans;
 use creator\logic\CreatorLogicLocationTextures;
 use creator\logic\CreatorLogicTwinbru;
 use creator\logic\CreatorLogicLightbeans;
+use creator\logic\CreatorLogicCgTrader;
 use database\Database;
 use DateTime;
 use Exception;
@@ -48,6 +49,7 @@ enum Creator: int
 	case PBR_PX = 20;
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
+	case CGTRADER = 23;
 
 	public static function fromAny(mixed $value): ?self
 	{
@@ -79,7 +81,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'location-textures',
 			self::PBR_PX => "pbr-px",
 			self::TWINBRU => "twinbru",
-			self::LIGHTBEANS => "lightbeans"
+			self::LIGHTBEANS => "lightbeans",
+			self::CGTRADER => "cgtrader"
 		};
 	}
 
@@ -102,7 +105,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'Location Textures',
 			self::PBR_PX => 'PBRPX',
 			self::TWINBRU => 'Twinbru',
-			self::LIGHTBEANS => 'Lightbeans'
+			self::LIGHTBEANS => 'Lightbeans',
+			self::CGTRADER => 'CGTrader (Free Section)'
 		};
 	}
 
@@ -125,7 +129,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.',
 			self::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
 			self::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.',
-			self::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.'
+			self::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.',
+			self::CGTRADER => 'CGTrader is a marketplace for 3D models, featuring professional and user-generated content for games, VR, AR, and visualization. Currently, only the "Free" section is indexed.'
 		};
 	}
 
@@ -172,7 +177,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/',
 			self::PBR_PX => 'https://library.pbrpx.com/',
 			self::TWINBRU => 'https://textures.twinbru.com',
-			self::LIGHTBEANS => 'https://lightbeans.com'
+			self::LIGHTBEANS => 'https://lightbeans.com',
+			self::CGTRADER => 'https://www.cgtrader.com/'
 		};
 	}
 
@@ -200,7 +206,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES,
 			self::PBR_PX,
 			self::TWINBRU,
-			self::LIGHTBEANS
+			self::LIGHTBEANS,
+			self::CGTRADER
 		];
 
 		do {
@@ -323,6 +330,7 @@ enum Creator: int
 			self::PBR_PX => new CreatorLogicPbrPx(),
 			self::TWINBRU => new CreatorLogicTwinbru(),
 			self::LIGHTBEANS => new CreatorLogicLightbeans(),
+			self::CGTRADER => new CreatorLogicCgTrader(),
 			// This becomes relevant when new creators are added without logic
 			//default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
 		};

@@ -13,6 +13,9 @@ use InvalidArgumentException;
  */
 class ScrapedAssetCollection extends ArrayObject
 {
+
+	use TestForUrl;
+
 	/**
 	 * @param array<int, ScrapedAsset> $assets
 	 */
