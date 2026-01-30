@@ -42,7 +42,7 @@ enum AssetType: int
 		return AssetType::OTHER;
 	}
 
-	public static function fromTex1Tag(string $tex1Tag): AssetType
+	public static function fromTex1Tag(?string $tex1Tag): AssetType
 	{
 		return match ($tex1Tag) {
 			"pbr-scanned", "pbr-procedural", "pbr-approximated", "pbr-multiangle", "pbr-stereo" => AssetType::PBR_MATERIAL,
