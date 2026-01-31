@@ -42,7 +42,7 @@ foreach ($assets as $a) { ?>
 		</a>
 		<span class="asset-icons only-hover">
 			<?php if ($a->creator->licenseUrl() !== null) { ?>
-				<a href="<?= $a->creator->licenseUrl() ?? "" ?>" title="License Details">
+				<a href="<?= $a->creator->licenseUrl() ?>" title="License Details">
 					<img src="/static/svg/scale-balance.svg" width="24" height="24" alt="License Details">
 				</a>
 			<?php } ?>
