@@ -19,13 +19,13 @@ if ($query->filterAssetId == [] && $query->filterCreator == [] && $query->filter
 	<div id="welcome-message">
 		<div>
 			<p>
-				Welcome to <strong>3Dassets.one</strong>, a search engine for finding free, high-quality, human-made 3D resources,
-				currently listing <strong><?= $assetCount ?> assets</strong> from <strong><?= sizeof(Creator::cases()) ?> sources</strong>.
+				Welcome to <strong>3Dassets.one</strong>, a search engine for finding free, high-quality, human-made 3D resources.
+				Currently listing <strong><?= $assetCount ?> assets</strong> from <strong><?= sizeof(Creator::cases()) ?> sources</strong>.
 			</p>
 			<p>
 				This is a side project to <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>, the free texture site.
 				You can support the development via the <a class="subtle-link" href="https://patreon.com/ambientCG">ambientCG Patreon</a>.
-				Suggestions for new creators to be listed can be made via <a class="subtle-link" href="https://github.com/struffel/3d-assets-one/issues">GitHub</a>.
+				Suggest new sites via <a class="subtle-link" href="https://github.com/struffel/3d-assets-one/issues">GitHub</a>.
 			</p>
 		</div>
 	</div>
