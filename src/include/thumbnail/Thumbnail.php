@@ -82,6 +82,11 @@ class Thumbnail
 				default => throw new \InvalidArgumentException("Unsupported image format: " . $t->getExtension()),
 			};
 
+			// Test if the file exists and is > 0 bytes
+			if (!file_exists($fileName) || filesize($fileName) === 0) {
+				throw new RuntimeException("Failed to save thumbnail to " . $fileName);
+			}
+
 			Log::write("Saved thumbnail", ["assetId" => $assetId, "fileName" => $fileName], LogLevel::DEBUG);
 		}
 	}
