@@ -43,6 +43,7 @@ $assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 						class="form-option"
 						<?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option"
 						value="<?= $c->slug() ?>"
+						style="--creator-icon: url('/static/creator/<?= $c->value ?>.png');"
 						data-count="<?= $assetCountByCreator[$c->value] ?? 0 ?>">
 						<?= $c->title()  ?>
 					</option>

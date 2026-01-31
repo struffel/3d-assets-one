@@ -34,14 +34,19 @@ foreach ($assets as $a) { ?>
 	<div class="asset-box">
 		<a target="_blank" href="/go?id=<?= $a->id ?>">
 			<img class="asset-creator-image only-hover" title="<?= $a->creator->title() ?>" width="32" height="32" src="/static/creator/<?= $a->creator->value ?>.png">
-			<span class="asset-name only-hover"><?= $a->title ?></span>
-			<span class="asset-icons only-hover">
-				<?php
-				//<span title="<?= $a->creator->commonLicense()->name() ?? "" "><img src="/svg/license/<?= $a->creator->commonLicense()->value .svg" width="32" height="32"></span>
-				?>
+			<span class="asset-name only-hover">
+				<?= $a->title ?>
 			</span>
+
 			<img class="asset-image" alt="<?= $a->title ?>" src="<?= $a->getThumbnailUrl(ThumbnailFormat::JPG_256_FFFFFF) ?>">
 		</a>
+		<span class="asset-icons only-hover">
+			<?php if ($a->creator->licenseUrl() !== null) { ?>
+				<a href="<?= $a->creator->licenseUrl() ?? "" ?>" title="License Details">
+					<img src="/static/svg/scale-balance.svg" width="24" height="24" alt="License Details">
+				</a>
+			<?php } ?>
+		</span>
 	</div>
 
 <?php } ?>

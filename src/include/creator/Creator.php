@@ -132,7 +132,21 @@ enum Creator: int
 	{
 		return match ($this) {
 			self::AMBIENTCG => 'https://docs.ambientcg.com/license/',
+			self::POLYHAVEN => 'https://polyhaven.com/license',
+			self::SHARETEXTURES => 'https://www.sharetextures.com/p/license',
+			self::THREE_D_TEXTURES => 'https://3dtextures.me/about/',
+			self::CGBOOKCASE => "https://www.cgbookcase.com/textures#:~:text=The%20textures%20are%20published%20under%20the%20CC0%201.0%20license%2C%20which%20means%20means%20you%20can%20use%20them%20for%20free%20without%20giving%20credit.",
+			self::TEXTURECAN => "https://www.texturecan.com/terms/",
+			self::NOEMOTIONHDRS => 'https://noemotionhdrs.net/#:~:text=NoEmotionHDRs%20by%20Peter%20Sanitra%20is%20licensed%20under%20a%20Creative%20Commons%20Attribution%2DNoDerivatives%204.0%20International%20License.%20Based%20on%20a%20work%20at%20http%3A//noemotionhdrs.net.%20Permissions%20beyond%20the%20scope%20of%20this%20license%20may%20be%20available%20at%20http%3A//noemotionhdrs.net',
+			self::RAWCATALOG => 'https://rawcatalog.com/terms/',
+			self::POLIIGON => 'https://help.poliigon.com/en/articles/8749749-asset-use-licensing',
+			self::TEXTURES_COM => 'https://www.textures.com/faq-license',
+			self::CGMOOD => 'https://cgmood.com/faq',
+			self::THREE_D_SCANS => 'https://threedscans.com/info/',
 			self::LOCATION_TEXTURES => 'https://locationtextures.com/privacy-policy/',
+			self::PBR_PX => 'https://pbrpx.com/privacy-policy/',
+			self::TWINBRU => "https://textures.twinbru.com/en/products?page=1&page_size=50#:~:text=The%20right%20to%20download%20pictures%20provides%20you%20a%20non%2Dtransferable%2C%20non%2Dexclusive%2C%20always%20terminable%20limited%20right%20to%20use%20this%20image%20in%20order%20to%20promote%20the%20sale%20of%20the%20fabrics%20shown%20in%20the%20pictures.",
+			self::LIGHTBEANS => "https://lightbeans.com/en/pages/texture-terms",
 			default => NULL
 		};
 	}
