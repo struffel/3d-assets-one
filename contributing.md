@@ -42,7 +42,7 @@ In `src/include/creator/Creator.php` add a new enum value for the creator and ad
 - `title()`
 - `description()`
 - `baseUrl()`
-- `licenseUrl()` and `commonLicense()` if applicable
+- `licenseUrl()`
 - Add the creator to `regularREfreshList()` if it should be indexed regularly.
 
 ### Adding logic

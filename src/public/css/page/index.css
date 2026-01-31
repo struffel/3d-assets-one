@@ -144,7 +144,7 @@ main {
 			border: 1px solid slategray;
 		}
 
-		#multi-select-creator optgroup option::after {
+		#multi-select-creator option::after {
 			content: attr(data-count);
 			float: right;
 			color: gray;

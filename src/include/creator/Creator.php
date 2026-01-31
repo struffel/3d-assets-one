@@ -2,7 +2,6 @@
 
 namespace creator;
 
-use asset\CommonLicense;
 use creator\CreatorLogic;
 use creator\logic\CreatorLogicAmbientCg;
 use creator\logic\CreatorLogic3dTextures;
@@ -126,21 +125,6 @@ enum Creator: int
 			self::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
 			self::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.',
 			self::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.'
-		};
-	}
-
-	public function commonLicense(): CommonLicense
-	{
-		return match ($this) {
-			self::AMBIENTCG => CommonLicense::CC0,
-			self::POLYHAVEN => CommonLicense::CC0,
-			self::SHARETEXTURES => CommonLicense::CC0,
-			self::TEXTURECAN => CommonLicense::CC0,
-			self::CGBOOKCASE => CommonLicense::CC0,
-			self::NOEMOTIONHDRS => CommonLicense::CC_BY_ND,
-			self::GPUOPENMATLIB => CommonLicense::APACHE_2_0,
-			self::THREE_D_TEXTURES => CommonLicense::CC0,
-			default => CommonLicense::NONE
 		};
 	}
 

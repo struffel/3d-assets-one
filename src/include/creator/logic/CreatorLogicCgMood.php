@@ -6,7 +6,7 @@ namespace creator\logic;
 use asset\Asset;
 use asset\ScrapedAsset;
 use asset\ScrapedAssetStatus;
-use asset\CommonLicense;
+
 use asset\AssetType;
 use asset\ScrapedAssetCollection;
 use asset\StoredAssetCollection;
