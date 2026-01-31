@@ -102,7 +102,6 @@ class CreatorLogicPoliigon extends CreatorLogic
 						creatorGivenId: null,
 						title: $name,
 						url: $url,
-						date: new DateTime(),
 						tags: $tags,
 						type: $type,
 

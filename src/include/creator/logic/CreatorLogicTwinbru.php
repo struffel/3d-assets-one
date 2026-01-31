@@ -191,7 +191,6 @@ class CreatorLogicTwinbru extends CreatorLogic
 						creatorGivenId: null,
 						title: $name,
 						url: $assetUrl,
-						date: new DateTime($date),
 						tags: $tags,
 						type: $type,
 						creator: $this->creator,

@@ -69,7 +69,6 @@ class CreatorLogicAmbientCg extends CreatorLogic
 					$tmpAsset = new ScrapedAsset(
 						url: $acgAsset['shortLink'],
 						creatorGivenId: $acgAsset['assetId'] ?? NULL,
-						date: new DateTime($acgAsset['releaseDate']),
 						title: $acgAsset['displayName'],
 						tags: $acgAsset['tags'],
 						type: $this->typeMapping[$acgAsset['dataType']] ?? AssetType::OTHER,

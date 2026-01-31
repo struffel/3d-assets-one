@@ -57,7 +57,6 @@ class CreatorLogicCgBookcase extends CreatorLogic
 					creatorGivenId: null,
 					title: $metaTags['tex1:name'],
 					url: $url,
-					date: new DateTime($metaTags['tex1:release-date']),
 					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags']),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
 					creator: Creator::CGBOOKCASE,

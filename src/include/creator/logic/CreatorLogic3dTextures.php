@@ -93,7 +93,6 @@ class CreatorLogic3dTextures extends CreatorLogic
 							creatorGivenId: null,
 							title: $wpPost['title']['rendered'],
 							url: $wpPost['link'],
-							date: new DateTime($wpPost['date']),
 							tags: $tmpTags,
 							type: AssetType::PBR_MATERIAL,
 							creator: Creator::THREE_D_TEXTURES,

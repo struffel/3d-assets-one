@@ -41,7 +41,6 @@ class CreatorLogicThreeDScans extends CreatorLogic
 
 					// Extract year and month from thumbnail URL or use current date as a fallback
 					preg_match('/[0-9]{4}\/[0-9]{2}/', $assetImageElement->attr('src'), $matches);
-					$date = isset($matches[0]) ? str_replace('/', '-', $matches[0]) . "-01" : date("Y-m-d");
 
 					if (!$existingAssets->containsUrl($assetLinkElement->attr('href'))) {
 						$tmpCollection[] = new ScrapedAsset(
@@ -49,7 +48,6 @@ class CreatorLogicThreeDScans extends CreatorLogic
 							creatorGivenId: null,
 							title: $assetLinkElement->attr('title'),
 							url: $assetLinkElement->attr('href'),
-							date: new DateTime($date),
 							tags: array_merge(
 								array_filter(
 									preg_split(

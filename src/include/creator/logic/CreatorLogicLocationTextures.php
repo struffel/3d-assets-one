@@ -63,7 +63,6 @@ class CreatorLogicLocationTextures extends CreatorLogic
 							creatorGivenId: null,
 							title: $assetImageElement->attr('title'),
 							url: $assetLinkElement->attr('href'),
-							date: new DateTime(),
 							tags: array_merge(
 								array_filter(
 									preg_split('/[^A-Za-z0-9]/', $assetImageElement->attr('title')) ?: []

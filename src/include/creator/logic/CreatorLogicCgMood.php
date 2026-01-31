@@ -90,7 +90,6 @@ class CreatorLogicCgMood extends CreatorLogic
 						creatorGivenId: null,
 						title: $assetImageElement->attr('data-product-title'),
 						url: $assetImageElement->attr('data-product-url'),
-						date: new DateTime(),
 						tags: array_values($tags),
 						type: $type,
 

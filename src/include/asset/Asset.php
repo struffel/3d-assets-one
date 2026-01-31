@@ -17,7 +17,6 @@ abstract class Asset
 	 * @param null|string $creatorGivenId 
 	 * @param string $title 
 	 * @param string $url 
-	 * @param DateTime $date 
 	 * @param AssetType $type 
 	 * @param Creator $creator 
 	 * @param array<string> $tags 
@@ -28,7 +27,6 @@ abstract class Asset
 		public ?string $creatorGivenId,
 		public string $title,
 		public string $url,
-		public DateTime $date,
 		public AssetType $type,
 		public Creator $creator,
 		public array $tags = [],

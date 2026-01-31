@@ -58,7 +58,6 @@ class CreatorLogicAmdGpuOpen extends CreatorLogic
 							creatorGivenId: $amdAsset['id'],
 							url: $url,
 							title: $amdAsset['title'],
-							date: new DateTime($amdAsset['published_date']),
 							tags: $tags,
 							type: AssetType::PBR_MATERIAL,
 							creator: Creator::GPUOPENMATLIB,

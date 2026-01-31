@@ -79,7 +79,6 @@ class CreatorLogicTexturesCom extends CreatorLogic
 						creatorGivenId: null,
 						title: $texComAsset['defaultPhotoSet']['titleThumbnail'],
 						url: $url,
-						date: new DateTime($texComAsset['defaultPhotoSet']['createdAtUtc']),
 						tags: array_filter(
 							preg_split('/[^A-Za-z0-9]/', $texComAsset['defaultPhotoSet']['titleThumbnail']) ?: []
 						),

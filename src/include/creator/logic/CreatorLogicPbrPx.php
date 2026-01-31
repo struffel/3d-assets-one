@@ -144,7 +144,6 @@ class CreatorLogicPbrPx extends CreatorLogic
 						creatorGivenId: null,
 						title: $pbrPxAssetDetails['ename'],
 						url: $assetUrl,
-						date: new DateTime($pbrPxAsset['create_time']),
 						type: $type,
 						creator: $this->creator,
 						rawThumbnailData: new WebItemReference(

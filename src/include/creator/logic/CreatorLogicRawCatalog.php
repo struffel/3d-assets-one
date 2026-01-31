@@ -73,7 +73,6 @@ class CreatorLogicRawCatalog extends CreatorLogic
 						creatorGivenId: null,
 						url: $url,
 						title: (string) $rawCatalogAsset->name,
-						date: new DateTime((string) $rawCatalogAsset->updated),
 						tags: $tags,
 						type: $type,
 						creator: Creator::RAWCATALOG,

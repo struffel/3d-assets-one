@@ -90,7 +90,6 @@ class CreatorLogicLightbeans extends CreatorLogic
 					creatorGivenId: null,
 					title: $title,
 					url: $newUrl,
-					date: new DateTime(),
 					tags: $tags,
 					type: $type,
 
