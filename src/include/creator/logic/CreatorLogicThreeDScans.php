@@ -3,7 +3,7 @@
 namespace creator\logic;
 // Three D Scans
 
-use asset\CommonLicense;
+
 use asset\AssetType;
 use asset\ScrapedAsset;
 use asset\ScrapedAssetCollection;

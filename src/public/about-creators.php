@@ -22,7 +22,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 				<span>
 					<h2><?= $c->title() ?></h2>
 					<p><?= $c->description() ?></p>
-					<p><a class="subtle-link" href="<?= $c->baseUrl() ?>">Main website</a></p>
+					<p>
+						<a class="subtle-link" href="<?= $c->baseUrl() ?>">Main website</a>
+						<?php if ($c->licenseUrl()) { ?>
+							| <a class="subtle-link" href="<?= $c->licenseUrl() ?>">License</a>
+						<?php } ?>
+					</p>
 				</span>
 			</div>
 		<?php } ?>

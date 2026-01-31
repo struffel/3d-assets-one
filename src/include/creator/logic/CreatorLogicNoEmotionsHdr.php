@@ -3,7 +3,7 @@
 
 namespace creator\logic;
 
-use asset\CommonLicense;
+
 use asset\AssetType;
 use asset\ScrapedAsset;
 use asset\ScrapedAssetCollection;
