@@ -2,6 +2,7 @@
 
 use asset\StoredAssetQuery;
 use asset\StoredAsset;
+use blocks\LogoBlock;
 use thumbnail\ThumbnailFormat;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
@@ -10,6 +11,21 @@ $query = StoredAssetQuery::fromHttpGet();
 $assets = $query->execute();
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
+
+if ($query->filterAssetId == [] && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) { ?>
+	<div id="welcome-message">
+		<div>
+			<p>
+				Welcome to <strong>3Dassets.one</strong>, a search engine for free, high-quality, human-made 3D resources across numerous different websites.<br>
+			</p>
+			<p>
+				This is a side project to <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>, the free texture site.
+				You can support the development via the <a class="subtle-link" href="https://patreon.com/ambientCG">ambientCG Patreon</a>.
+				Suggestions for new creators to be listed can be made via <a class="subtle-link" href="https://github.com/struffel/3d-assets-one/issues">GitHub</a>.
+			</p>
+		</div>
+	</div>
+<?php }
 
 /**
  * @var StoredAsset $a */

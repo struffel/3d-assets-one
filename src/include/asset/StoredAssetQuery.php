@@ -43,7 +43,7 @@ class StoredAssetQuery
 	 */
 	public function __construct(
 		// Basics
-		public ?int $offset = NULL,						// ?offset
+		public int $offset = 0,						// ?offset
 		public ?int $limit = NULL,						// ?limit
 		public AssetSorting $sort = AssetSorting::LATEST,		// ?sort
 

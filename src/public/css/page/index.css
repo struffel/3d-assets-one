@@ -20,6 +20,18 @@ main {
 	margin-right: 40px;
 	z-index: 1;
 
+	#welcome-message {
+		grid-column: 1/4;
+		width: calc(var(--asset-box-size) * 3 - 50px);
+		height: 100%;
+
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+
+	}
+
+
 	.asset-box {
 		display: inline-block;
 		transition: transform ease-in-out 0.1s, opacity ease-in-out .2s;
