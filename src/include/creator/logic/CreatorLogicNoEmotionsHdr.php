@@ -38,12 +38,6 @@ class CreatorLogicNoEmotionsHdr extends CreatorLogic
 					id: NULL,
 					creatorGivenId: null,
 					title: $name,
-					date: new DateTime("2010-" . (
-						preg_split(
-							'/=|_/',
-							urldecode($url)
-						)
-						?: array("", "01-01"))[1]),
 					url: $url,
 					tags: ['Sky', $category],
 					type: AssetType::HDRI,

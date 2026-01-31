@@ -17,7 +17,6 @@ class ScrapedAsset extends Asset
 	 * @param null|string $creatorGivenId 
 	 * @param string $title 
 	 * @param string $url 
-	 * @param DateTime $date 
 	 * @param AssetType $type 
 	 * @param Creator $creator 
 	 * @param ScrapedAssetStatus $status 
@@ -30,7 +29,6 @@ class ScrapedAsset extends Asset
 		?string $creatorGivenId,
 		string $title,
 		string $url,
-		DateTime $date,
 		AssetType $type,
 		Creator $creator,
 		public ScrapedAssetStatus $status,
@@ -42,7 +40,6 @@ class ScrapedAsset extends Asset
 			creatorGivenId: $creatorGivenId,
 			title: $title,
 			url: $url,
-			date: $date,
 			type: $type,
 			creator: $creator,
 			tags: $tags,
@@ -56,7 +53,7 @@ class ScrapedAsset extends Asset
 			creatorGivenId: $this->creatorGivenId,
 			title: $this->title,
 			url: $this->url,
-			date: $this->date,
+			date: new DateTime(),
 			type: $this->type,
 			creator: $this->creator,
 			tags: $this->tags,

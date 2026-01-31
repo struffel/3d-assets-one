@@ -41,7 +41,6 @@ class CreatorLogicTextureCan extends CreatorLogic
 					creatorGivenId: null,
 					title: $metaTags['tex1:name'] ?? throw new Exception("Could not resolve title from meta tags."),
 					url: $url,
-					date: new DateTime($metaTags['tex1:release-date'] ?? date('Y-m-d')),
 					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags'] ?? throw new Exception("Could not resolve tags from meta tags.")),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
 					creator: Creator::TEXTURECAN,

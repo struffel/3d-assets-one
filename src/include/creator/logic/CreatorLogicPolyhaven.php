@@ -60,7 +60,6 @@ class CreatorLogicPolyhaven extends CreatorLogic
 					id: NULL,
 					creatorGivenId: null,
 					url: $url,
-					date: $date,
 					title: $phAsset['name'],
 					tags: $phAsset['tags'],
 					type: $this->typeMapping[intval($phAsset['type'])] ?? AssetType::OTHER,

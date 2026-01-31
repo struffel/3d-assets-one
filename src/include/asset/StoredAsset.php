@@ -37,11 +37,10 @@ class StoredAsset extends Asset
 		?string $creatorGivenId,
 		string $title,
 		string $url,
-		DateTime $date,
+		public DateTime $date,
 		AssetType $type,
 		Creator $creator,
 		array $tags = [],
-
 		public StoredAssetStatus $status = StoredAssetStatus::ACTIVE,
 		public ?DateTime $lastSuccessfulValidation = NULL,
 	) {
@@ -50,7 +49,6 @@ class StoredAsset extends Asset
 			creatorGivenId: $creatorGivenId,
 			title: $title,
 			url: $url,
-			date: $date,
 			type: $type,
 			creator: $creator,
 			tags: $tags,

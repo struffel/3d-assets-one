@@ -41,7 +41,6 @@ class CreatorLogicShareTextures extends CreatorLogic
 					creatorGivenId: null,
 					title: $metaTags['og:title'] ?? throw new Exception("Could not resolve title from meta tags."),
 					url: $url,
-					date: new DateTime($metaTags['tex1:release-date'] ?? date('Y-m-d')),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type'] ?? ""),
 					creator: $this->creator,
 					rawThumbnailData: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->content,
