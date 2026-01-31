@@ -38,13 +38,6 @@ abstract class CreatorLogic
 		Database::runQuery("REPLACE INTO FetchingState (creatorId,stateKey,stateValue) VALUES (?,?,?);", [$this->creator->value, $key, $value]);
 	}
 
-	// Creator-specific functions
-
-	public function postprocessUrl(string $url): string
-	{
-		return $url;
-	}
-
 	public function validateAsset(Asset $asset): bool
 	{
 		try {

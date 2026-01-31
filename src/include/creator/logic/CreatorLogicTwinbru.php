@@ -72,14 +72,6 @@ class CreatorLogicTwinbru extends CreatorLogic
 		}
 	}
 
-	public function postprocessUrl(string $url): string
-	{
-		return StringUtil::addHttpParameters($url, [
-			'utm_source' => '3dassets.one',
-			'utm_campaign' => 'twinbru'
-		]);
-	}
-
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
 	{
 
