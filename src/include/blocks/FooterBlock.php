@@ -9,7 +9,6 @@ class FooterBlock
 {
 	public static function render(): void
 	{
-		$assetCount = StoredAssetQuery::assetCountTotal();
 
 ?>
 
@@ -21,9 +20,6 @@ class FooterBlock
 				<a class="subtle-link" href="https://github.com/struffel/3d-assets-one">GitHub</a>
 				&nbsp;•&nbsp;
 				<a class="subtle-link" href="https://docs.ambientCG.com/legal">Imprint</a>
-			</p>
-			<p>
-				Total Assets: <?= $assetCount ?>
 			</p>
 		</footer>
 <?php

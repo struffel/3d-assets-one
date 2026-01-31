@@ -3,6 +3,7 @@
 use asset\StoredAssetQuery;
 use asset\StoredAsset;
 use blocks\LogoBlock;
+use creator\Creator;
 use thumbnail\ThumbnailFormat;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
@@ -10,13 +11,16 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 $query = StoredAssetQuery::fromHttpGet();
 $assets = $query->execute();
 
+$assetCount = StoredAssetQuery::assetCountTotal();
+
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 
 if ($query->filterAssetId == [] && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) { ?>
 	<div id="welcome-message">
 		<div>
 			<p>
-				Welcome to <strong>3Dassets.one</strong>, a search engine for free, high-quality, human-made 3D resources across numerous different websites.<br>
+				Welcome to <strong>3Dassets.one</strong>, a search engine for finding free, high-quality, human-made 3D resources,
+				currently listing <strong><?= $assetCount ?> assets</strong> from <strong><?= sizeof(Creator::cases()) ?> sources</strong>.
 			</p>
 			<p>
 				This is a side project to <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>, the free texture site.
