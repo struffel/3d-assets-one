@@ -6,6 +6,7 @@ use DateTime;
 use DOMDocument;
 use DOMNodeList;
 use DOMXPath;
+use Rct567\DomQuery\DomQuery;
 use SimpleXMLElement;
 
 class FetchedWebItem
@@ -93,6 +94,16 @@ class FetchedWebItem
 		$document = new DOMDocument();
 		@$document->loadHTML($this->content);
 		return $document;
+	}
+
+	public function parseAsDomQuery(): ?DomQuery
+	{
+		$dom = $this->parseAsDomDocument();
+		if ($dom === null) {
+			return null;
+		}
+		$query = new DomQuery($dom);
+		return $query;
 	}
 
 	/**
