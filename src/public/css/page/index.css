@@ -176,6 +176,12 @@ main {
 				justify-content: flex-start;
 			}
 
+			option[data-count="0"] {
+				font-style: italic;
+				opacity: 0.5;
+				filter: grayscale();
+			}
+
 			option::before {
 				content: "\00a0";
 				display: inline-block;
@@ -183,8 +189,8 @@ main {
 				background-size: cover;
 				background-position: center;
 				background-repeat: no-repeat;
-				width: 18px;
-				height: 18px;
+				width: 16px;
+				height: 16px;
 				margin-right: 8px;
 				margin-left: 1px;
 			}

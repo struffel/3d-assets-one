@@ -4,15 +4,15 @@
 use asset\AssetSorting;
 use asset\AssetType;
 use asset\StoredAssetQuery;
+use blocks\CreatorOptionsBlock;
 use blocks\FooterBlock;
 use blocks\HeadBlock;
 use blocks\HeaderBlock;
 use creator\Creator;
+use Creator\CreatorLicenseType;
 use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
-
-$assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 
 ?>
 <!DOCTYPE html>
@@ -36,19 +36,19 @@ $assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 			<label class="form-label" for="sort">Tags</label>
 			<input class="text-input" type="text" name="q" value="<?= preg_replace('/[^a-zA-Z0-9, ]/', '', $_GET['q'] ?? '') ?>" placeholder="tags...">
 
-			<label class="form-label" for="creator[]">Site</label>
-			<select size="<?= sizeof(Creator::cases()) ?>" id="multi-select-creator" class="multi-select" name="creator[]" multiple>
-				<?php foreach (Creator::cases() as $c) : ?>
+			<label class="form-label" for="select-license-type">License</label>
+			<select name="license" id="select-license-type">
+				<?php foreach (CreatorLicenseType::cases() as $c) : ?>
 					<option
 						class="form-option"
-						<?= in_array($c->slug(), $_GET['creator'] ?? []) ? 'selected' : '' ?> class="multi-select-option"
-						value="<?= $c->slug() ?>"
-						style="--creator-icon: url('/static/creator/<?= $c->value ?>.png');"
-						data-count="<?= $assetCountByCreator[$c->value] ?? 0 ?>">
+						value="<?= $c->value ?>">
 						<?= $c->title()  ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
+
+			<label class="form-label" for="creator[]">Site</label>
+			<?php CreatorOptionsBlock::render(); ?>
 
 			<label class="form-label" for="type[]">Type</label>
 			<select size="<?= sizeof(AssetType::cases()) ?>" class="multi-select" name="type[]" multiple>

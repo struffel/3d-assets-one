@@ -2,6 +2,7 @@
 
 use asset\StoredAssetQuery;
 use asset\StoredAsset;
+use blocks\CreatorOptionsBlock;
 use blocks\LogoBlock;
 use creator\Creator;
 use thumbnail\ThumbnailFormat;
@@ -10,12 +11,17 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 $query = StoredAssetQuery::fromHttpGet();
 $assets = $query->execute();
+$countByCreator = $query->executeCountByCreator();
 
-$assetCount = StoredAssetQuery::assetCountTotal();
+
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 
-if ($query->filterAssetId == [] && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) { ?>
+// Welcome message for empty queries
+
+if ($query->filterAssetId == [] && $query->filterLicenseType === null && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) {
+	$assetCount = StoredAssetQuery::assetCountTotal();
+?>
 	<div id="welcome-message">
 		<div>
 			<p>
@@ -30,6 +36,11 @@ if ($query->filterAssetId == [] && $query->filterCreator == [] && $query->filter
 		</div>
 	</div>
 <?php }
+
+
+// OOB-Update to the creator list
+CreatorOptionsBlock::render($countByCreator, $query->filterLicenseType);
+
 
 /**
  * @var StoredAsset $a */

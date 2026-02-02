@@ -3,14 +3,37 @@
 namespace asset;
 
 use creator\Creator;
-
+use Creator\CreatorLicenseType;
 use DateTime;
 use database\Database;
+use Database\Query;
 use log\Log;
 use log\LogLevel;
 
 class StoredAssetQuery
 {
+
+	/**
+	 * @param list<int> $filterAssetId
+	 * @param list<string> $filterTag
+	 * @param list<Creator> $filterCreator
+	 * @param list<AssetType> $filterType
+	 */
+	public function __construct(
+		// Basics
+		public int $offset = 0,						// ?offset
+		public ?int $limit = NULL,						// ?limit
+		public AssetSorting $sort = AssetSorting::LATEST,		// ?sort
+
+		// Filters
+		public array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
+		public array $filterTag = [],			// ?tags, Assets must have ALL tags in the array in order to be included.
+		public array $filterCreator = [],		// ?creator, limits the search to certain creators.
+		public array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
+		public ?StoredAssetStatus $filterStatus = StoredAssetStatus::ACTIVE,				// NULL => Any status
+		public CreatorLicenseType $filterLicenseType = CreatorLicenseType::ANY_LICENSE
+
+	) {}
 
 	public static function assetCountTotal(): int
 	{
@@ -34,28 +57,6 @@ class StoredAssetQuery
 		}
 		return $assetCountByCreator;
 	}
-
-	/**
-	 * @param list<int> $filterAssetId
-	 * @param list<string> $filterTag
-	 * @param list<Creator> $filterCreator
-	 * @param list<AssetType> $filterType
-	 */
-	public function __construct(
-		// Basics
-		public int $offset = 0,						// ?offset
-		public ?int $limit = NULL,						// ?limit
-		public AssetSorting $sort = AssetSorting::LATEST,		// ?sort
-
-		// Filters
-		public array $filterAssetId = [],		// ?id, Allows filtering for specific asset ids.
-		public array $filterTag = [],			// ?tags, Assets must have ALL tags in the array in order to be included.
-		public array $filterCreator = [],		// ?creator, limits the search to certain creators.
-		public array $filterType = [],			// ?type, defines which types of asset should be included. Empty array causes all types to be included.
-		public ?StoredAssetStatus $filterStatus = StoredAssetStatus::ACTIVE,				// NULL => Any status
-
-	) {}
-
 	public function toHttpGet(bool $includeStatus = false): string
 	{
 
@@ -72,6 +73,7 @@ class StoredAssetQuery
 		$output['id'] = $this->filterAssetId;
 		$output['creator'] = array_map($enumToSlugConverter, $this->filterCreator);
 		$output['type'] = array_map($enumToSlugConverter, $this->filterType);
+		$output['license'] = $this->filterLicenseType?->value;
 
 		if ($includeStatus) {
 			$output['status'] = $this->filterStatus?->value;
@@ -91,6 +93,11 @@ class StoredAssetQuery
 		// status filter (only if it's not defined in the method head)
 		if ($filterStatus === NULL && isset($_GET['status']) && $_GET['status'] != "") {
 			$filterStatus = StoredAssetStatus::tryFrom(intval($_GET['status']));
+		}
+
+		// License filter
+		if (isset($_GET['license']) && $_GET['license'] != "") {
+			$filterLicenseType = CreatorLicenseType::tryFrom(intval($_GET['license']));
 		}
 
 		// assetId filter
@@ -127,23 +134,26 @@ class StoredAssetQuery
 			filterTag: $filterTag,
 			filterCreator: $filterCreator,
 			filterType: $filterType,
-			filterStatus: $filterStatus
+			filterStatus: $filterStatus,
+			filterLicenseType: $filterLicenseType,
 		);
 	}
 
-	public function execute(): StoredAssetCollection
-	{
-
+	private function buildQuery(
+		bool $countByCreator = false
+	): Query {
 		Log::write("Loading assets based on this query", $this, LogLevel::DEBUG);
 
 		// Begin defining SQL string and parameters for prepared statement
-		$sqlCommand = " SELECT id,url,title,state,date,clicks,lastSuccessfulValidation,typeId,creatorId,tags FROM Asset ";
+		if ($countByCreator) {
+			$sqlCommand = " SELECT creatorId, COUNT(*) AS count FROM Asset ";
+		} else {
+			$sqlCommand = " SELECT id,url,title,state,date,clicks,lastSuccessfulValidation,typeId,creatorId,tags FROM Asset ";
+		}
 		$sqlValues = [];
 
 		// Joins
-
 		$sqlCommand .= " LEFT JOIN (SELECT id, GROUP_CONCAT(tag , ',') AS tags FROM Tag GROUP BY id ) AllTags USING (id) ";
-
 		$sqlCommand .= " WHERE TRUE ";
 
 
@@ -165,11 +175,21 @@ class StoredAssetQuery
 			$sqlValues = array_merge($sqlValues, $this->filterType);
 		}
 
-		if (count($this->filterCreator) > 0) {
-			$ph = Database::generatePlaceholder($this->filterCreator);
-			$sqlCommand .= " AND creatorId IN ($ph) ";
-			$sqlValues = array_merge($sqlValues, $this->filterCreator);
+		// Creator filter with license type consideration
+		$actualCreatorFilter = Creator::cases();
+
+		if (!$countByCreator && count($this->filterCreator) > 0) {
+			$actualCreatorFilter = $this->filterCreator;
 		}
+
+		$actualCreatorFilter = array_filter($actualCreatorFilter, function (Creator $c) {
+			return $c->licenseType()->value <= $this->filterLicenseType->value;
+		});
+
+
+		$ph = Database::generatePlaceholder($actualCreatorFilter);
+		$sqlCommand .= " AND creatorId IN ($ph) ";
+		$sqlValues = array_merge($sqlValues, $actualCreatorFilter);
 
 		if ($this->filterStatus !== NULL) {
 			$sqlCommand .= " AND state=? ";
@@ -177,25 +197,27 @@ class StoredAssetQuery
 		}
 
 		// Sort
-		$sqlCommand .= match ($this->sort) {
+		if (!$countByCreator) {
+			$sqlCommand .= match ($this->sort) {
 
-			// Options for public display
-			AssetSorting::LATEST => " ORDER BY date DESC, id DESC ",
-			AssetSorting::OLDEST => " ORDER BY date ASC, id ASC ",
-			AssetSorting::RANDOM => " ORDER BY RANDOM() ",
-			AssetSorting::POPULAR => " ORDER BY ( clicks / ABS( JULIANDAY('now') - JULIANDAY(date) ) + 1  ) DESC, date DESC, id DESC ",
+				// Options for public display
+				AssetSorting::LATEST => " ORDER BY date DESC, id DESC ",
+				AssetSorting::OLDEST => " ORDER BY date ASC, id ASC ",
+				AssetSorting::RANDOM => " ORDER BY RANDOM() ",
+				AssetSorting::POPULAR => " ORDER BY ( clicks / ABS( JULIANDAY('now') - JULIANDAY(date) ) + 1  ) DESC, date DESC, id DESC ",
 
-			// Options for internal editor (potentially less optimized)
-			AssetSorting::LEAST_CLICKED => " ORDER BY clicks ASC ",
-			AssetSorting::MOST_CLICKED => " ORDER BY clicks DESC ",
-			AssetSorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) ASC ",
-			AssetSorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) DESC ",
-			AssetSorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RANDOM() ",
-			AssetSorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RANDOM() "
-		};
+				// Options for internal editor (potentially less optimized)
+				AssetSorting::LEAST_CLICKED => " ORDER BY clicks ASC ",
+				AssetSorting::MOST_CLICKED => " ORDER BY clicks DESC ",
+				AssetSorting::LEAST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) ASC ",
+				AssetSorting::MOST_TAGGED => " ORDER BY (SELECT COUNT(*) FROM Tag WHERE Tag.id = Asset.id) DESC ",
+				AssetSorting::LATEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation DESC, RANDOM() ",
+				AssetSorting::OLDEST_VALIDATION_SUCCESS => " ORDER BY lastSuccessfulValidation ASC, RANDOM() "
+			};
+		}
 
 		// Offset and Limit
-		if ($this->limit != NULL) {
+		if (!$countByCreator && $this->limit != NULL) {
 			// Clean up query
 			$this->limit = max(1, $this->limit); // +1 to check if there are more assets available
 			$this->offset = max(0, $this->offset);
@@ -205,8 +227,30 @@ class StoredAssetQuery
 			$sqlValues[] = $this->offset;
 		}
 
+		if ($countByCreator) {
+			$sqlCommand .= " GROUP BY creatorId ";
+		}
+
+		return new Query($sqlCommand, $sqlValues);
+	}
+
+	public function executeCountByCreator(): array
+	{
+		$databaseResult = $this->buildQuery(true)->execute();
+		$databaseOutput = [];
+		if (!is_bool($databaseResult)) {
+			while ($row = $databaseResult->fetchArray(SQLITE3_ASSOC)) {
+				$databaseOutput[$row['creatorId']] = $row['count'];
+			}
+		}
+		return $databaseOutput;
+	}
+
+	public function execute(): StoredAssetCollection
+	{
+
 		// Fetch data from DB
-		$databaseResult = Database::runQuery($sqlCommand, $sqlValues);
+		$databaseResult = $this->buildQuery(false)->execute();
 		$databaseOutput = [];
 		if (!is_bool($databaseResult)) {
 			while ($row = $databaseResult->fetchArray(SQLITE3_ASSOC)) {

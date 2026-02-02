@@ -30,21 +30,24 @@ use log\LogLevel;
 
 enum Creator: int
 {
+
+	// Enum values, arranged by the order to display them in
 	case AMBIENTCG = 1;
 	case POLYHAVEN = 2;
 	case SHARETEXTURES = 3;
 	case THREE_D_TEXTURES = 4;
 	case CGBOOKCASE = 5;
 	case TEXTURECAN = 6;
-	case NOEMOTIONHDRS = 7;
+	case PBR_PX = 20;
 	case GPUOPENMATLIB = 10;
+
+	case NOEMOTIONHDRS = 7;
 	case RAWCATALOG = 11;
 	case POLIIGON = 14;
 	case TEXTURES_COM = 15;
 	case CGMOOD = 16;
 	case THREE_D_SCANS = 18;
 	case LOCATION_TEXTURES = 19;
-	case PBR_PX = 20;
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
 
@@ -125,6 +128,31 @@ enum Creator: int
 			self::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
 			self::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.',
 			self::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.'
+		};
+	}
+
+	public function licenseType(): CreatorLicenseType
+	{
+		return match ($this) {
+			self::AMBIENTCG,
+			self::POLYHAVEN,
+			self::SHARETEXTURES,
+			self::PBR_PX,
+			self::THREE_D_TEXTURES,
+			self::CGBOOKCASE,
+			self::GPUOPENMATLIB,
+			self::TEXTURECAN,
+			self::NOEMOTIONHDRS,
+			=> CreatorLicenseType::PUBLIC_DOMAIN,
+
+			self::THREE_D_SCANS,
+			self::LOCATION_TEXTURES,
+			self::POLIIGON,
+			self::TEXTURES_COM,
+			self::RAWCATALOG,
+			self::LIGHTBEANS,
+			self::TWINBRU,
+			self::CGMOOD => CreatorLicenseType::ANY_LICENSE,
 		};
 	}
 
