@@ -30,7 +30,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 			onchange="window.scrollTo(0,0);"
 			hx-get="/render/asset-list.php"
 			hx-target="main"
-			hx-trigger="change,load,input delay:200ms"
+			hx-trigger="change,load,input delay:250ms"
 			hx-swap="innerHTML"
 			hx-push-url="/">
 			<label class="form-label" for="sort">Tags</label>
