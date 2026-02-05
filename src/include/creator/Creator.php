@@ -12,7 +12,6 @@ use creator\logic\CreatorLogicTextureCan;
 use creator\logic\CreatorLogicNoEmotionsHdr;
 use creator\logic\CreatorLogicAmdGpuOpen;
 use creator\logic\CreatorLogicRawCatalog;
-use creator\logic\CreatorLogicHdriWorkshop;
 use creator\logic\CreatorLogicPbrPx;
 use creator\logic\CreatorLogicPoliigon;
 use creator\logic\CreatorLogicTexturesCom;

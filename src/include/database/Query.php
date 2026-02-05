@@ -1,11 +1,18 @@
 <?php
 
-namespace Database;
+namespace database;
 
 use SQLite3Result;
 
 class Query
 {
+
+	/**
+	 * 
+	 * @param string $sql 
+	 * @param array<int,mixed> $params 
+	 * @return void 
+	 */
 	public function __construct(
 		public string $sql,
 		public array $params = []

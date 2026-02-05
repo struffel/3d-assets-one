@@ -8,7 +8,7 @@ use blocks\FooterBlock;
 use blocks\HeadBlock;
 use blocks\HeaderBlock;
 use creator\Creator;
-use Creator\CreatorLicenseType;
+use creator\CreatorLicenseType;
 use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';

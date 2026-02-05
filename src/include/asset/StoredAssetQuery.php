@@ -3,10 +3,10 @@
 namespace asset;
 
 use creator\Creator;
-use Creator\CreatorLicenseType;
+use creator\CreatorLicenseType;
 use DateTime;
 use database\Database;
-use Database\Query;
+use database\Query;
 use log\Log;
 use log\LogLevel;
 
@@ -73,7 +73,7 @@ class StoredAssetQuery
 		$output['id'] = $this->filterAssetId;
 		$output['creator'] = array_map($enumToSlugConverter, $this->filterCreator);
 		$output['type'] = array_map($enumToSlugConverter, $this->filterType);
-		$output['license'] = $this->filterLicenseType?->slug();
+		$output['license'] = $this->filterLicenseType->slug();
 
 		if ($includeStatus) {
 			$output['status'] = $this->filterStatus?->value;
@@ -96,8 +96,9 @@ class StoredAssetQuery
 		}
 
 		// License filter
-		if (isset($_GET['license']) && $_GET['license'] != "") {
-			$filterLicenseType = CreatorLicenseType::tryFromSlug($_GET['license']) ?? CreatorLicenseType::ANY_LICENSE;
+		$filterLicenseType = CreatorLicenseType::tryFromSlug($_GET['license'] ?? "");
+		if (!$filterLicenseType) {
+			$filterLicenseType = CreatorLicenseType::ANY_LICENSE;
 		}
 
 		// assetId filter
@@ -234,6 +235,10 @@ class StoredAssetQuery
 		return new Query($sqlCommand, $sqlValues);
 	}
 
+	/**
+	 * 
+	 * @return array<int,int>
+	 */
 	public function executeCountByCreator(): array
 	{
 		$databaseResult = $this->buildQuery(true)->execute();

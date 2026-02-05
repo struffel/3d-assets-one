@@ -4,6 +4,7 @@ use asset\StoredAssetQuery;
 use asset\StoredAsset;
 use blocks\LogoBlock;
 use creator\Creator;
+use creator\CreatorLicenseType;
 use thumbnail\ThumbnailFormat;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
@@ -17,7 +18,7 @@ header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 
 // Welcome message for empty queries
 
-if ($query->filterAssetId == [] && $query->filterLicenseType === null && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) {
+if ($query->filterAssetId == [] && $query->filterLicenseType === CreatorLicenseType::ANY_LICENSE && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) {
 	$assetCount = StoredAssetQuery::assetCountTotal();
 ?>
 	<div id="welcome-message">

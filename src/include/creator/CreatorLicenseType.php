@@ -1,6 +1,6 @@
 <?php
 
-namespace Creator;
+namespace creator;
 
 enum CreatorLicenseType: int
 {
