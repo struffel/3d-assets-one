@@ -73,7 +73,7 @@ class StoredAssetQuery
 		$output['id'] = $this->filterAssetId;
 		$output['creator'] = array_map($enumToSlugConverter, $this->filterCreator);
 		$output['type'] = array_map($enumToSlugConverter, $this->filterType);
-		$output['license'] = $this->filterLicenseType?->value;
+		$output['license'] = $this->filterLicenseType?->slug();
 
 		if ($includeStatus) {
 			$output['status'] = $this->filterStatus?->value;
@@ -97,7 +97,7 @@ class StoredAssetQuery
 
 		// License filter
 		if (isset($_GET['license']) && $_GET['license'] != "") {
-			$filterLicenseType = CreatorLicenseType::tryFrom(intval($_GET['license']));
+			$filterLicenseType = CreatorLicenseType::tryFromSlug($_GET['license']) ?? CreatorLicenseType::ANY_LICENSE;
 		}
 
 		// assetId filter

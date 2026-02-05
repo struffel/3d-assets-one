@@ -4,7 +4,6 @@
 use asset\AssetSorting;
 use asset\AssetType;
 use asset\StoredAssetQuery;
-use blocks\CreatorOptionsBlock;
 use blocks\FooterBlock;
 use blocks\HeadBlock;
 use blocks\HeaderBlock;
@@ -13,6 +12,8 @@ use Creator\CreatorLicenseType;
 use database\Database;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
+
+$assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 
 ?>
 <!DOCTYPE html>
@@ -41,14 +42,30 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 				<?php foreach (CreatorLicenseType::cases() as $c) : ?>
 					<option
 						class="form-option"
-						value="<?= $c->value ?>">
+						value="<?= $c->slug() ?>">
 						<?= $c->title()  ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
 
 			<label class="form-label" for="creator[]">Site</label>
-			<?php CreatorOptionsBlock::render(); ?>
+			<select size="<?= sizeof(Creator::cases()) ?>" id="multi-select-creator" hx-swap-oob="true" class="multi-select" name="creator[]" multiple>
+				<?php foreach (Creator::cases() as $c) {
+					$selected = in_array($c->slug(), $_GET['creator'] ?? []);
+				?>
+					<option
+						onmousedown="event.preventDefault();toggleOption(this);"
+						class="form-option"
+						id="creator-option-<?= $c->value ?>"
+						<?= $selected ? 'selected' : '' ?>
+						class="multi-select-option"
+						value="<?= $c->slug() ?>"
+						style="--creator-icon: url('/static/creator/<?= $c->value ?>.png');">
+						<span class="creator-title"><?= $c->title()  ?></span>
+						<span id="creator-count-<?= $c->value ?>" class="creator-count">(<?= $assetCountByCreator[$c->value] ?? 0 ?>)</span>
+					</option>
+				<?php } ?>
+			</select>
 
 			<label class="form-label" for="type[]">Type</label>
 			<select size="<?= sizeof(AssetType::cases()) ?>" class="multi-select" name="type[]" multiple>

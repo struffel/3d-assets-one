@@ -15,4 +15,21 @@ enum CreatorLicenseType: int
 			self::ANY_LICENSE => 'Any License',
 		};
 	}
+
+	public function slug(): string
+	{
+		return match ($this) {
+			self::PUBLIC_DOMAIN => 'public-domain',
+			self::ANY_LICENSE => 'any',
+		};
+	}
+
+	public static function tryFromSlug(string $slug): ?self
+	{
+		return match ($slug) {
+			'public-domain' => self::PUBLIC_DOMAIN,
+			'any-license' => self::ANY_LICENSE,
+			default => null,
+		};
+	}
 }
