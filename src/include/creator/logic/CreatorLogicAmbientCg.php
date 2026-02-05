@@ -39,8 +39,8 @@ class CreatorLogicAmbientCg extends CreatorLogic
 		"3DModel" => AssetType::MODEL_3D,
 		"SculptingBrush" => AssetType::OTHER,
 		"Terrain" => AssetType::OTHER,
-		"SBSAR" => AssetType::PBR_MATERIAL,
-		"Substance" => AssetType::PBR_MATERIAL,
+		"SBSAR" => AssetType::SUBSTANCE_MATERIAL,
+		"Substance" => AssetType::SUBSTANCE_MATERIAL,
 		"PlainTexture" => AssetType::PBR_MATERIAL,
 		"Brush" => AssetType::OTHER,
 		"HDRIElement" => AssetType::HDRI
