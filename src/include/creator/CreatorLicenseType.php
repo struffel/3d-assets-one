@@ -4,7 +4,8 @@ namespace creator;
 
 enum CreatorLicenseType: int
 {
-	case ANY_LICENSE = 2;
+	case ANY_LICENSE = 3;
+	case OPEN_LICENSE = 2;
 	case PUBLIC_DOMAIN = 1;
 
 
@@ -12,6 +13,7 @@ enum CreatorLicenseType: int
 	{
 		return match ($this) {
 			self::PUBLIC_DOMAIN => 'Public Domain Only',
+			self::OPEN_LICENSE => 'Open License',
 			self::ANY_LICENSE => 'Any License',
 		};
 	}
@@ -20,6 +22,7 @@ enum CreatorLicenseType: int
 	{
 		return match ($this) {
 			self::PUBLIC_DOMAIN => 'public-domain',
+			self::OPEN_LICENSE => 'open',
 			self::ANY_LICENSE => 'any',
 		};
 	}
@@ -28,7 +31,8 @@ enum CreatorLicenseType: int
 	{
 		return match ($slug) {
 			'public-domain' => self::PUBLIC_DOMAIN,
-			'any-license' => self::ANY_LICENSE,
+			'any' => self::ANY_LICENSE,
+			'open' => self::OPEN_LICENSE,
 			default => null,
 		};
 	}

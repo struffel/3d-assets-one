@@ -141,8 +141,10 @@ enum Creator: int
 			self::CGBOOKCASE,
 			self::GPUOPENMATLIB,
 			self::TEXTURECAN,
-			self::NOEMOTIONHDRS,
 			=> CreatorLicenseType::PUBLIC_DOMAIN,
+
+			self::NOEMOTIONHDRS
+			=> CreatorLicenseType::OPEN_LICENSE,
 
 			self::THREE_D_SCANS,
 			self::LOCATION_TEXTURES,
