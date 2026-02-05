@@ -54,7 +54,6 @@ $assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 					$selected = in_array($c->slug(), $_GET['creator'] ?? []);
 				?>
 					<option
-						onmousedown="event.preventDefault();toggleOption(this);"
 						class="form-option"
 						id="creator-option-<?= $c->value ?>"
 						<?= $selected ? 'selected' : '' ?>
