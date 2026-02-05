@@ -39,13 +39,16 @@ $assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 
 			<label class="form-label" for="select-license-type">License</label>
 			<select name="license" id="select-license-type">
-				<?php foreach (CreatorLicenseType::cases() as $c) : ?>
+				<?php foreach (CreatorLicenseType::cases() as $c) {
+					$selected = ($_GET['license'] ?? '') === $c->slug();
+				?>
 					<option
 						class="form-option"
+						<?= $selected ? 'selected' : '' ?>
 						value="<?= $c->slug() ?>">
 						<?= $c->title()  ?>
 					</option>
-				<?php endforeach; ?>
+				<?php } ?>
 			</select>
 
 			<label class="form-label" for="creator[]">Site</label>
