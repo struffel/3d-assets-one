@@ -4,18 +4,23 @@ use asset\StoredAssetQuery;
 use asset\StoredAsset;
 use blocks\LogoBlock;
 use creator\Creator;
+use creator\CreatorLicenseType;
 use thumbnail\ThumbnailFormat;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../include/init.php';
 
 $query = StoredAssetQuery::fromHttpGet();
 $assets = $query->execute();
+$countByCreator = $query->executeCountByCreator();
 
-$assetCount = StoredAssetQuery::assetCountTotal();
 
 header("HX-Replace-Url: ?" . $_SERVER['QUERY_STRING']);
 
-if ($query->filterAssetId == [] && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) { ?>
+// Welcome message for empty queries
+
+if ($query->filterAssetId == [] && $query->filterLicenseType === CreatorLicenseType::ANY_LICENSE && $query->filterCreator == [] && $query->filterType == null && $query->offset == 0 && $query->filterTag == []) {
+	$assetCount = StoredAssetQuery::assetCountTotal();
+?>
 	<div id="welcome-message">
 		<div>
 			<p>
@@ -30,6 +35,21 @@ if ($query->filterAssetId == [] && $query->filterCreator == [] && $query->filter
 		</div>
 	</div>
 <?php }
+
+// Update the count by creator using OOB-HTMX
+
+foreach (Creator::cases() as $c) {
+	$count = $countByCreator[$c->value] ?? 0;
+?>
+	<span
+		id="creator-count-<?= $c->value ?>"
+		data-count="<?= $count ?>"
+		hx-swap-oob="true"
+		class="creator-count">
+		(<?= $count ?>)
+	</span>
+<?php
+}
 
 /**
  * @var StoredAsset $a */

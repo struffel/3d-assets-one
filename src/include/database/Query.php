@@ -1,0 +1,25 @@
+<?php
+
+namespace database;
+
+use SQLite3Result;
+
+class Query
+{
+
+	/**
+	 * 
+	 * @param string $sql 
+	 * @param array<int,mixed> $params 
+	 * @return void 
+	 */
+	public function __construct(
+		public string $sql,
+		public array $params = []
+	) {}
+
+	public function execute(): SQLite3Result|bool
+	{
+		return Database::runQuery($this->sql, $this->params);
+	}
+}
