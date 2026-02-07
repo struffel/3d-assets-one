@@ -60,7 +60,7 @@ class CreatorLogicCgBookcase extends CreatorLogic
 					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags']),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
 					creator: Creator::CGBOOKCASE,
-					rawThumbnailData: new WebItemReference(url: $metaTags['tex1:preview-image'])->fetch()->content,
+					rawThumbnail: new WebItemReference(url: $metaTags['tex1:preview-image'])->fetch()->parseAsGdImage(),
 					status: ScrapedAssetStatus::NEWLY_FOUND,
 				);
 

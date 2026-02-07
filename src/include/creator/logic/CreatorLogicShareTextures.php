@@ -43,7 +43,7 @@ class CreatorLogicShareTextures extends CreatorLogic
 					url: $url,
 					type: AssetType::fromTex1Tag($metaTags['tex1:type'] ?? ""),
 					creator: $this->creator,
-					rawThumbnailData: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->content,
+					rawThumbnail: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->parseAsGdImage(),
 					status: ScrapedAssetStatus::NEWLY_FOUND,
 					tags: explode(",", $metaTags['tex1:tags'] ?? throw new Exception("Could not resolve tags from meta tags.")),
 				);

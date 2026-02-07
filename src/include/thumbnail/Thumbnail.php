@@ -59,12 +59,12 @@ class Thumbnail
 		}
 	}
 
-	public static function saveThumbnailVariations(int $assetId, string $originalImageData): void
+	public static function saveThumbnailVariations(int $assetId, GdImage $originalImage): void
 	{
 
 		foreach (ThumbnailFormat::cases() as $t) {
 
-			$gdImage = Thumbnail::createThumbnailFromImageData($originalImageData, $t);
+			$gdImage = Thumbnail::createThumbnailFromImageData($originalImage, $t);
 
 			$fileName = self::getThumbnailStorePath() . "/" .
 				$t->value . "/$assetId." . strtolower($t->getExtension());
@@ -82,29 +82,72 @@ class Thumbnail
 				default => throw new \InvalidArgumentException("Unsupported image format: " . $t->getExtension()),
 			};
 
-			// Test if the file exists and is > 0 bytes
-			if (!file_exists($fileName) || filesize($fileName) === 0) {
-				throw new RuntimeException("Failed to save thumbnail to " . $fileName);
-			}
+			self::validateThumbnail($fileName);
 
 			Log::write("Saved thumbnail", ["assetId" => $assetId, "fileName" => $fileName], LogLevel::DEBUG);
 		}
 	}
 
-	public static function createThumbnailFromImageData(string $rawImageData, ThumbnailFormat $format): GdImage
+	private static function validateThumbnail(string $filePath): void
+	{
+		// Exists?
+		if (!file_exists($filePath)) {
+			throw new RuntimeException("Thumbnail file does not exist: " . $filePath);
+		}
+
+		// Not empty?
+		if (filesize($filePath) === 0) {
+			throw new RuntimeException("Thumbnail file is empty: " . $filePath);
+		}
+
+		$imageInfo = getimagesize($filePath);
+		if ($imageInfo === false) {
+			throw new RuntimeException("Failed to get image info for thumbnail: " . $filePath);
+		}
+
+		// Valid dimensions?
+		if ($imageInfo[0] <= 0 || $imageInfo[1] <= 0) {
+			throw new RuntimeException("Thumbnail has invalid dimensions: " . $filePath);
+		}
+
+		// Not identical on all pixels?
+		// I.e. is the entire image black/white/transparent?
+		$gdImage = match ($imageInfo[2]) {
+			IMAGETYPE_JPEG => imagecreatefromjpeg($filePath),
+			IMAGETYPE_PNG => imagecreatefrompng($filePath),
+			default => throw new RuntimeException("Unsupported thumbnail image type: " . $filePath),
+		};
+
+		if ($gdImage === false) {
+			throw new RuntimeException("Failed to create GD image for validation purposes: " . $filePath);
+		}
+
+		$width = imagesx($gdImage);
+		$height = imagesy($gdImage);
+		$checkInterval = max(1, min((int)($width / 10), (int)($height / 10)));
+		$allPixelsSame = true;
+		$firstPixel = imagecolorat($gdImage, 0, 0);
+		for ($x = 0; $x < $width; $x += $checkInterval) {
+			for ($y = 0; $y < $height; $y += $checkInterval) {
+				if (imagecolorat($gdImage, $x, $y) !== $firstPixel) {
+					$allPixelsSame = false;
+					break 2;
+				}
+			}
+		}
+
+		if ($allPixelsSame) {
+			throw new RuntimeException("Thumbnail image is uniformly colored and likely invalid: " . $filePath);
+		}
+	}
+
+	public static function createThumbnailFromImageData(GdImage $rawImage, ThumbnailFormat $format): GdImage
 	{
 
 		Log::write("Building variation " . $format->value, LogLevel::DEBUG);
 
-		// Read image using GD
-		$tmpImage = imagecreatefromstring($rawImageData);
-
-		if ($tmpImage === false) {
-			throw new RuntimeException("Failed to create image from data.");
-		}
-
-		$originalWidth = imagesx($tmpImage);
-		$originalHeight = imagesy($tmpImage);
+		$originalWidth = imagesx($rawImage);
+		$originalHeight = imagesy($rawImage);
 
 		// Calculate new dimensions maintaining aspect ratio
 		$ratio = min($format->getSize() / $originalWidth, $format->getSize() / $originalHeight);
@@ -143,8 +186,8 @@ class Thumbnail
 		}
 
 		// Resize and copy the original image centered
-		imagealphablending($tmpImage, true);
-		imagecopyresampled($outputImage, $tmpImage, $offsetX, $offsetY, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+		imagealphablending($rawImage, true);
+		imagecopyresampled($outputImage, $rawImage, $offsetX, $offsetY, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
 
 		return $outputImage;
 	}

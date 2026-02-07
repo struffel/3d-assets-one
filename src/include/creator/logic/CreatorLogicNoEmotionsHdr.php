@@ -44,7 +44,7 @@ class CreatorLogicNoEmotionsHdr extends CreatorLogic
 					creator: Creator::NOEMOTIONHDRS,
 
 					status: ScrapedAssetStatus::NEWLY_FOUND,
-					rawThumbnailData: new WebItemReference($thumbnailUrl)->fetch()->content,
+					rawThumbnail: new WebItemReference($thumbnailUrl)->fetch()->parseAsGdImage(),
 				);
 
 				$tmpCollection[] = $tmpAsset;

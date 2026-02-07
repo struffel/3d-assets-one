@@ -12,6 +12,7 @@ use creator\Creator;
 use creator\CreatorLogic;
 use DateTime;
 use fetch\WebItemReference;
+use GdImage;
 use log\Log;
 use log\LogLevel;
 use RuntimeException;
@@ -82,8 +83,8 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 				if ($thumbnail === null) {
 					Log::write("Failed to fetch thumbnail for URL (skipping asset): ", $newUrl, LogLevel::WARNING);
+					continue;
 				}
-
 				// Build asset
 				$tmpCollection[] = new ScrapedAsset(
 					id: NULL,
@@ -95,7 +96,7 @@ class CreatorLogicLightbeans extends CreatorLogic
 
 					creator: $this->creator,
 					status: ScrapedAssetStatus::NEWLY_FOUND,
-					rawThumbnailData: $thumbnail
+					rawThumbnail: $thumbnail
 				);
 			}
 		}
@@ -103,7 +104,7 @@ class CreatorLogicLightbeans extends CreatorLogic
 		return $tmpCollection;
 	}
 
-	private function fetchThumbnailImage(string $url): ?string
+	private function fetchThumbnailImage(string $url): ?GdImage
 	{
 
 		// Load the image
@@ -137,15 +138,6 @@ class CreatorLogicLightbeans extends CreatorLogic
 		// Crop the image to the calculated dimensions
 		imagecopy($croppedImage, $image, 0, 0, $x, $y, $cropSize, $cropSize);
 
-		// Output to string
-		ob_start();
-		imagepng($croppedImage);
-		$result = ob_get_clean();
-
-		if ($result === false) {
-			throw new RuntimeException("Failed to capture cropped image output.");
-		}
-
-		return $result;
+		return $croppedImage;
 	}
 }

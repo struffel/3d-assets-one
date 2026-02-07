@@ -6,6 +6,7 @@ use DateTime;
 use DOMDocument;
 use DOMNodeList;
 use DOMXPath;
+use GdImage;
 use SimpleXMLElement;
 
 class FetchedWebItem
@@ -116,6 +117,15 @@ class FetchedWebItem
 			}
 		}
 		return $output;
+	}
+
+	public function parseAsGdImage(): ?GdImage
+	{
+		if ($this->content === null) {
+			return null;
+		}
+		$image = imagecreatefromstring($this->content);
+		return $image ?: null;
 	}
 
 	/*public function parseAsWordpressApiPosts()

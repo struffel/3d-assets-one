@@ -95,8 +95,8 @@ if (sizeof($newScrapedAssets) > 0) {
 		Database::startTransaction();
 
 		$newStoredAsset->writeToDatabase();
-		if ($newStoredAsset->id !== null && $newScrapedAsset->rawThumbnailData !== null) {
-			Thumbnail::saveThumbnailVariations($newStoredAsset->id, $newScrapedAsset->rawThumbnailData);
+		if ($newStoredAsset->id !== null && $newScrapedAsset->rawThumbnail !== null) {
+			Thumbnail::saveThumbnailVariations($newStoredAsset->id, $newScrapedAsset->rawThumbnail);
 			Log::write("Saved thumbnail for asset ", $newStoredAsset->id);
 		}
 

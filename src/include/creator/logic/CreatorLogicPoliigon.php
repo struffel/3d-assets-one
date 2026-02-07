@@ -107,9 +107,9 @@ class CreatorLogicPoliigon extends CreatorLogic
 
 						creator: Creator::POLIIGON,
 						status: ScrapedAssetStatus::NEWLY_FOUND,
-						rawThumbnailData: new WebItemReference(
+						rawThumbnail: new WebItemReference(
 							url: $assetBox->find('img')->attr('src')
-						)->fetch()->content
+						)->fetch()->parseAsGdImage()
 					);
 				}
 			}

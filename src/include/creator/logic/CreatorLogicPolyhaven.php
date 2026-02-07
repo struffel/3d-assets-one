@@ -65,9 +65,9 @@ class CreatorLogicPolyhaven extends CreatorLogic
 					type: $this->typeMapping[intval($phAsset['type'])] ?? AssetType::OTHER,
 
 					creator: Creator::POLYHAVEN,
-					rawThumbnailData: new WebItemReference(
+					rawThumbnail: new WebItemReference(
 						url: $this->thumbnailUrlPrefix . $key . $this->thumbnailUrlSuffix
-					)->fetch()->content,
+					)->fetch()->parseAsGdImage(),
 					status: ScrapedAssetStatus::NEWLY_FOUND,
 				);
 

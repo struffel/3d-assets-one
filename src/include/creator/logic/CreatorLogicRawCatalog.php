@@ -77,9 +77,9 @@ class CreatorLogicRawCatalog extends CreatorLogic
 						type: $type,
 						creator: Creator::RAWCATALOG,
 
-						rawThumbnailData: new WebItemReference(
+						rawThumbnail: new WebItemReference(
 							url: (string) $rawCatalogAsset->cover
-						)->fetch()->content,
+						)->fetch()->parseAsGdImage(),
 						status: ScrapedAssetStatus::NEWLY_FOUND,
 					);
 

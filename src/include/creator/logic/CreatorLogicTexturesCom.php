@@ -85,9 +85,9 @@ class CreatorLogicTexturesCom extends CreatorLogic
 						type: $this->categoryMapping[intval($texComAsset['defaultCategoryId'])] ?? AssetType::OTHER,
 						creator: Creator::TEXTURES_COM,
 						status: ScrapedAssetStatus::NEWLY_FOUND,
-						rawThumbnailData: new WebItemReference(
+						rawThumbnail: new WebItemReference(
 							url: "https://textures.com/" . $texComAsset['picture']
-						)->fetch()->content
+						)->fetch()->parseAsGdImage()
 					);
 				}
 			}

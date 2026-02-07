@@ -60,9 +60,9 @@ class CreatorLogicThreeDScans extends CreatorLogic
 							type: AssetType::MODEL_3D,
 							creator: $this->creator,
 							status: ScrapedAssetStatus::NEWLY_FOUND,
-							rawThumbnailData: new WebItemReference(
+							rawThumbnail: new WebItemReference(
 								url: $assetImageElement->attr('src')
-							)->fetch()->content
+							)->fetch()->parseAsGdImage()
 						);
 					}
 				}
