@@ -42,9 +42,13 @@ if (is_bool($result)) {
 			<th>Failed Attempts</th>
 		</tr>
 		<?php while ($row = $result->fetchArray(SQLITE3_ASSOC)) :
+			$creator = Creator::tryFrom(intval($row['creatorId']));
+			if ($creator === null) {
+				continue;
+			}
 		?>
 			<tr>
-				<td><?= htmlspecialchars(Creator::from(intval($row['creatorId']))->title()) ?></td>
+				<td><?= htmlspecialchars($creator->title()) ?></td>
 				<td><?= htmlspecialchars($row['lastChecked']) ?></td>
 				<td><?= htmlspecialchars($row['lastAvailable']) ?></td>
 				<td><?= htmlspecialchars($row['failedAttempts']) ?></td>

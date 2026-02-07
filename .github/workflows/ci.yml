@@ -52,7 +52,7 @@ jobs:
                   server: ${{ vars.FTP_SERVER }}
                   username: ${{ vars.FTP_USER }}
                   password: ${{ secrets.FTP_PASSWORD }}
-                  local-dir: ./src/
+                  local-dir: ./
                   server-dir: /
                   exclude: |
                       **/.git*

@@ -1,0 +1,24 @@
+{
+	"platform": {
+		"php": "8.4"
+	},
+	"require": {
+		"guzzlehttp/guzzle": "^7.4",
+		"rct567/dom-query": "^1.0",
+		"vlucas/phpdotenv": "^5.6"
+	},
+	"require-dev": {
+		"phpstan/phpstan": "^2.1",
+		"phpunit/phpunit": "13"
+	},
+	"autoload": {
+		"psr-4": {
+			"\\": "include/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\": "tests/"
+		}
+	}
+}
