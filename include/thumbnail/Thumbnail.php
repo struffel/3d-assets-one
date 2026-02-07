@@ -130,10 +130,6 @@ class Thumbnail
 		$width = imagesx($gdImage);
 		$height = imagesy($gdImage);
 
-		if ($width === 0 || $height === 0) {
-			throw new RuntimeException("Thumbnail image has zero width or height, likely invalid.");
-		}
-
 		$checkInterval = max(1, min((int)($width / 10), (int)($height / 10)));
 		$allPixelsSame = true;
 		$firstPixel = imagecolorat($gdImage, 0, 0);
