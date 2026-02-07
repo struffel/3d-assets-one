@@ -15,12 +15,17 @@ class Database
 
 	private static SQLite3 $connection;
 
+	private static function getDbPath(): string
+	{
+		return __DIR__ . "/../../data/3d1.sqlite";
+	}
+
 	private static function initializeConnection(bool $createIfNotExists = false): void
 	{
 		// Create connection
 		if (!isset(self::$connection)) {
 			Log::write("Initializing DB Connection", LogLevel::DEBUG);
-			$dbPath = $_ENV["3D1_DB_PATH"];
+			$dbPath = self::getDbPath();
 			self::$connection = new SQLite3($dbPath, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 			self::$connection->enableExceptions(true);
 			self::$connection->busyTimeout(5000);
@@ -65,7 +70,7 @@ class Database
 
 		// Ensure that the database file is writable by everyone.
 		// This is necessary because the web server user needs write access, but the migration might be run by a different user from the CLI.
-		chmod($_ENV["3D1_DB_PATH"], 0666);
+		chmod(self::getDbPath(), 0666);
 		Log::write("Set database file permissions to 0666.", LogLevel::DEBUG);
 	}
 

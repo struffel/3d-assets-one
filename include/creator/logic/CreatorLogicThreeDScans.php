@@ -21,6 +21,8 @@ class CreatorLogicThreeDScans extends CreatorLogic
 	protected Creator $creator = Creator::THREE_D_SCANS;
 	private string $indexingBaseUrl = "https://threedscans.com/page/";
 
+	private int $maxAssetsPerRun = 10;
+
 	public function scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection
 	{
 
@@ -64,6 +66,10 @@ class CreatorLogicThreeDScans extends CreatorLogic
 								url: $assetImageElement->attr('src')
 							)->fetch()->parseAsGdImage()
 						);
+					}
+
+					if (sizeof($tmpCollection) >= $this->maxAssetsPerRun) {
+						break 2; // Break out of both the foreach and the do-while loop
 					}
 				}
 			} else {

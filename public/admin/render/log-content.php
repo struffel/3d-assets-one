@@ -8,7 +8,7 @@ use misc\Auth;
 Auth::requireAuth();
 header('Cache-Control: no-store');
 
-$logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
+$logDirectory = Log::getLogDirectory();
 $selectedFile = $_GET['file'] ?? '';
 $minLevel = (int)($_GET['level'] ?? 2); // Default to INFO level
 

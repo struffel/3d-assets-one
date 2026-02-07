@@ -10,7 +10,7 @@ use misc\Auth;
 
 Auth::requireAuth();
 
-$logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
+$logDirectory = Log::getLogDirectory();
 
 // Get all log files recursively, grouped by directory
 $filesByDirectory = [];

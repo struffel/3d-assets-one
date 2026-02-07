@@ -2,6 +2,7 @@
 
 namespace log;
 
+use DateTime;
 use Exception;
 use FilesystemIterator;
 use LimitIterator;
@@ -20,6 +21,11 @@ class Log
 	private static string $logName;
 	private static bool $finalized = false;
 
+	public static function timestampHelper(): string
+	{
+		return (new DateTime())->format('Y-m-d\TH-i-s-v');
+	}
+
 
 	public static function start(string $logName,  bool $writeToStdout = false): void
 	{
@@ -34,7 +40,7 @@ class Log
 
 		set_exception_handler([self::class, 'exceptionHandler']);
 
-		Log::write("Started logging", ["Name" => $logName], LogLevel::SYSTEM);
+		Log::write("Started logging", ["path" => self::getLogFilePath()], LogLevel::SYSTEM);
 	}
 
 	public static function exceptionHandler(Throwable $th): never
@@ -143,7 +149,12 @@ class Log
 		if (!isset(self::$logName)) {
 			throw new Exception("No log name defined.");
 		}
-		return $_ENV['3D1_LOG_DIRECTORY'] . "/" . self::$logName . ".log";
+		return self::getLogDirectory() . "/" . self::$logName . ".log";
+	}
+
+	public static function getLogDirectory(): string
+	{
+		return __DIR__ . "/../../data/log";
 	}
 
 	private static function createFileIfNotPresent(string $file): void
@@ -164,7 +175,7 @@ class Log
 	 */
 	private static function cleanUpLogDirectory(int $deleteOlderThanDays): void
 	{
-		$logDirectory = $_ENV['3D1_LOG_DIRECTORY'];
+		$logDirectory = self::getLogDirectory();
 
 		if (!is_dir($logDirectory)) {
 			return;

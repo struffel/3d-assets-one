@@ -24,7 +24,7 @@ class Thumbnail
 	 * Deletes all thumbnail variations carrying asset ids no longer in the database.
 	 * @return void 
 	 */
-	public static function deleteOrphanedThumbnails()
+	public static function deleteOrphanedThumbnails(): void
 	{
 		// Do nothing if the thumbnail directory does not exist
 		if (!is_dir(self::getThumbnailStorePath())) {
@@ -62,6 +62,9 @@ class Thumbnail
 	public static function saveThumbnailVariations(int $assetId, GdImage $originalImage): void
 	{
 
+		// Is the input image valid?
+		self::validateImage($originalImage);
+
 		foreach (ThumbnailFormat::cases() as $t) {
 
 			$gdImage = Thumbnail::createThumbnailFromImageData($originalImage, $t);
@@ -82,13 +85,13 @@ class Thumbnail
 				default => throw new \InvalidArgumentException("Unsupported image format: " . $t->getExtension()),
 			};
 
-			self::validateThumbnail($fileName);
+			self::validateImageFile($fileName);
 
 			Log::write("Saved thumbnail", ["assetId" => $assetId, "fileName" => $fileName], LogLevel::DEBUG);
 		}
 	}
 
-	private static function validateThumbnail(string $filePath): void
+	private static function validateImageFile(string $filePath): void
 	{
 		// Exists?
 		if (!file_exists($filePath)) {
@@ -105,13 +108,6 @@ class Thumbnail
 			throw new RuntimeException("Failed to get image info for thumbnail: " . $filePath);
 		}
 
-		// Valid dimensions?
-		if ($imageInfo[0] <= 0 || $imageInfo[1] <= 0) {
-			throw new RuntimeException("Thumbnail has invalid dimensions: " . $filePath);
-		}
-
-		// Not identical on all pixels?
-		// I.e. is the entire image black/white/transparent?
 		$gdImage = match ($imageInfo[2]) {
 			IMAGETYPE_JPEG => imagecreatefromjpeg($filePath),
 			IMAGETYPE_PNG => imagecreatefrompng($filePath),
@@ -122,8 +118,22 @@ class Thumbnail
 			throw new RuntimeException("Failed to create GD image for validation purposes: " . $filePath);
 		}
 
+		self::validateImage($gdImage);
+	}
+
+	private static function validateImage(GdImage $gdImage): void
+	{
+
+		// Not identical on all pixels?
+		// I.e. is the entire image black/white/transparent?
+
 		$width = imagesx($gdImage);
 		$height = imagesy($gdImage);
+
+		if ($width === 0 || $height === 0) {
+			throw new RuntimeException("Thumbnail image has zero width or height, likely invalid.");
+		}
+
 		$checkInterval = max(1, min((int)($width / 10), (int)($height / 10)));
 		$allPixelsSame = true;
 		$firstPixel = imagecolorat($gdImage, 0, 0);
@@ -137,7 +147,7 @@ class Thumbnail
 		}
 
 		if ($allPixelsSame) {
-			throw new RuntimeException("Thumbnail image is uniformly colored and likely invalid: " . $filePath);
+			throw new RuntimeException("Thumbnail image is uniformly colored and likely invalid");
 		}
 	}
 
