@@ -22,11 +22,11 @@ jobs:
 
             - name: Run PHP Composer
               run: composer install --no-progress --prefer-dist
-              working-directory: ./src
+              working-directory: ./
 
             - name: Run PHPStan
               run: vendor/bin/phpstan analyse cli include public --level=8
-              working-directory: ./src
+              working-directory: ./
 
     deploy:
         name: Build & Deploy
@@ -44,7 +44,7 @@ jobs:
 
             - name: Run PHP Composer
               run: composer install --no-progress --prefer-dist
-              working-directory: ./src
+              working-directory: ./
 
             - name: Sync files
               uses: SamKirkland/FTP-Deploy-Action@4.1.0

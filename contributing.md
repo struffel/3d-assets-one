@@ -9,7 +9,7 @@ If available, Docker is the easiest way to run 3dassets.one locally for developm
 2. Review the provided `.env.template` file in the `src/` directory and create a `.env` file in the same directory.
 3. Fetch the needed PHP composer dependencies:
 ```bash
-docker run -it --rm -v $pwd/src:/app composer composer install
+docker run -it --rm -v $pwd/:/app composer composer install
 ```
 4. Build and start the Docker containers:
 ```bash
