@@ -95,9 +95,9 @@ class CreatorLogicCgMood extends CreatorLogic
 
 						creator: Creator::CGMOOD,
 						status: ScrapedAssetStatus::NEWLY_FOUND,
-						rawThumbnailData: new WebItemReference(
+						rawThumbnail: new WebItemReference(
 							url: "https://cgmood.com" . $assetImageElement->attr('src')
-						)->fetch()->content
+						)->fetch()->parseAsGdImage()
 					);
 				}
 			}

@@ -75,7 +75,7 @@ class CreatorLogicAmbientCg extends CreatorLogic
 
 						creator: Creator::AMBIENTCG,
 						id: NULL,
-						rawThumbnailData: new WebItemReference(url: $acgAsset['previewImage']['512-PNG'])->fetch()->content,
+						rawThumbnail: new WebItemReference(url: $acgAsset['previewImage']['512-PNG'])->fetch()->parseAsGdImage(),
 						status: ScrapedAssetStatus::NEWLY_FOUND,
 					);
 

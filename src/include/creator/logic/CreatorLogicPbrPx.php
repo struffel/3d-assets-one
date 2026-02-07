@@ -146,9 +146,9 @@ class CreatorLogicPbrPx extends CreatorLogic
 						url: $assetUrl,
 						type: $type,
 						creator: $this->creator,
-						rawThumbnailData: new WebItemReference(
+						rawThumbnail: new WebItemReference(
 							url: $thumbnailUrl
-						)->fetch()->content,
+						)->fetch()->parseAsGdImage(),
 						status: ScrapedAssetStatus::NEWLY_FOUND,
 						tags: $tags,
 					);

@@ -4,6 +4,7 @@ namespace asset;
 
 use creator\Creator;
 use DateTime;
+use GdImage;
 
 /**
  * The main asset class.
@@ -21,7 +22,7 @@ class ScrapedAsset extends Asset
 	 * @param Creator $creator 
 	 * @param ScrapedAssetStatus $status 
 	 * @param array<string> $tags 
-	 * @param null|string $rawThumbnailData 
+	 * @param null|GdImage $rawThumbnail 
 	 * @return void 
 	 */
 	public function __construct(
@@ -33,7 +34,7 @@ class ScrapedAsset extends Asset
 		Creator $creator,
 		public ScrapedAssetStatus $status,
 		array $tags = [],
-		public ?string $rawThumbnailData = NULL,
+		public ?GdImage $rawThumbnail = NULL,
 	) {
 		parent::__construct(
 			id: $id,

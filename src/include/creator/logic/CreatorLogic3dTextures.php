@@ -96,7 +96,7 @@ class CreatorLogic3dTextures extends CreatorLogic
 							tags: $tmpTags,
 							type: AssetType::PBR_MATERIAL,
 							creator: Creator::THREE_D_TEXTURES,
-							rawThumbnailData: new WebItemReference(url: $tmpThumbnail)->fetch()->content,
+							rawThumbnail: new WebItemReference(url: $tmpThumbnail)->fetch()->parseAsGdImage(),
 							status: ScrapedAssetStatus::NEWLY_FOUND,
 						);
 

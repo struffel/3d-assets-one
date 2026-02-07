@@ -73,9 +73,9 @@ class CreatorLogicLocationTextures extends CreatorLogic
 
 							creator: $this->creator,
 							status: ScrapedAssetStatus::NEWLY_FOUND,
-							rawThumbnailData: new WebItemReference(
+							rawThumbnail: new WebItemReference(
 								url: $assetImageElement->attr('data-src')
-							)->fetch()->content
+							)->fetch()->parseAsGdImage()
 						);
 
 						$processedAssets += 1;

@@ -61,13 +61,13 @@ class CreatorLogicAmdGpuOpen extends CreatorLogic
 							tags: $tags,
 							type: AssetType::PBR_MATERIAL,
 							creator: Creator::GPUOPENMATLIB,
-							rawThumbnailData: new WebItemReference(
+							rawThumbnail: new WebItemReference(
 								url: str_replace(
 									'#ID#',
 									$amdAsset['renders_order'][0],
 									$this->previewImageTemplate
 								)
-							)->fetch()->content,
+							)->fetch()->parseAsGdImage(),
 							status: ScrapedAssetStatus::NEWLY_FOUND,
 						);
 

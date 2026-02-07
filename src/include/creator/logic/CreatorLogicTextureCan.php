@@ -44,7 +44,7 @@ class CreatorLogicTextureCan extends CreatorLogic
 					tags: StringUtil::explodeFilterTrim(",", $metaTags['tex1:tags'] ?? throw new Exception("Could not resolve tags from meta tags.")),
 					type: AssetType::fromTex1Tag($metaTags['tex1:type']),
 					creator: Creator::TEXTURECAN,
-					rawThumbnailData: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->content,
+					rawThumbnail: new WebItemReference($metaTags['tex1:preview-image'])->fetch()->parseAsGdImage(),
 					status: ScrapedAssetStatus::NEWLY_FOUND,
 				);
 

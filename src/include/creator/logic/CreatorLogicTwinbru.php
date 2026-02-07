@@ -187,9 +187,9 @@ class CreatorLogicTwinbru extends CreatorLogic
 						type: $type,
 						creator: $this->creator,
 						status: ScrapedAssetStatus::NEWLY_FOUND,
-						rawThumbnailData: new WebItemReference(
+						rawThumbnail: new WebItemReference(
 							url: $thumbnailUrl
-						)->fetch()->content
+						)->fetch()->parseAsGdImage()
 					);
 				}
 			}
