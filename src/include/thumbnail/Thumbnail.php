@@ -118,6 +118,10 @@ class Thumbnail
 			default => throw new RuntimeException("Unsupported thumbnail image type: " . $filePath),
 		};
 
+		if ($gdImage === false) {
+			throw new RuntimeException("Failed to create GD image for validation purposes: " . $filePath);
+		}
+
 		$width = imagesx($gdImage);
 		$height = imagesy($gdImage);
 		$checkInterval = max(1, min((int)($width / 10), (int)($height / 10)));
