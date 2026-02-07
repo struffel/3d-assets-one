@@ -1,9 +1,0 @@
-{
-  "version": "1",
-  "name": "3dassets.one",
-  "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
-}
