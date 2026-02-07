@@ -15,10 +15,5 @@
 		"psr-4": {
 			"\\": "include/"
 		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Tests\\": "tests/"
-		}
 	}
 }
