@@ -54,7 +54,7 @@ class CreatorLogicPolyhaven extends CreatorLogic
 			if (!$existingAssets->containsUrl($url) && sizeof($tmpCollection) < $this->maxAssetsPerRun) {
 
 				$date = new DateTime();
-				$date->setTimestamp(($phAsset['date_added']));
+				$date->setTimestamp(($phAsset['date_published']));
 
 				$tmpAsset = new ScrapedAsset(
 					id: NULL,
