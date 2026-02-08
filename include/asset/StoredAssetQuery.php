@@ -120,7 +120,10 @@ class StoredAssetQuery
 		// type filter
 		$filterType = [];
 		foreach ($_GET['type'] ?? [] as $typeSlug) {
-			$filterType[] = AssetType::tryFromSlug($typeSlug);
+			$type = AssetType::tryFromSlug($typeSlug);
+			if ($type !== null) {
+				$filterType[] = $type;
+			}
 		}
 
 

@@ -53,7 +53,7 @@ enum Creator: int
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
 
-	public static function fromValueOrSlug(mixed $value): ?self
+	public static function fromValueOrSlug(mixed $value): self
 	{
 		if (is_numeric($value)) {
 			return self::from(intval($value));

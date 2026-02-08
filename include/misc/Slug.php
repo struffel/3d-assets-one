@@ -18,8 +18,7 @@ trait Slug
 
 	public static function tryFromSlug(string $slug): ?self
 	{
-		$cases = method_exists(self::class, 'cases') ? self::cases() : [];
-		foreach ($cases as $c) {
+		foreach (self::cases() as $c) {
 			if ($c->slug() === $slug) {
 				return $c;
 			}
