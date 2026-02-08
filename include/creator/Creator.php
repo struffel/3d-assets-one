@@ -1,0 +1,350 @@
+<?php
+
+namespace creator;
+
+use creator\CreatorLogic;
+use creator\logic\CreatorLogicAmbientCg;
+use creator\logic\CreatorLogic3dTextures;
+use creator\logic\CreatorLogicPolyhaven;
+use creator\logic\CreatorLogicShareTextures;
+use creator\logic\CreatorLogicCgBookcase;
+use creator\logic\CreatorLogicTextureCan;
+use creator\logic\CreatorLogicNoEmotionsHdr;
+use creator\logic\CreatorLogicAmdGpuOpen;
+use creator\logic\CreatorLogicRawCatalog;
+use creator\logic\CreatorLogicPbrPx;
+use creator\logic\CreatorLogicPoliigon;
+use creator\logic\CreatorLogicTexturesCom;
+use creator\logic\CreatorLogicCgMood;
+use creator\logic\CreatorLogicThreeDScans;
+use creator\logic\CreatorLogicLocationTextures;
+use creator\logic\CreatorLogicTwinbru;
+use creator\logic\CreatorLogicLightbeans;
+use database\Database;
+use DateTime;
+use Exception;
+use InvalidArgumentException;
+use log\Log;
+use log\LogLevel;
+use misc\Slug;
+
+enum Creator: int
+{
+
+	use Slug;
+
+		// Enum values, arranged by the order to display them in
+	case AMBIENTCG = 1;
+	case POLYHAVEN = 2;
+	case SHARETEXTURES = 3;
+	case THREE_D_TEXTURES = 4;
+	case CGBOOKCASE = 5;
+	case TEXTURECAN = 6;
+	case PBR_PX = 20;
+	case GPUOPENMATLIB = 10;
+
+	case NOEMOTIONHDRS = 7;
+	case RAWCATALOG = 11;
+	case POLIIGON = 14;
+	case TEXTURES_COM = 15;
+	case CGMOOD = 16;
+	case THREE_D_SCANS = 18;
+	case LOCATION_TEXTURES = 19;
+	case TWINBRU = 21;
+	case LIGHTBEANS = 22;
+
+	public static function fromValueOrSlug(mixed $value): self
+	{
+		if (is_numeric($value)) {
+			return self::from(intval($value));
+		} elseif (is_string($value)) {
+			return self::fromSlug($value);
+		} else {
+			throw new InvalidArgumentException("Cannot convert value to Creator enum.");
+		}
+	}
+
+	public function slug(): string
+	{
+		return match ($this) {
+			self::AMBIENTCG => 'ambientcg',
+			self::POLYHAVEN => 'polyhaven',
+			self::SHARETEXTURES => 'sharetextures',
+			self::TEXTURECAN => 'texturecan',
+			self::THREE_D_TEXTURES => '3d-textures',
+			self::CGBOOKCASE => 'cgbookcase',
+			self::NOEMOTIONHDRS => 'noemotionhdrs',
+			self::GPUOPENMATLIB => 'gpuopen-matlib',
+			self::RAWCATALOG => 'rawcatalog',
+			self::POLIIGON => 'poliigon',
+			self::TEXTURES_COM => 'textures-com',
+			self::CGMOOD => 'cgmood',
+			self::THREE_D_SCANS => 'three-d-scans',
+			self::LOCATION_TEXTURES => 'location-textures',
+			self::PBR_PX => "pbr-px",
+			self::TWINBRU => "twinbru",
+			self::LIGHTBEANS => "lightbeans"
+		};
+	}
+
+	public function title(): string
+	{
+		return match ($this) {
+			self::AMBIENTCG => 'ambientCG',
+			self::POLYHAVEN => 'Poly Haven',
+			self::SHARETEXTURES => 'Share Textures',
+			self::THREE_D_TEXTURES => '3D Textures',
+			self::TEXTURECAN => 'Texture Can',
+			self::CGBOOKCASE => 'CG Bookcase',
+			self::NOEMOTIONHDRS => 'NoEmotion HDRs',
+			self::GPUOPENMATLIB => 'AMD GPUOpen MaterialX Library',
+			self::RAWCATALOG => 'Raw Catalog',
+			self::POLIIGON => 'Poliigon (Free Section)',
+			self::TEXTURES_COM => 'Textures.com (Free Section)',
+			self::CGMOOD => 'CGMood (Free Section)',
+			self::THREE_D_SCANS => 'Three D Scans',
+			self::LOCATION_TEXTURES => 'Location Textures',
+			self::PBR_PX => 'PBRPX',
+			self::TWINBRU => 'Twinbru',
+			self::LIGHTBEANS => 'Lightbeans'
+		};
+	}
+
+	public function description(): string
+	{
+		return match ($this) {
+			self::THREE_D_TEXTURES => 'Free seamless PBR textures and unique creations in Substance Designer.',
+			self::AMBIENTCG => '2000+ Public Domain materials, HDRIs and models for Physically Based Rendering.',
+			self::POLYHAVEN => 'The Public 3D Asset Library - A combination of the websites "HDRI Haven", "Texture Haven" and "3D Model Haven."',
+			self::SHARETEXTURES => 'ShareTextures.com is creating and sharing PBR textures since 2018.',
+			self::TEXTURECAN => 'Offers free CG textures, free graphics and free patterns for 3D artists.',
+			self::CGBOOKCASE => 'Free PBR textures that come with all the map types needed to create photorealistic materials.',
+			self::NOEMOTIONHDRS => 'An older website with an impressive collection of free HDRIs.',
+			self::GPUOPENMATLIB => 'A collection of high-quality materials and related textures that is available completely for free, hosted by AMD GPUOpen. (Duplicates of materials from Polyhaven are excluded.)',
+			self::RAWCATALOG => 'A unique library that includes many ready-to-use resources for creating amazing projects in the field of video games, films, animation and visualization.',
+			self::POLIIGON => 'Textures, models and HDRIs for photorealistic 3D rendering. Make better renders, faster. Currently, only the "Free" section is indexed.',
+			self::TEXTURES_COM => 'Take your CG art to the next level with our highest quality content! Currently, only the "Free" section is indexed.',
+			self::CGMOOD => 'CGMood is a fresh, fair 3D marketplace. We are a team of architects and designers with many years of experience in the 3D visualization field. Currently, only the "Free" section is indexed.',
+			self::THREE_D_SCANS => 'A collection of high-quality statues/sculptures scanned in various european museums.',
+			self::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.',
+			self::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
+			self::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.',
+			self::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.'
+		};
+	}
+
+	public function licenseType(): CreatorLicenseType
+	{
+		return match ($this) {
+			self::AMBIENTCG,
+			self::POLYHAVEN,
+			self::SHARETEXTURES,
+			self::PBR_PX,
+			self::THREE_D_TEXTURES,
+			self::CGBOOKCASE,
+			self::GPUOPENMATLIB,
+			self::TEXTURECAN,
+			=> CreatorLicenseType::PUBLIC_DOMAIN,
+
+			self::NOEMOTIONHDRS
+			=> CreatorLicenseType::OPEN_LICENSE,
+
+			self::THREE_D_SCANS,
+			self::LOCATION_TEXTURES,
+			self::POLIIGON,
+			self::TEXTURES_COM,
+			self::RAWCATALOG,
+			self::LIGHTBEANS,
+			self::TWINBRU,
+			self::CGMOOD => CreatorLicenseType::ANY_LICENSE,
+		};
+	}
+
+	public function licenseUrl(): ?string
+	{
+		return match ($this) {
+			self::AMBIENTCG => 'https://docs.ambientcg.com/license/',
+			self::POLYHAVEN => 'https://polyhaven.com/license',
+			self::SHARETEXTURES => 'https://www.sharetextures.com/p/license',
+			self::THREE_D_TEXTURES => 'https://3dtextures.me/about/',
+			self::CGBOOKCASE => "https://www.cgbookcase.com/textures#:~:text=The%20textures%20are%20published%20under%20the%20CC0%201.0%20license%2C%20which%20means%20means%20you%20can%20use%20them%20for%20free%20without%20giving%20credit.",
+			self::TEXTURECAN => "https://www.texturecan.com/terms/",
+			self::NOEMOTIONHDRS => 'https://noemotionhdrs.net/#:~:text=NoEmotionHDRs%20by%20Peter%20Sanitra%20is%20licensed%20under%20a%20Creative%20Commons%20Attribution%2DNoDerivatives%204.0%20International%20License.%20Based%20on%20a%20work%20at%20http%3A//noemotionhdrs.net.%20Permissions%20beyond%20the%20scope%20of%20this%20license%20may%20be%20available%20at%20http%3A//noemotionhdrs.net',
+			self::RAWCATALOG => 'https://rawcatalog.com/terms/',
+			self::POLIIGON => 'https://help.poliigon.com/en/articles/8749749-asset-use-licensing',
+			self::TEXTURES_COM => 'https://www.textures.com/faq-license',
+			self::CGMOOD => 'https://cgmood.com/faq',
+			self::THREE_D_SCANS => 'https://threedscans.com/info/',
+			self::LOCATION_TEXTURES => 'https://locationtextures.com/privacy-policy/',
+			self::PBR_PX => 'https://pbrpx.com/privacy-policy/',
+			self::TWINBRU => "https://textures.twinbru.com/en/products?page=1&page_size=50#:~:text=The%20right%20to%20download%20pictures%20provides%20you%20a%20non%2Dtransferable%2C%20non%2Dexclusive%2C%20always%20terminable%20limited%20right%20to%20use%20this%20image%20in%20order%20to%20promote%20the%20sale%20of%20the%20fabrics%20shown%20in%20the%20pictures.",
+			self::LIGHTBEANS => "https://lightbeans.com/en/pages/texture-terms",
+			default => NULL
+		};
+	}
+
+	public function baseUrl(): string
+	{
+		return match ($this) {
+			self::THREE_D_TEXTURES => "https://3dtextures.me",
+			self::AMBIENTCG => 'https://ambientCG.com',
+			self::POLYHAVEN => 'https://polyhaven.com',
+			self::SHARETEXTURES => 'https://sharetextures.com',
+			self::TEXTURECAN => 'https://texturecan.com',
+			self::CGBOOKCASE => 'https://cgbookcase.com',
+			self::NOEMOTIONHDRS => 'http://noemotionhdrs.net',
+			self::GPUOPENMATLIB => 'https://matlib.gpuopen.com/',
+			self::RAWCATALOG => 'https://rawcatalog.com',
+			self::POLIIGON => 'https://www.poliigon.com/search/free',
+			self::TEXTURES_COM => 'https://www.textures.com/free',
+			self::CGMOOD => 'https://cgmood.com/free',
+			self::THREE_D_SCANS => 'https://threedscans.com/',
+			self::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/',
+			self::PBR_PX => 'https://library.pbrpx.com/',
+			self::TWINBRU => 'https://textures.twinbru.com',
+			self::LIGHTBEANS => 'https://lightbeans.com'
+		};
+	}
+
+	// Additional helpers
+
+	/**
+	 * 
+	 * @return self
+	 */
+	public static function randomScrapingTarget(bool $considerAvailability): self
+	{
+		$regularTargets = [
+			self::AMBIENTCG,
+			self::POLYHAVEN,
+			self::SHARETEXTURES,
+			self::THREE_D_TEXTURES,
+			self::CGBOOKCASE,
+			self::TEXTURECAN,
+			self::GPUOPENMATLIB,
+			self::RAWCATALOG,
+			self::POLIIGON,
+			self::TEXTURES_COM,
+			self::CGMOOD,
+			self::THREE_D_SCANS,
+			self::LOCATION_TEXTURES,
+			self::PBR_PX,
+			self::TWINBRU,
+			self::LIGHTBEANS
+		];
+
+		do {
+			if (sizeof($regularTargets) === 0) {
+				throw new Exception("No available creators for scraping.");
+			} else {
+				$target = $regularTargets[array_rand($regularTargets)];
+				unset($regularTargets[array_search($target, $regularTargets)]);
+			}
+		} while ($considerAvailability && !$target->isAvailableForScrape());
+
+		Log::write("Selected creator for scraping: ", $target, LogLevel::INFO);
+		return $target;
+	}
+
+	public function incrementFailedAttempts(DateTime $now): void
+	{
+		$nowStr = $now->format('Y-m-d H:i:s');
+		$sql = "INSERT INTO CreatorAvailability (creatorId, lastChecked, lastAvailable, failedAttempts) 
+				VALUES (?, ?, NULL, 1)
+				ON CONFLICT(creatorId) DO UPDATE SET 
+					lastChecked = ?,
+					lastAvailable = lastAvailable,
+					failedAttempts = failedAttempts + 1;";
+		$parameters = [$this->value, $nowStr, $nowStr];
+		$result = Database::runQuery($sql, $parameters);
+
+		if ($result === false) {
+			throw new Exception("Database query failed when incrementing failed attempts for creator.");
+		}
+	}
+
+	public function resetFailedAttempts(DateTime $now): void
+	{
+		$nowStr = $now->format('Y-m-d H:i:s');
+		$sql = "INSERT INTO CreatorAvailability (creatorId, lastChecked, lastAvailable, failedAttempts) 
+				VALUES (?, ?, ?, 0)
+				ON CONFLICT(creatorId) DO UPDATE SET 
+					lastChecked = ?,
+					lastAvailable = ?,
+					failedAttempts = 0;";
+		$parameters = [$this->value, $nowStr, $nowStr, $nowStr, $nowStr];
+		$result = Database::runQuery($sql, $parameters);
+
+		if ($result === false) {
+			throw new Exception("Database query failed when resetting failed attempts for creator.");
+		}
+	}
+
+	private function isAvailableForScrape(): bool
+	{
+
+		// Get availability state from DB
+		$sql = "SELECT creatorId,lastChecked,lastAvailable,failedAttempts FROM CreatorAvailability WHERE creatorId = ?";
+		$parameters = [$this->value];
+		$result = Database::runQuery($sql, $parameters);
+
+		if ($result === false) {
+			throw new Exception("Database query failed when checking creator availability.");
+		}
+
+		// Empty
+		if ($result === true) {
+			return true;
+		}
+
+		if ($row = $result->fetchArray(SQLITE3_ASSOC) ?: null) {
+			$failedAttempts = (int)$row['failedAttempts'];
+			$lastChecked = new DateTime($row['lastChecked']);
+			$lastAvailable = new DateTime($row['lastAvailable']);
+
+			// Rule: Creator is available if the difference between now and lastChecked is bigger than 2^failedAttempts minutes
+			$now = new DateTime();
+			$backoffMinutes = pow(2, $failedAttempts);
+			$nextCheckTime = clone $lastChecked;
+			$nextCheckTime->modify("+$backoffMinutes minutes");
+			if ($now < $nextCheckTime) {
+				Log::write("Creator not available for scraping yet due to backoff.", [
+					"creator" => $this,
+					"failedAttempts" => $failedAttempts,
+					"lastChecked" => $lastChecked->format(DateTime::ATOM),
+					"nextCheckTime" => $nextCheckTime->format(DateTime::ATOM)
+				], LogLevel::WARNING);
+				return false;
+			}
+		}
+
+		// No entry yet or check has passed, assume available
+		Log::write("Creator is available for scraping.", ["creator" => $this], LogLevel::INFO);
+		return true;
+	}
+
+	public function getLogic(): CreatorLogic
+	{
+		return match ($this) {
+			self::AMBIENTCG => new CreatorLogicAmbientCg(),
+			self::POLYHAVEN => new CreatorLogicPolyhaven(),
+			self::SHARETEXTURES => new CreatorLogicShareTextures(),
+			self::THREE_D_TEXTURES => new CreatorLogic3dTextures(),
+			self::CGBOOKCASE => new CreatorLogicCgBookcase(),
+			self::TEXTURECAN => new CreatorLogicTextureCan(),
+			self::NOEMOTIONHDRS => new CreatorLogicNoEmotionsHdr(),
+			self::GPUOPENMATLIB => new CreatorLogicAmdGpuOpen(),
+			self::RAWCATALOG => new CreatorLogicRawCatalog(),
+			self::POLIIGON => new CreatorLogicPoliigon(),
+			self::TEXTURES_COM => new CreatorLogicTexturesCom(),
+			self::CGMOOD => new CreatorLogicCgMood(),
+			self::THREE_D_SCANS => new CreatorLogicThreeDScans(),
+			self::LOCATION_TEXTURES => new CreatorLogicLocationTextures(),
+			self::PBR_PX => new CreatorLogicPbrPx(),
+			self::TWINBRU => new CreatorLogicTwinbru(),
+			self::LIGHTBEANS => new CreatorLogicLightbeans(),
+			// This becomes relevant when new creators are added without logic
+			//default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
+		};
+	}
+}
