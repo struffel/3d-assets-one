@@ -2,8 +2,13 @@
 
 namespace creator;
 
+use misc\Slug;
+
 enum CreatorLicenseType: int
 {
+
+	use Slug;
+
 	case ANY_LICENSE = 3;
 	case OPEN_LICENSE = 2;
 	case PUBLIC_DOMAIN = 1;
@@ -24,16 +29,6 @@ enum CreatorLicenseType: int
 			self::PUBLIC_DOMAIN => 'public-domain',
 			self::OPEN_LICENSE => 'open',
 			self::ANY_LICENSE => 'any',
-		};
-	}
-
-	public static function tryFromSlug(string $slug): ?self
-	{
-		return match ($slug) {
-			'public-domain' => self::PUBLIC_DOMAIN,
-			'any' => self::ANY_LICENSE,
-			'open' => self::OPEN_LICENSE,
-			default => null,
 		};
 	}
 }

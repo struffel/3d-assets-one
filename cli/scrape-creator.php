@@ -32,7 +32,7 @@ Log::write("Forceful mode?", $force, LogLevel::DEBUG);
 
 // Pick a target creator
 if (isset($argv[1])) {
-	$creator = Creator::fromAny($argv[1]);
+	$creator = Creator::fromValueOrSlug($argv[1]);
 } else {
 	$creator = Creator::randomScrapingTarget(!$force);
 }

@@ -28,8 +28,7 @@ jobs:
               run: vendor/bin/phpstan analyse cli include public --level=8
               working-directory: ./
 
-            - name: Run PHPUnit
-              # Testing the entire creator suite would create a huge runtime, extra traffic and make the tests more brittle.
+            - name: Run PHPUnit (Standard Testsuite)
               run: vendor/bin/phpunit --testsuite standard --testdox
               working-directory: ./
 

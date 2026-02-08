@@ -111,7 +111,7 @@ class StoredAssetQuery
 		// creator filter
 		$filterCreator = [];
 		foreach ($_GET['creator'] ?? [] as $creatorSlug) {
-			$creator = Creator::fromSlug($creatorSlug);
+			$creator = Creator::tryFromSlug($creatorSlug);
 			if ($creator !== null) {
 				$filterCreator[] = $creator;
 			}
@@ -120,7 +120,7 @@ class StoredAssetQuery
 		// type filter
 		$filterType = [];
 		foreach ($_GET['type'] ?? [] as $typeSlug) {
-			$filterType[] = AssetType::fromSlug($typeSlug);
+			$filterType[] = AssetType::tryFromSlug($typeSlug);
 		}
 
 
@@ -130,7 +130,7 @@ class StoredAssetQuery
 		return new StoredAssetQuery(
 			offset: intval($_GET['offset'] ?? 0),
 			limit: min(intval($_GET['limit'] ?? 150), 500),
-			sort: AssetSorting::fromAnyString($_GET['sort'] ?? "latest"),
+			sort: AssetSorting::tryFrom($_GET['sort'] ?? "") ?? AssetSorting::LATEST,
 			filterAssetId: $filterAssetId,
 			filterTag: $filterTag,
 			filterCreator: $filterCreator,

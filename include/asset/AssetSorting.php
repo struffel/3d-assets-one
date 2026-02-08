@@ -2,8 +2,12 @@
 
 namespace asset;
 
+use misc\Slug;
+
 enum AssetSorting: string
 {
+	use Slug;
+
 	case POPULAR = "popular";
 	case LATEST = "latest";
 	case OLDEST = "oldest";
@@ -19,12 +23,13 @@ enum AssetSorting: string
 	 * Returns the enum value for the string. 
 	 * Every other/invalid string gets turned into Sorting::LATEST.
 	 */
-	public static function fromAnyString(string $string): AssetSorting
+	public static function fromSlug(string $slug): self
 	{
-		if (in_array($string, array_column(AssetSorting::cases(), 'value'))) {
-			return AssetSorting::from($string);
-		} else {
-			return AssetSorting::LATEST;
-		}
+		return self::tryFromSlug($slug) ?? self::LATEST;
+	}
+
+	public function slug(): string
+	{
+		return $this->value;
 	}
 }

@@ -2,8 +2,13 @@
 
 namespace asset;
 
+use misc\Slug;
+
 enum AssetType: int
 {
+
+	use Slug;
+
 	case OTHER = 0;
 	case PBR_MATERIAL = 1;
 	case MODEL_3D = 2;
@@ -13,43 +18,38 @@ enum AssetType: int
 	public function slug(): string
 	{
 		return match ($this) {
-			AssetType::OTHER => 'other',
-			AssetType::PBR_MATERIAL => 'pbr-material',
-			AssetType::MODEL_3D => '3d-model',
-			AssetType::SUBSTANCE_MATERIAL => 'sbsar',
-			AssetType::HDRI => 'hdri',
+			self::OTHER => 'other',
+			self::PBR_MATERIAL => 'pbr-material',
+			self::MODEL_3D => '3d-model',
+			self::SUBSTANCE_MATERIAL => 'sbsar',
+			self::HDRI => 'hdri',
 		};
 	}
 
 	public function name(): string
 	{
 		return match ($this) {
-			AssetType::OTHER => 'Other',
-			AssetType::PBR_MATERIAL => 'PBR material',
-			AssetType::MODEL_3D => '3D model',
-			AssetType::SUBSTANCE_MATERIAL => 'Substance material',
-			AssetType::HDRI => 'HDRI',
+			self::OTHER => 'Other',
+			self::PBR_MATERIAL => 'PBR material',
+			self::MODEL_3D => '3D model',
+			self::SUBSTANCE_MATERIAL => 'Substance material',
+			self::HDRI => 'HDRI',
 		};
 	}
 
-	public static function fromSlug(string $slug): AssetType
+	public static function fromSlug(string $slug): self
 	{
-		foreach (AssetType::cases() as $c) {
-			if ($c->slug() === $slug) {
-				return $c;
-			}
-		}
-		return AssetType::OTHER;
+		return self::tryFromSlug($slug) ?? self::OTHER;
 	}
 
-	public static function fromTex1Tag(?string $tex1Tag): AssetType
+	public static function fromTex1Tag(?string $tex1Tag): self
 	{
 		return match ($tex1Tag) {
-			"pbr-scanned", "pbr-procedural", "pbr-approximated", "pbr-multiangle", "pbr-stereo" => AssetType::PBR_MATERIAL,
-			"sbsar-procedural" => AssetType::SUBSTANCE_MATERIAL,
-			"hdri-real" => AssetType::HDRI,
-			"3d-modeled", "3d-scanned", "3d-models" => AssetType::MODEL_3D,
-			default => AssetType::OTHER,
+			"pbr-scanned", "pbr-procedural", "pbr-approximated", "pbr-multiangle", "pbr-stereo" => self::PBR_MATERIAL,
+			"sbsar-procedural" => self::SUBSTANCE_MATERIAL,
+			"hdri-real" => self::HDRI,
+			"3d-modeled", "3d-scanned", "3d-models" => self::MODEL_3D,
+			default => self::OTHER,
 		};
 	}
 }

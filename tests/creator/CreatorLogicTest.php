@@ -1,6 +1,7 @@
 <?php
 
 use asset\StoredAssetCollection;
+use creator\Creator;
 use creator\CreatorLogic;
 use creator\logic\CreatorLogic3dTextures;
 use creator\logic\CreatorLogicAmbientCg;
@@ -32,29 +33,15 @@ final class CreatorLogicTest extends TestCase
 
 	public static function creatorLogicProvider(): array
 	{
-		return [
-			'3dTextures' => [new CreatorLogic3dTextures()],
-			'AmbientCg' => [new CreatorLogicAmbientCg()],
-			'AmdGpuOpen' => [new CreatorLogicAmdGpuOpen()],
-			'CgBookcase' => [new CreatorLogicCgBookcase()],
-			'CgMood' => [new CreatorLogicCgMood()],
-			'Lightbeans' => [new CreatorLogicLightbeans()],
-			'LocationTextures' => [new CreatorLogicLocationTextures()],
-			'NoEmotionsHdr' => [new CreatorLogicNoEmotionsHdr()],
-			'PbrPx' => [new CreatorLogicPbrPx()],
-			'Poliigon' => [new CreatorLogicPoliigon()],
-			'Polyhaven' => [new CreatorLogicPolyhaven()],
-			'RawCatalog' => [new CreatorLogicRawCatalog()],
-			'ShareTextures' => [new CreatorLogicShareTextures()],
-			'TextureCan' => [new CreatorLogicTextureCan()],
-			'TexturesCom' => [new CreatorLogicTexturesCom()],
-			'ThreeDScans' => [new CreatorLogicThreeDScans()],
-			'Twinbru' => [new CreatorLogicTwinbru()],
-		];
+		$output = [];
+		foreach (Creator::cases() as $creator) {
+			$output[$creator->slug()] = [$creator->getLogic()];
+		}
+		return $output;
 	}
 
 	#[DataProvider('creatorLogicProvider')]
-	public function testScrapeCreatorLogic(CreatorLogic $creatorLogic): void
+	public function testScrapeAssets(CreatorLogic $creatorLogic): void
 	{
 		$existingAssets = new StoredAssetCollection();
 		$scrapedAssets = $creatorLogic->scrapeAssets($existingAssets);

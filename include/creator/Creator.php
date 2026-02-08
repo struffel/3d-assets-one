@@ -26,11 +26,14 @@ use Exception;
 use InvalidArgumentException;
 use log\Log;
 use log\LogLevel;
+use misc\Slug;
 
 enum Creator: int
 {
 
-	// Enum values, arranged by the order to display them in
+	use Slug;
+
+		// Enum values, arranged by the order to display them in
 	case AMBIENTCG = 1;
 	case POLYHAVEN = 2;
 	case SHARETEXTURES = 3;
@@ -50,7 +53,7 @@ enum Creator: int
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
 
-	public static function fromAny(mixed $value): ?self
+	public static function fromValueOrSlug(mixed $value): ?self
 	{
 		if (is_numeric($value)) {
 			return self::from(intval($value));
@@ -318,16 +321,6 @@ enum Creator: int
 		// No entry yet or check has passed, assume available
 		Log::write("Creator is available for scraping.", ["creator" => $this], LogLevel::INFO);
 		return true;
-	}
-
-	public static function fromSlug(string $slug): ?self
-	{
-		foreach (self::cases() as $c) {
-			if ($c->slug() === $slug) {
-				return $c;
-			}
-		}
-		return null;
 	}
 
 	public function getLogic(): CreatorLogic

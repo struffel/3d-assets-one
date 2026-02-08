@@ -5,9 +5,12 @@
 	<testsuites>
 		<testsuite name="standard">
 			<directory>tests/thumbnail/</directory>
+			<directory>tests/misc/</directory>
+			<directory>tests/fetch/</directory>
+			<file>tests/creator/CreatorTest.php</file>
 		</testsuite>
-		<testsuite name="creators">
-			<directory>tests/creator</directory>
+		<testsuite name="scraping">
+			<file>tests/creator/CreatorLogicTest.php</file>
 		</testsuite>
 	</testsuites>
 
