@@ -61,6 +61,8 @@ jobs:
                   exclude: |
                       **/.git*
                       **/.git*/**
+                      .github/**
+                      .git/**
                       .htaccess
                       **/.env
                       data/**
