@@ -29,6 +29,7 @@ class Database
 			self::$connection = new SQLite3($dbPath, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 			self::$connection->enableExceptions(true);
 			self::$connection->busyTimeout(5000);
+
 			Log::write("Initialized SQLite DB connection", ["database" => $dbPath], LogLevel::DEBUG);
 
 			if (self::getUserVersion() == 0) {
@@ -110,6 +111,7 @@ class Database
 	{
 		self::initializeConnection();
 		Log::write("Optimizing database...", null, LogLevel::DEBUG);
+		self::$connection->exec("VACUUM;");
 		self::$connection->exec("PRAGMA optimize;");
 	}
 
