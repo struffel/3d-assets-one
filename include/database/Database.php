@@ -72,6 +72,8 @@ class Database
 		// This is necessary because the web server user needs write access, but the migration might be run by a different user from the CLI.
 		chmod(self::getDbPath(), 0666);
 		Log::write("Set database file permissions to 0666.", LogLevel::DEBUG);
+
+		Database::optimize();
 	}
 
 	private static function getUserVersion(): int
@@ -104,10 +106,17 @@ class Database
 		self::$connection->exec("BEGIN TRANSACTION;");
 	}
 
+	public static function optimize(): void
+	{
+		self::initializeConnection();
+		Log::write("Optimizing database...", null, LogLevel::DEBUG);
+		self::$connection->exec("PRAGMA optimize;");
+	}
+
 	public static function commitTransaction(): void
 	{
 		self::initializeConnection();
-		Log::write("Commit transaction...", LogLevel::DEBUG);
+		Log::write("Commit transaction...", null, LogLevel::DEBUG);
 		self::$connection->exec("COMMIT;");
 	}
 
