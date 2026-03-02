@@ -78,7 +78,7 @@ $assetCountByCreator = StoredAssetQuery::assetCountByCreator();
 
 			<label class="form-label" for="sort">Sort by</label>
 			<select name="sort">
-				<?php foreach ([AssetSorting::POPULAR, AssetSorting::LATEST, AssetSorting::OLDEST, AssetSorting::RANDOM] as $c) { ?>
+				<?php foreach ([AssetSorting::LATEST, AssetSorting::POPULAR, AssetSorting::OLDEST, AssetSorting::RANDOM] as $c) { ?>
 					<option class="form-option" <?= (($_GET['sort'] ?? '') === $c->value) ? 'selected' : '' ?> value="<?= $c->value ?>"><?= ucfirst($c->value) ?></option>
 				<?php } ?>
 			</select>
