@@ -130,7 +130,7 @@ class Thumbnail
 		$width = imagesx($gdImage);
 		$height = imagesy($gdImage);
 
-		$checkInterval = max(1, min((int)($width / 50), (int)($height / 50)));
+		$checkInterval = 4;
 		$allPixelsSame = true;
 		$firstPixel = imagecolorat($gdImage, 0, 0);
 		for ($x = 0; $x < $width; $x += $checkInterval) {
