@@ -197,9 +197,8 @@ class Database
 			throw new Exception("Failed to retrieve assets for popularity score update.");
 		}
 
-		$sqlUpdate = "";
+		$cases = [];
 		while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-
 			$clicks = intval($row['clicks']);
 			$ageDays = floatval($row['ageDays']);
 			$creatorCountRecent = intval($row['creatorCountRecent']);
@@ -209,7 +208,12 @@ class Database
 			$popularityScore /= pow($ageDays + 1, 1.5);
 			$popularityScore /= log($creatorCountRecent + 1, 2) + 1;
 
-			Database::runQuery("UPDATE Asset SET popularityScore = $popularityScore WHERE id = $id;");
+			$cases[] = "WHEN $id THEN $popularityScore";
+		}
+
+		if (!empty($cases)) {
+			$sql = "UPDATE Asset SET popularityScore = CASE id " . implode(" ", $cases) . " END;";
+			Database::runQuery($sql);
 		}
 	}
 }
