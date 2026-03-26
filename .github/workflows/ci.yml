@@ -25,7 +25,7 @@ jobs:
               working-directory: ./
 
             - name: Run PHPStan
-              run: vendor/bin/phpstan analyse cli include public --level=8
+              run: vendor/bin/phpstan analyse
               working-directory: ./
 
             - name: Run PHPUnit (Standard Testsuite)
