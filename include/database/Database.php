@@ -217,8 +217,7 @@ class Database
 			$popularityScore /= pow($ageDays + 1, 1.5);
 			$popularityScore /= log($creatorCountRecent + 1, 2) + 1;
 
-			$sqlUpdate .= "UPDATE Asset SET popularityScore = $popularityScore WHERE id = $id;";
+			Database::runQuery("UPDATE Asset SET popularityScore = $popularityScore WHERE id = $id;", [], true);
 		}
-		Database::runQuery($sqlUpdate, [], true);
 	}
 }
