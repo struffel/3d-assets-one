@@ -20,11 +20,8 @@ class EditorRow
 			class="editor-row">
 
 			<div class="editor-row-thumbnail">
-				<img height="48" width="48" class="asset-image" alt="<?= $asset->title ?>" src="<?= $asset->getThumbnailUrl(ThumbnailFormat::JPG_64_FFFFFF) ?>">
-			</div>
-			<div class="editor-row-link">
 				<a href="/go?id=<?= $asset->id ?>">
-					Test
+					<img height="48" width="48" class="asset-image" alt="<?= $asset->title ?>" src="<?= $asset->getThumbnailUrl(ThumbnailFormat::JPG_64_FFFFFF) ?>">
 				</a>
 			</div>
 			<div class="editor-row-id">

@@ -3,6 +3,8 @@
 namespace database;
 
 use asset\Asset;
+use BackedEnum;
+use DateTime;
 use Exception;
 use indexing\event\IndexingEvent;
 use log\Log;
@@ -127,11 +129,11 @@ class Database
 			// Turn any enums into their native representation and DateTime with a string
 			for ($i = 0; $i < sizeof($parameters); $i++) {
 
-				if ($parameters[$i] instanceof \BackedEnum) {
+				if ($parameters[$i] instanceof BackedEnum) {
 					$parameters[$i] = $parameters[$i]->value;
 				}
 
-				if ($parameters[$i] instanceof \DateTime) {
+				if ($parameters[$i] instanceof DateTime) {
 					$parameters[$i] = $parameters[$i]->format('Y-m-d H:i:s');
 				}
 			}
@@ -178,5 +180,32 @@ class Database
 	{
 		$sql = "UPDATE Asset SET clicks = clicks + 1 WHERE id = ?;";
 		Database::runQuery($sql, [$assetId]);
+	}
+
+	/**
+	 * Recalculate and store the popularity score for all assets.
+	 */
+	public static function updatePopularityScores(): void
+	{
+		$sql = "SELECT id,clicks,Asset.creatorId,creatorCountLast90d,ABS(JULIANDAY('now') - JULIANDAY(date)) as ageDays
+		FROM Asset
+		LEFT JOIN (SELECT creatorId, COUNT(*) as creatorCountLast90d FROM Asset WHERE date >= datetime('now', '-90 days') GROUP BY creatorId) as recentAssets ON Asset.creatorId = recentAssets.creatorId;";
+		$result = Database::runQuery($sql);
+
+		$sqlUpdate = "";
+		while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+
+			$clicks = intval($row['clicks']);
+			$ageDays = floatval($row['ageDays']);
+			$creatorCountLast90d = intval($row['creatorCountLast90d']);
+			$id = intval($row['id']);
+
+			$popularityScore = $clicks;
+			$popularityScore /= pow($ageDays + 1, 1.5);
+			$popularityScore /= log($creatorCountLast90d + 1, 2) + 1;
+
+			$sqlUpdate .= "UPDATE Asset SET popularityScore = $popularityScore WHERE id = $id;";
+		}
+		Database::runQuery($sqlUpdate);
 	}
 }
