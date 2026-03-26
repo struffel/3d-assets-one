@@ -193,7 +193,7 @@ class Database
 		LEFT JOIN (SELECT creatorId, COUNT(*) as creatorCountLast90d FROM Asset WHERE date >= datetime('now', '-90 days') GROUP BY creatorId) as recentAssets ON Asset.creatorId = recentAssets.creatorId;";
 		$result = Database::runQuery($sql);
 
-		if ($result === false) {
+		if (is_bool($result)) {
 			throw new Exception("Failed to retrieve assets for popularity score update.");
 		}
 
