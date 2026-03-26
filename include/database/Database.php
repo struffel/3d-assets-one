@@ -120,8 +120,8 @@ class Database
 	 */
 	public static function runQuery(string $sql, array $parameters = []): SQLite3Result|bool
 	{
-		$sqlToLog = explode(";", $sql)[0]; // Log only the first statement for readability
-		Log::write("Received SQL query to run: ", ["sql" => $sqlToLog, "parameters" => $parameters], LogLevel::DEBUG);
+		//$sqlToLog = explode(";", $sql)[0]; // Log only the first statement for readability
+		Log::write("Received SQL query to run: ", ["sql" => $sql, "parameters" => $parameters], LogLevel::DEBUG);
 		self::initializeConnection();
 
 
