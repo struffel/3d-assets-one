@@ -3,6 +3,8 @@
 namespace database;
 
 use asset\Asset;
+use BackedEnum;
+use DateTime;
 use Exception;
 use indexing\event\IndexingEvent;
 use log\Log;
@@ -129,6 +131,7 @@ class Database
 	 */
 	public static function runQuery(string $sql, array $parameters = []): SQLite3Result|bool
 	{
+		//$sqlToLog = explode(";", $sql)[0]; // Log only the first statement for readability
 		Log::write("Received SQL query to run: ", ["sql" => $sql, "parameters" => $parameters], LogLevel::DEBUG);
 		self::initializeConnection();
 
@@ -138,11 +141,11 @@ class Database
 			// Turn any enums into their native representation and DateTime with a string
 			for ($i = 0; $i < sizeof($parameters); $i++) {
 
-				if ($parameters[$i] instanceof \BackedEnum) {
+				if ($parameters[$i] instanceof BackedEnum) {
 					$parameters[$i] = $parameters[$i]->value;
 				}
 
-				if ($parameters[$i] instanceof \DateTime) {
+				if ($parameters[$i] instanceof DateTime) {
 					$parameters[$i] = $parameters[$i]->format('Y-m-d H:i:s');
 				}
 			}
@@ -189,5 +192,14 @@ class Database
 	{
 		$sql = "UPDATE Asset SET clicks = clicks + 1 WHERE id = ?;";
 		Database::runQuery($sql, [$assetId]);
+	}
+
+	/**
+	 * Recalculate and store the popularity score for all assets.
+	 */
+	public static function updatePopularityScores(): void
+	{
+		$sql = "UPDATE Asset SET popularityScore = ((clicks/ABS(JULIANDAY('now') - JULIANDAY(date))+1) / (SELECT (COUNT(*)+1) FROM Asset WHERE creatorId = Asset.creatorId AND date >= datetime('now', '-14 days') GROUP BY creatorId));";
+		Database::runQuery($sql);
 	}
 }

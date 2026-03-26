@@ -1,3 +1,2 @@
-CREATE INDEX "dateIndex" ON "Asset" ("date" DESC);
-CREATE INDEX "sortByLatestIndex" ON "Asset" ("state", "date" DESC, "id" DESC);
-CREATE INDEX "sortByOldestIndex" ON "Asset" ("state", "date" ASC, "id" ASC);
+ALTER TABLE "Asset" ADD COLUMN "popularityScore" REAL DEFAULT 0;
+CREATE INDEX "popularityScoreIndex" ON "Asset" ("popularityScore");

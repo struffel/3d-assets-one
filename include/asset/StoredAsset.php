@@ -53,6 +53,11 @@ class StoredAsset extends Asset
 			creator: $creator,
 			tags: $tags,
 		);
+
+		// Ensure that the date is not in the future
+		if ($this->date > new DateTime()) {
+			$this->date = new DateTime();
+		}
 	}
 
 	public function getThumbnailUrl(ThumbnailFormat $format, bool $fullUrl = false): string
