@@ -188,32 +188,7 @@ class Database
 	 */
 	public static function updatePopularityScores(): void
 	{
-		$sql = "SELECT id,clicks,Asset.creatorId,creatorCountRecent,ABS(JULIANDAY('now') - JULIANDAY(date)) as ageDays
-		FROM Asset
-		LEFT JOIN (SELECT creatorId, COUNT(*) as creatorCountRecent FROM Asset WHERE date >= datetime('now', '-30 days') GROUP BY creatorId) as recentAssets ON Asset.creatorId = recentAssets.creatorId;";
-		$result = Database::runQuery($sql);
-
-		if (is_bool($result)) {
-			throw new Exception("Failed to retrieve assets for popularity score update.");
-		}
-
-		$cases = [];
-		while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-			$clicks = intval($row['clicks']);
-			$ageDays = floatval($row['ageDays']);
-			$creatorCountRecent = intval($row['creatorCountRecent']);
-			$id = intval($row['id']);
-
-			$popularityScore = $clicks;
-			$popularityScore /= pow($ageDays + 1, 1.5);
-			$popularityScore /= log($creatorCountRecent + 1, 2) + 1;
-
-			$cases[] = "WHEN $id THEN $popularityScore";
-		}
-
-		if (!empty($cases)) {
-			$sql = "UPDATE Asset SET popularityScore = CASE id " . implode(" ", $cases) . " END;";
-			Database::runQuery($sql);
-		}
+		$sql = "UPDATE Asset SET popularityScore = ((clicks/ABS(JULIANDAY('now') - JULIANDAY(date))+1) / (SELECT (COUNT(*)+1) FROM Asset WHERE creatorId = Asset.creatorId AND date >= datetime('now', '-14 days') GROUP BY creatorId));";
+		Database::runQuery($sql);
 	}
 }
