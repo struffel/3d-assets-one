@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: 3d1-web
     ports:
-      - "5000:80"
+      - "7000:80"
     volumes:
       - ./:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/
     environment:

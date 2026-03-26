@@ -45,10 +45,15 @@ class StoredAssetQuery
 	}
 
 	/** @return array<int, int> */
-	public static function assetCountByCreator(): array
+	public static function assetCountByCreator(?int $lastNDays = null): array
 	{
 		$assetCountByCreator = [];
-		$result = Database::runQuery("SELECT creatorId, COUNT(*) AS count FROM Asset GROUP BY creatorId");
+		$sql = "SELECT creatorId, COUNT(*) AS count FROM Asset";
+		if ($lastNDays !== null) {
+			$sql .= " WHERE date >= datetime('now', '-$lastNDays days')";
+		}
+		$sql .= " GROUP BY creatorId";
+		$result = Database::runQuery($sql);
 		if (is_bool($result)) {
 			return $assetCountByCreator;
 		}
@@ -208,7 +213,7 @@ class StoredAssetQuery
 				AssetSorting::LATEST => " ORDER BY date DESC, id DESC ",
 				AssetSorting::OLDEST => " ORDER BY date ASC, id ASC ",
 				AssetSorting::RANDOM => " ORDER BY RANDOM() ",
-				AssetSorting::POPULAR => " ORDER BY ( clicks / ABS( JULIANDAY('now') - JULIANDAY(date) ) + 1  ) DESC, date DESC, id DESC ",
+				AssetSorting::POPULAR => " ORDER BY popularityScore DESC, date DESC, id DESC ",
 
 				// Options for internal editor (potentially less optimized)
 				AssetSorting::LEAST_CLICKED => " ORDER BY clicks ASC ",
