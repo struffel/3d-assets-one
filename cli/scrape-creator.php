@@ -111,6 +111,8 @@ if (sizeof($newScrapedAssets) > 0) {
 
 $creator->resetFailedAttempts($now);
 
+Database::optimize();
+
 Thumbnail::deleteOrphanedThumbnails();
 
 Log::stop(true);

@@ -149,20 +149,27 @@ class StoredAssetQuery
 	}
 
 	private function buildQuery(
-		bool $countByCreator = false
+		bool $countByCreator = false,
+		bool $includeTags = true
 	): Query {
 		Log::write("Loading assets based on this query", $this, LogLevel::DEBUG);
 
 		// Begin defining SQL string and parameters for prepared statement
 		if ($countByCreator) {
-			$sqlCommand = " SELECT creatorId, COUNT(*) AS count FROM Asset ";
+			$sqlCommand = " SELECT creatorId, COUNT(id) AS count FROM Asset ";
 		} else {
-			$sqlCommand = " SELECT id,url,title,state,date,clicks,lastSuccessfulValidation,typeId,creatorId,tags FROM Asset ";
+			if ($includeTags) {
+				$sqlCommand = " SELECT id,url,title,state,date,clicks,lastSuccessfulValidation,typeId,creatorId,tags FROM Asset ";
+			} else {
+				$sqlCommand = " SELECT id,url,title,state,date,clicks,lastSuccessfulValidation,typeId,creatorId FROM Asset ";
+			}
 		}
 		$sqlValues = [];
 
 		// Joins
-		$sqlCommand .= " LEFT JOIN (SELECT id, GROUP_CONCAT(tag , ',') AS tags FROM Tag GROUP BY id ) AllTags USING (id) ";
+		if (!$countByCreator && $includeTags) {
+			$sqlCommand .= " LEFT JOIN (SELECT id, GROUP_CONCAT(tag , ',') AS tags FROM Tag GROUP BY id ) AllTags USING (id) ";
+		}
 		$sqlCommand .= " WHERE TRUE ";
 
 
@@ -195,10 +202,12 @@ class StoredAssetQuery
 			return $c->licenseType()->value <= $this->filterLicenseType->value;
 		});
 
-
-		$ph = Database::generatePlaceholder($actualCreatorFilter);
-		$sqlCommand .= " AND creatorId IN ($ph) ";
-		$sqlValues = array_merge($sqlValues, $actualCreatorFilter);
+		// Only add creator filter if it actually excludes some creators
+		if (count($actualCreatorFilter) < count(Creator::cases())) {
+			$ph = Database::generatePlaceholder($actualCreatorFilter);
+			$sqlCommand .= " AND creatorId IN ($ph) ";
+			$sqlValues = array_merge($sqlValues, $actualCreatorFilter);
+		}
 
 		if ($this->filterStatus !== NULL) {
 			$sqlCommand .= " AND state=? ";
@@ -249,7 +258,7 @@ class StoredAssetQuery
 	 */
 	public function executeCountByCreator(): array
 	{
-		$databaseResult = $this->buildQuery(true)->execute();
+		$databaseResult = $this->buildQuery(true, includeTags: false)->execute();
 		$databaseOutput = [];
 		if (!is_bool($databaseResult)) {
 			while ($row = $databaseResult->fetchArray(SQLITE3_ASSOC)) {
@@ -259,11 +268,10 @@ class StoredAssetQuery
 		return $databaseOutput;
 	}
 
-	public function execute(): StoredAssetCollection
+	public function execute(bool $includeTags = true): StoredAssetCollection
 	{
-
 		// Fetch data from DB
-		$databaseResult = $this->buildQuery(false)->execute();
+		$databaseResult = $this->buildQuery(countByCreator: false, includeTags: $includeTags)->execute();
 		$databaseOutput = [];
 		if (!is_bool($databaseResult)) {
 			while ($row = $databaseResult->fetchArray(SQLITE3_ASSOC)) {
@@ -300,7 +308,6 @@ class StoredAssetQuery
 		}
 
 		Log::write("Loaded assets", ["count" => count($output), "nextCollection" => $output->nextCollection], LogLevel::DEBUG);
-
 		return $output;
 	}
 }
