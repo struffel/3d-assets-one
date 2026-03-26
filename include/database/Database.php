@@ -118,7 +118,7 @@ class Database
 	 * @param array<int, mixed> $parameters 
 	 * @return SQLite3Result|bool 
 	 */
-	public static function runQuery(string $sql, array $parameters = []): SQLite3Result|bool
+	public static function runQuery(string $sql, array $parameters = [], bool $resultless = false): SQLite3Result|bool
 	{
 		//$sqlToLog = explode(";", $sql)[0]; // Log only the first statement for readability
 		Log::write("Received SQL query to run: ", ["sql" => $sql, "parameters" => $parameters], LogLevel::DEBUG);
@@ -126,6 +126,10 @@ class Database
 
 
 		if (sizeof($parameters) > 0) {
+
+			if ($resultless) {
+				throw new Exception("Resultless queries with parameters are not supported.");
+			}
 
 			// Turn any enums into their native representation and DateTime with a string
 			for ($i = 0; $i < sizeof($parameters); $i++) {
@@ -153,7 +157,11 @@ class Database
 
 			$result = $stmt->execute();
 		} else {
-			$result = self::$connection->query($sql);
+			if ($resultless) {
+				$result = self::$connection->exec($sql);
+			} else {
+				$result = self::$connection->query($sql);
+			}
 		}
 
 		return $result;
@@ -211,6 +219,6 @@ class Database
 
 			$sqlUpdate .= "UPDATE Asset SET popularityScore = $popularityScore WHERE id = $id;";
 		}
-		Database::runQuery($sqlUpdate);
+		Database::runQuery($sqlUpdate, [], true);
 	}
 }
