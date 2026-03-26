@@ -188,9 +188,9 @@ class Database
 	 */
 	public static function updatePopularityScores(): void
 	{
-		$sql = "SELECT id,clicks,Asset.creatorId,creatorCountLast90d,ABS(JULIANDAY('now') - JULIANDAY(date)) as ageDays
+		$sql = "SELECT id,clicks,Asset.creatorId,creatorCountRecent,ABS(JULIANDAY('now') - JULIANDAY(date)) as ageDays
 		FROM Asset
-		LEFT JOIN (SELECT creatorId, COUNT(*) as creatorCountLast90d FROM Asset WHERE date >= datetime('now', '-90 days') GROUP BY creatorId) as recentAssets ON Asset.creatorId = recentAssets.creatorId;";
+		LEFT JOIN (SELECT creatorId, COUNT(*) as creatorCountRecent FROM Asset WHERE date >= datetime('now', '-30 days') GROUP BY creatorId) as recentAssets ON Asset.creatorId = recentAssets.creatorId;";
 		$result = Database::runQuery($sql);
 
 		if (is_bool($result)) {
@@ -202,12 +202,12 @@ class Database
 
 			$clicks = intval($row['clicks']);
 			$ageDays = floatval($row['ageDays']);
-			$creatorCountLast90d = intval($row['creatorCountLast90d']);
+			$creatorCountRecent = intval($row['creatorCountRecent']);
 			$id = intval($row['id']);
 
 			$popularityScore = $clicks;
 			$popularityScore /= pow($ageDays + 1, 1.5);
-			$popularityScore /= log($creatorCountLast90d + 1, 2) + 1;
+			$popularityScore /= log($creatorCountRecent + 1, 2) + 1;
 
 			$sqlUpdate .= "UPDATE Asset SET popularityScore = $popularityScore WHERE id = $id;";
 		}
