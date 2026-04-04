@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Creator availability</title>
+	<link rel="stylesheet" href="/css/page/availability.css">
+</head>
+<body>
+	{{template "admin-header"}}
+	<table>
+		<tr>
+			<th>Creator</th>
+			<th>Last Checked</th>
+			<th>Last Available</th>
+			<th>Failed Attempts</th>
+		</tr>
+		{{range .Rows}}
+		<tr>
+			<td>{{.Title}}</td>
+			<td>{{.LastChecked}}</td>
+			<td>{{.LastAvailable}}</td>
+			<td>{{.FailedAttempts}}</td>
+		</tr>
+		{{end}}
+	</table>
+</body>
+</html>

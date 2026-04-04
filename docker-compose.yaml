@@ -5,9 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: 3d1-web
     ports:
-      - "7000:80"
-    volumes:
-      - ./:/var/www/vhosts/h577143.web300.dogado.net/sites/3d1/
+      - "7000:8080"
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/public
     restart: unless-stopped

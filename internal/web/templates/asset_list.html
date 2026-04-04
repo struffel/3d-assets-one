@@ -1,0 +1,52 @@
+{{if .ShowWelcome}}
+<div id="welcome-message">
+	<div>
+		<p>
+			Welcome to <strong>3Dassets.one</strong>, a search engine for finding free, high-quality, human-made 3D resources.
+			Currently listing <strong>{{.AssetCount}} assets</strong> from <strong>{{.CreatorCount}} sources</strong>.
+		</p>
+		<p>
+			This is a side project to <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>, the free texture site.
+			You can support the development via the <a class="subtle-link" href="https://patreon.com/ambientCG">ambientCG Patreon</a>.
+			Suggest new sites via <a class="subtle-link" href="https://github.com/struffel/3d-assets-one/issues">GitHub</a>.
+		</p>
+	</div>
+</div>
+{{end}}
+
+{{range .CreatorCounts}}
+<span
+	id="creator-count-{{.Value}}"
+	data-count="{{.Count}}"
+	hx-swap-oob="true"
+	class="creator-count">
+	({{.Count}})
+</span>
+{{end}}
+
+{{range .Assets}}
+<div class="asset-box">
+	<a target="_blank" href="/go?id={{.ID}}">
+		<img class="asset-creator-image only-hover" title="{{.CreatorTitle}}" width="32" height="32" src="/static/creator/{{.CreatorValue}}.png">
+		<span class="asset-name only-hover">
+			{{.Title}}
+		</span>
+		<img class="asset-image" alt="{{.Title}}" src="{{.ThumbnailURL}}">
+	</a>
+	<span class="asset-icons only-hover">
+		{{if .LicenseURL}}
+		<a href="{{.LicenseURL}}" title="License Details">
+			<img src="/static/svg/scale-balance.svg" width="24" height="24" alt="License Details">
+		</a>
+		{{end}}
+	</span>
+</div>
+{{end}}
+
+{{if .NextPageURL}}
+<div style="opacity:0;transform:translateY(-650px);" id="load-more" hx-get="{{.NextPageURL}}" hx-trigger="intersect once" hx-swap="outerHTML"></div>
+{{else}}
+<div id="end-reached" class="results-end-text">
+	End of results.
+</div>
+{{end}}

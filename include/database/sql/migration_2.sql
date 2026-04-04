@@ -1,6 +1,0 @@
-CREATE TABLE "CreatorAvailability" (
-	"creatorId" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"lastChecked" TEXT DEFAULT CURRENT_TIMESTAMP,
-	"lastAvailable" TEXT DEFAULT NULL,
-	"failedAttempts" INTEGER DEFAULT 0
-);

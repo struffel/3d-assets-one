@@ -1,7 +1,0 @@
-parameters:
-    level: 8
-    paths:
-        - public
-        - cli
-        - include
-    treatPhpDocTypesAsCertain: false

@@ -1,0 +1,63 @@
+{{define "head"}}
+<head>
+	<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js"></script>
+	<title>3Dassets.one - The asset search engine</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/static/favicon/site.webmanifest">
+	<link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+	<link rel="shortcut icon" href="/static/favicon/favicon.ico">
+	<meta name="msapplication-TileColor" content="#2d89ef">
+	<meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+</head>
+{{end}}
+
+{{define "logo"}}<span style="color:#CB6CE6;">3D</span><span>assets</span><span style="color:#7ED957;">.</span><span>one</span>{{end}}
+
+{{define "header"}}
+<link rel="stylesheet" href="/css/component/header.css">
+<header>
+	<div class="logo">
+		{{template "logo"}}
+	</div>
+	<div class="logo-slogan">
+		The 3D Asset Search Engine<br>
+		by <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>
+	</div>
+	<nav class="navbar">
+		<a class="prominent-link" href="/">Assets</a>
+		<a class="prominent-link" href="/about-creators">Creators</a>
+		<a class="prominent-link" href="/about-site">About</a>
+	</nav>
+</header>
+{{end}}
+
+{{define "footer"}}
+<link rel="stylesheet" href="/css/component/footer.css">
+<footer>
+	<p>
+		<a class="subtle-link" href="https://patreon.com/ambientCG">Patreon</a>
+		&nbsp;•&nbsp;
+		<a class="subtle-link" href="https://github.com/struffel/3d-assets-one">GitHub</a>
+		&nbsp;•&nbsp;
+		<a class="subtle-link" href="https://docs.ambientCG.com/legal">Imprint</a>
+	</p>
+</footer>
+{{end}}
+
+{{define "admin-header"}}
+<link rel="stylesheet" href="/css/component/admin-header.css">
+<header>
+	<span class="logo">
+		{{template "logo"}}
+	</span>
+	<nav class="navbar">
+		<a class="prominent-link" href="/admin/availability">Availability</a>
+		<a class="prominent-link" href="/admin/editor">Editor</a>
+	</nav>
+</header>
+{{end}}

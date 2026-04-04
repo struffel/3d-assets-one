@@ -1,52 +1,29 @@
-FROM php:8.4-apache
+# Build stage
+FROM golang:1.25-alpine AS builder
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-	libpng-dev \
-	libjpeg-dev \
-	libfreetype6-dev \
-	libzip-dev \
-	libmagickwand-dev \
-	libwebp-dev \
-	sqlite3 \
-	libsqlite3-dev \
-	unzip \
-	git \
-	curl \
-	&& rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-# Configure and install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-	&& docker-php-ext-install -j$(nproc) \
-	gd \
-	zip \
-	mysqli \
-	calendar
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Install ImageMagick PHP extension
-#RUN pecl install imagick \
-#	&& docker-php-ext-enable imagick
+COPY . .
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+RUN CGO_ENABLED=0 GOOS=linux go build -o /server ./cmd/server
 
-# Configure PHP settings
-RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/memory-limit.ini \
-	&& echo "upload_max_filesize = 100M" >> /usr/local/etc/php/conf.d/upload.ini \
-	&& echo "post_max_size = 100M" >> /usr/local/etc/php/conf.d/upload.ini \
-	&& echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/execution.ini \
-	&& echo "max_input_vars = 3000" >> /usr/local/etc/php/conf.d/input.ini
+# Runtime stage
+FROM alpine:3.21
 
-# Enable Apache modules
-RUN a2enmod rewrite ssl headers
+RUN apk add --no-cache ca-certificates tzdata
 
-# Set proper permissions
-RUN mkdir -p /var/www/acg/ \
-	&& chown -R www-data:www-data /var/www/acg/ \
-	&& chmod -R 755 /var/www/acg/
+WORKDIR /app
 
-# Expose port 80
-EXPOSE 80
+COPY --from=builder /server /app/server
+COPY public/css /app/public/css
+COPY public/js /app/public/js
+COPY public/static /app/public/static
 
-# Set the document root and start Apache
-CMD ["/bin/bash", "-c", "sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/conf-available/*.conf && apache2-foreground"]
+EXPOSE 8080
+
+ENV GOMAXPROCS=8
+
+CMD ["/app/server"]

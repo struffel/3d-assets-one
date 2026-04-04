@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head"}}
+<link rel="stylesheet" href="/css/page/editor.css">
+<body>
+	{{template "admin-header"}}
+	<form id="editor-form"
+		hx-get="/admin/render/editor-list"
+		hx-target="main"
+		hx-trigger="submit,change,load,input delay:200ms"
+		hx-swap="innerHTML">
+
+		<label for="creator-select">Creator:</label>
+		<select name="creator[]">
+			<option value></option>
+			{{range .Creators}}<option class="form-option" value="{{.Slug}}" {{if .Selected}}selected{{end}}>{{.Title}}</option>
+			{{end}}
+		</select>
+
+		<label for="id-input">Asset ID:</label>
+		<input type="number" name="id[]" placeholder="assetId" value="{{.AssetID}}">
+
+		<label for="sort-select">Sort by:</label>
+		<select name="sort">
+			{{range .Sortings}}<option class="form-option" value="{{.Value}}" {{if .Selected}}selected{{end}}>{{.Value}}</option>
+			{{end}}
+		</select>
+
+		<label for="status-select">Status:</label>
+		<select name="status">
+			<option value></option>
+			{{range .Statuses}}<option class="form-option" value="{{.Value}}" {{if .Selected}}selected{{end}}>{{.Name}}</option>
+			{{end}}
+		</select>
+		<hr>
+	</form>
+	<main class="editor-main">
+	</main>
+</body>
+</html>

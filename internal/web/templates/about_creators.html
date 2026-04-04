@@ -1,0 +1,27 @@
+<html>
+{{template "head"}}
+<body>
+	<link rel="stylesheet" href="/css/page/about-creators.css">
+	{{template "header"}}
+	<main>
+		{{range .Creators}}
+		<div class="creator-box">
+			<span>
+				<img class="creator-box-image" src="/static/creator/{{.Value}}.png">
+			</span>
+			<span>
+				<h2>{{.Title}}</h2>
+				<p>{{.Description}}</p>
+				<p>
+					<a class="subtle-link" href="{{.BaseURL}}">Main website</a>
+					{{if .LicenseURL}}
+					| <a class="subtle-link" href="{{.LicenseURL}}">License</a>
+					{{end}}
+				</p>
+			</span>
+		</div>
+		{{end}}
+	</main>
+	{{template "footer"}}
+</body>
+</html>

@@ -1,0 +1,55 @@
+{{range .Assets}}
+<form
+	hx-ext="remove-me"
+	hx-post="/admin/render/editor-update-asset"
+	hx-swap="outerHTML"
+	class="editor-row">
+
+	<div class="editor-row-thumbnail">
+		<a href="/go?id={{.ID}}">
+			<img height="48" width="48" class="asset-image" alt="{{.Title}}" src="{{.ThumbnailURL}}">
+		</a>
+	</div>
+	<div class="editor-row-id">
+		<input readonly type="text" name="id" value="{{.ID}}">
+	</div>
+	<div class="editor-row-title">
+		<input type="text" name="title" value="{{.Title}}">
+	</div>
+	<div class="editor-row-tags">
+		<input type="text" name="tagString" value="{{.TagString}}">
+	</div>
+	<div class="editor-row-url">
+		<input type="text" name="url" value="{{.URL}}">
+	</div>
+	<div class="editor-row-date">
+		<input type="datetime-local" name="date" value="{{.DateString}}">
+	</div>
+	<div class="editor-row-status">
+		<select name="status">
+			{{range .Statuses}}<option {{if .Selected}}selected{{end}} class="form-option" value="{{.Value}}">{{.Name}}</option>
+			{{end}}
+		</select>
+	</div>
+	<div class="editor-row-type">
+		<select name="type">
+			{{range .Types}}<option {{if .Selected}}selected{{end}} class="form-option" value="{{.Value}}">{{.Name}}</option>
+			{{end}}
+		</select>
+	</div>
+	<div class="editor-row-update">
+		<button type="submit">Update</button>
+	</div>
+	{{if .Updated}}
+	<div remove-me="2s" class="updated-message">Updated!</div>
+	{{end}}
+</form>
+{{end}}
+
+{{if .NextPageURL}}
+<div style="opacity:0;transform:translateY(-650px);" id="load-more" hx-get="{{.NextPageURL}}" hx-trigger="intersect once" hx-swap="outerHTML"></div>
+{{else}}
+<div id="end-reached" class="results-end-text">
+	End of results.
+</div>
+{{end}}

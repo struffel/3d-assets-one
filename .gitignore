@@ -14,3 +14,4 @@ public/thumbnail/*
 # Data
 data/*
 /.phpunit.cache
+server.exe

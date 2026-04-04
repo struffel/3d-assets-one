@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head"}}
+<body>
+	<link rel="stylesheet" href="/css/page/index.css">
+	<nav id="asset-filters">
+		{{template "header"}}
+		<form
+			id="asset-filters-form"
+			oninput="window.scrollTo(0,0);"
+			onchange="window.scrollTo(0,0);"
+			hx-get="/render/asset-list"
+			hx-target="main"
+			hx-trigger="change,load,input delay:100ms"
+			hx-swap="innerHTML"
+			hx-push-url="/">
+			<label class="form-label" for="sort">Tags</label>
+			<input class="text-input" type="text" name="q" value="{{.Query}}" placeholder="tags...">
+
+			<label class="form-label" for="select-license-type">License</label>
+			<select name="license" id="select-license-type">
+				{{range .LicenseTypes}}<option class="form-option" {{if .Selected}}selected{{end}} value="{{.Slug}}">{{.Title}}</option>
+				{{end}}
+			</select>
+
+			<label class="form-label" for="creator[]">Site</label>
+			<select size="{{.CreatorCount}}" id="multi-select-creator" hx-swap-oob="true" class="multi-select" name="creator[]" multiple>
+				{{range .Creators}}<option
+					class="form-option"
+					id="creator-option-{{.Value}}"
+					{{if .Selected}}selected{{end}}
+					class="multi-select-option"
+					value="{{.Slug}}"
+					style="--creator-icon: url('/static/creator/{{.Value}}.png');">
+					<span class="creator-title">{{.Title}}</span>
+					<span id="creator-count-{{.Value}}" class="creator-count">({{.Count}})</span>
+				</option>
+				{{end}}
+			</select>
+
+			<label class="form-label" for="type[]">Type</label>
+			<select size="{{.TypeCount}}" class="multi-select" name="type[]" multiple>
+				{{range .Types}}<option class="form-option" {{if .Selected}}selected{{end}} value="{{.Slug}}">{{.Name}}</option>
+				{{end}}
+			</select>
+
+			<label class="form-label" for="sort">Sort by</label>
+			<select name="sort">
+				{{range .Sortings}}<option class="form-option" {{if .Selected}}selected{{end}} value="{{.Value}}">{{.Label}}</option>
+				{{end}}
+			</select>
+		</form>
+		<script src="/js/index.js"></script>
+		{{template "footer"}}
+	</nav>
+	<main></main>
+</body>
+</html>
