@@ -12,6 +12,8 @@ import (
 	"github.com/struffel/3d-assets-one/internal/database"
 	"github.com/struffel/3d-assets-one/internal/model"
 	"github.com/struffel/3d-assets-one/internal/query"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // --- Index page ---
@@ -105,11 +107,12 @@ func (s *Server) handleIndex(c *gin.Context) {
 	}
 
 	publicSortings := model.PublicSortings()
+	titleCaser := cases.Title(language.English)
 	var sortItems []indexSortItem
 	for _, sr := range publicSortings {
 		sortItems = append(sortItems, indexSortItem{
 			Value:    string(sr),
-			Label:    strings.Title(string(sr)),
+			Label:    titleCaser.String(string(sr)),
 			Selected: selectedSort == string(sr),
 		})
 	}

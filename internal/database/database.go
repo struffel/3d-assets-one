@@ -17,7 +17,15 @@ var migrationsFS embed.FS
 
 // Connect opens a connection to BunnyDatabase (LibSQL) using the provided URL and auth token.
 func Connect(databaseURL, authToken string) (*sql.DB, error) {
-	connStr := fmt.Sprintf("%s?authToken=%s", databaseURL, authToken)
+	if databaseURL == "" {
+		return nil, fmt.Errorf("database URL is empty: set BUNNY_DATABASE_URL")
+	}
+
+	connStr := databaseURL
+	if authToken != "" {
+		connStr += "?authToken=" + authToken
+	}
+
 	db, err := sql.Open("libsql", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)

@@ -1,58 +1,68 @@
 # Contributing
 
-## Running 3dassets.one locally
+## Running 3DAssets.one locally
 
-### Docker
-If available, Docker is the easiest way to run 3dassets.one locally for development purposes.
+### Docker (recommended)
 
 1. Clone the repository and open a terminal in it.
-2. Review the provided `.env.template` file and create a `.env` file in the same directory.
-3. Fetch the needed PHP composer dependencies:
+2. Copy `.env.template` to `.env` and fill in the required values.
+3. Build and start the containers:
 ```bash
-docker run -it --rm -v $pwd/:/app composer composer install
+docker compose up --build -d
 ```
-1. Build and start the Docker containers:
+4. Go to `http://localhost:7000` to access the site.
+
+The Docker setup includes a local LibSQL database. Thumbnail storage is optional for local development — the app will run without `BUNNY_STORAGE_*` variables, but thumbnails won't be processed.
+
+### Manual setup
+
+Requirements: **Go 1.25+**
+
 ```bash
-docker compose up --force-recreate --build -d
-```
-1. Go to `http://localhost:5000` to access the site.
-2. To use the CLI tools, open a terminal in the running web container:
-```bash
-docker exec -it 3d1-web /bin/bash
+# Install dependencies
+go mod download
+
+# Build
+go build -o server ./cmd/server
+
+# Run (set environment variables first — see .env.template)
+./server
 ```
 
-and navigate to the location where the source code is mounted.
-In the `cli/` subdirectory you can find the available CLI tools and run them with `php <tool.php>`.
+The server listens on port `8080` by default and serves static assets from the `public/` directory.
 
-### Manual Setup
-- 3Dassets.one uses
-  - PHP 8.4
-  - Apache with `public/` as document root
-  - SQLite and GDimage extensions for PHP
-  - GD needs `.webp` support for some creator thumbnails
+### Running tests
+
+```bash
+go test ./...
+```
 
 ## Adding a new creator
-The main form of contribution to 3dassets.one is to write an indexer for a new creator.
 
 ### Registration
 
-In `include/creator/Creator.php` add a new enum value for the creator and add cases in the necessary functions:
+In `internal/model/creator.go`:
 
-- `slug()`
-- `title()`
-- `description()`
-- `baseUrl()`
-- `licenseUrl()`
-- Add the creator to `regularREfreshList()` if it should be indexed regularly.
+1. Add a new `Creator` constant with an unused integer ID.
+2. Add the value to the `allCreators` slice.
+3. Add switch cases in `Slug()`, `Title()`, `Description()`, `BaseURL()`, and `LicenseURL()`.
+4. Add the creator to `regularScrapingTargets` if it should be indexed on a schedule.
 
-### Adding logic
+### Adding a scraper
 
-In `include/creator/logic/` create a new class for the creator.
+In `internal/scraper/` create a new `.go` file for the creator.
 
-The `CreatorLogic<Name>` class needs to extend the `CreatorLogic` abstract class and implement the method:
+Implement a function with signature:
 
-`scrapeAssets(StoredAssetCollection $existingAssets): ScrapedAssetCollection`
+```go
+func scrape<Name>(ctx context.Context, existing []model.StoredAsset) ([]model.ScrapedAsset, error)
+```
 
-This method is called during indexing.
-It receives all existing assets from this creator and returns a collection of newly scraped assets (if any were found).
+Then register it in `internal/scraper/registry.go` by adding an entry to the `Registry` map:
+
+```go
+model.Creator<Name>: scrape<Name>,
+```
+
+The function receives the existing assets for this creator and returns newly scraped assets.
 

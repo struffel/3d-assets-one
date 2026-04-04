@@ -1,0 +1,25 @@
+# Thumbnail data (can be huge, not needed for build)
+data/
+
+# Test files
+test-files/
+
+# Git
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# IDE / sync
+_gsdata_/
+*.exe
+
+# Environment
+.env
+.env.*
+!.env.template
+
+# Documentation
+README.md
+contributing.md
+LICENSE

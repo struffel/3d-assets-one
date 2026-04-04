@@ -1,4 +1,9 @@
 services:
+  db:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    volumes:
+      - db-data:/var/lib/sqld
+
   web:
     build:
       context: .
@@ -6,6 +11,17 @@ services:
     container_name: 3d1-web
     ports:
       - "7000:8080"
+    depends_on:
+      - db
     environment:
-      APACHE_DOCUMENT_ROOT: /var/www/vhosts/h577143.web300.dogado.net/sites/3d1/public
+      BUNNY_DATABASE_URL: http://db:8080
+      BUNNY_DATABASE_AUTH_TOKEN: ""
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-default}
+      BUNNY_STORAGE_ZONE: ${BUNNY_STORAGE_ZONE:-}
+      BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD:-}
+      BUNNY_STORAGE_HOST: ${BUNNY_STORAGE_HOST:-storage.bunnycdn.com}
+      BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
     restart: unless-stopped
+
+volumes:
+  db-data:

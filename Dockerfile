@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=builder /server /app/server
 COPY public/css /app/public/css
 COPY public/js /app/public/js
-COPY public/static /app/public/static
+COPY public/img /app/public/img
 
 EXPOSE 8080
 

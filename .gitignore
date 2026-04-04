@@ -8,8 +8,8 @@ vendor/
 **.env
 **.htpasswd
 
-# Media
-public/thumbnail/*
+# Data
+data/thumbnail/
 
 # Data
 data/*

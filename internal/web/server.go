@@ -37,10 +37,10 @@ func NewServer(db *sql.DB, cfg *config.Config) *Server {
 func (s *Server) SetupRouter(staticFS fs.FS) *gin.Engine {
 	r := gin.Default()
 
-	// Serve static files (css, js, static)
+	// Serve static files (css, js, img)
 	r.StaticFS("/css", http.FS(mustSubFS(staticFS, "css")))
 	r.StaticFS("/js", http.FS(mustSubFS(staticFS, "js")))
-	r.StaticFS("/static", http.FS(mustSubFS(staticFS, "static")))
+	r.StaticFS("/img", http.FS(mustSubFS(staticFS, "img")))
 
 	// Health check
 	r.GET("/health", func(c *gin.Context) {

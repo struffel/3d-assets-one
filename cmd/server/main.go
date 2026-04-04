@@ -41,18 +41,23 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Object storage (FTP to Bunny)
-	store := storage.NewFTPStorage(cfg.StorageZone, cfg.StoragePassword, cfg.StorageHost, cfg.CDNBaseURL)
+	// Object storage (FTP to Bunny) - only if configured
+	var thumbProc *thumbnail.Processor
+	if cfg.StorageZone != "" && cfg.StoragePassword != "" {
+		store := storage.NewFTPStorage(cfg.StorageZone, cfg.StoragePassword, cfg.StorageHost, cfg.CDNBaseURL)
+		thumbProc = thumbnail.NewProcessor(store)
+	} else {
+		slog.Warn("Storage not configured, thumbnails and scraping will be disabled")
+	}
 
-	// Thumbnail processor
-	thumbProc := thumbnail.NewProcessor(store)
-
-	// Background scraper
+	// Background scraper - only if thumbnail processor is available
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	sched := scraper.NewScheduler(db, thumbProc, 2*time.Minute)
-	go sched.Start(ctx)
+	if thumbProc != nil {
+		sched := scraper.NewScheduler(db, thumbProc, 2*time.Minute)
+		go sched.Start(ctx)
+	}
 
 	// Web server
 	gin.SetMode(gin.ReleaseMode)
