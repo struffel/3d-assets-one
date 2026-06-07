@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}3Dassets.one Admin{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/admin/">Admin Home</a>
+            &nbsp;•&nbsp;
+            <a href="/admin/editor">Editor</a>
+            &nbsp;•&nbsp;
+            <a href="/admin/availability">Availability</a>
+            &nbsp;•&nbsp;
+            <a href="/admin/logs">Logs</a>
+            &nbsp;•&nbsp;
+            <a href="/">Public Site</a>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

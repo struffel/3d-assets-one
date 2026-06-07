@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}3Dassets.one - About{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="/css/page/about-site.css">
+{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="/css/component/header.css">
+<header>
+    <div class="logo">
+        <a href="/"><img src="/static/svg/logo.svg" alt="3Dassets.one" height="40"></a>
+    </div>
+    <div class="logo-slogan">
+        The 3D Asset Search Engine<br>
+        by <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>
+    </div>
+    <nav class="navbar">
+        <a class="prominent-link" href="/">Assets</a>
+        <a class="prominent-link" href="/about-creators">Creators</a>
+        <a class="prominent-link" href="/about-site">About</a>
+    </nav>
+</header>
+<main>
+    <h2>What is 3Dassets.one?</h2>
+    <p>
+        3Dassets.one is a search engine that combines the libraries of many independent CG asset websites like Poly Haven, ambientCG and others and allows you to look for the right texture, HDRI or model without having to open half a dozen browser tabs.
+    </p>
+    <p>
+        The site automatically polls the websites of all creators for new assets and automatically lists them. You can filter the results by creator or using keywords, categories and licenses. When clicking on an asset you will be redirected to the creators website.
+        3Dassets.one does not copy, archive or re-upload the assets.
+    </p>
+    <h2>Can I get my assets listed?</h2>
+    <p>
+        Yes, you can submit your assets, but there are a few requirements:
+    <ul>
+        <li><strong>Your collection must already be available on the internet.</strong></li>
+        <li><strong>The assets must be available for free.</strong></li>
+        <li><strong>Your collection should have at least ~20 assets.</strong></li>
+        <li><strong>Every asset must be addressable individually using a unique URL.</strong></li>
+    </ul>
+    If your asset collection fulfills these criteria you can write to <strong>info [at] 3Dassets.one</strong> to discuss an integration.
+    </p>
+    <h2>API</h2>
+    <p>
+        Below is a description for <code>v2</code> of the API for 3Dassets.one.
+    </p>
+    <h3><code>/api/v2/assets</code></h3>
+    <p>This endpoint allows searching the link database. Its HTTP parameters are identical to those of the main search page.</p>
+    <table>
+        <tr><td><code>q</code></td><td>The search string, a list of tags.</td></tr>
+        <tr><td><code>id[]</code></td><td>Allows searching for specific asset ids.</td></tr>
+        <tr><td><code>creator[]</code></td><td>Filter by creator slug.</td></tr>
+        <tr><td><code>type[]</code></td><td>Filter by asset type slug.</td></tr>
+        <tr><td><code>limit</code></td><td>Number of results (default 150, max 500).</td></tr>
+        <tr><td><code>offset</code></td><td>Pagination offset.</td></tr>
+        <tr><td><code>sort</code></td><td>Sort order: {% for s in sortings %}<code>{{ s.value }}</code> {% endfor %}</td></tr>
+        <tr><td><code>thumbnailFormat</code></td><td>Thumbnail format: <code>128-PNG 256-PNG 128-JPG-FFFFFF 256-JPG-FFFFFF</code></td></tr>
+    </table>
+    <h3><code>/api/v2/assets-rss</code></h3>
+    <p>Generates a customizable RSS feed of newly indexed assets.</p>
+    <h3><code>/api/v2/types</code></h3>
+    <p>Returns all asset types. No parameters.</p>
+    <h3><code>/api/v2/creators</code></h3>
+    <p>Returns all creators. No parameters.</p>
+</main>
+<link rel="stylesheet" href="/css/component/footer.css">
+<footer>
+    <p>
+        <a class="subtle-link" href="https://patreon.com/ambientCG">Patreon</a>
+        &nbsp;•&nbsp;
+        <a class="subtle-link" href="https://github.com/struffel/3d-assets-one">GitHub</a>
+        &nbsp;•&nbsp;
+        <a class="subtle-link" href="https://docs.ambientCG.com/legal">Imprint</a>
+    </p>
+</footer>
+{% endblock %}

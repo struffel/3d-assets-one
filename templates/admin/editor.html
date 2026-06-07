@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% block title %}Asset Editor - Admin{% endblock %}
+{% block content %}
+<h1>Asset Editor</h1>
+<form method="get" action="/admin/editor">
+    <input type="text" name="q" value="{{ get.get('q', '') | e }}" placeholder="tags...">
+    <select name="creator[]" multiple>
+        {% for c in creators %}
+        <option value="{{ c.slug() }}" {% if c.slug() in get.get('creator[]', []) %}selected{% endif %}>{{ c.title() }}</option>
+        {% endfor %}
+    </select>
+    <select name="sort">
+        {% for s in sortings %}
+        <option value="{{ s.value }}" {% if get.get('sort', '') == s.value %}selected{% endif %}>{{ s.value }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Thumbnail</th>
+            <th>Title</th>
+            <th>Creator</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>URL</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for asset in assets %}
+        <tr>
+            <td>{{ asset.id }}</td>
+            <td><img src="{{ asset.get_thumbnail_url('32-PNG') }}" width="32" height="32" alt=""></td>
+            <td>{{ asset.title }}</td>
+            <td>{{ asset.creator.title() }}</td>
+            <td>{{ asset.type.label() }}</td>
+            <td>{{ asset.status.name }}</td>
+            <td>{{ asset.date.strftime('%Y-%m-%d') }}</td>
+            <td><a href="{{ asset.url }}" target="_blank" rel="noopener noreferrer">Link</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

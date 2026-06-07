@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block title %}Log Files - Admin{% endblock %}
+{% block content %}
+<h1>Log Files</h1>
+{% if log_files %}
+<table>
+    <thead>
+        <tr>
+            <th>File</th>
+            <th>Size</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for f in log_files %}
+        <tr>
+            <td>{{ f.name }}</td>
+            <td>{{ f.size }}</td>
+            <td>
+                {% if f.success == true %}✓{% elif f.success == false %}✗{% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No log files found.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}3Dassets.one - Creators{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="/css/page/about-creators.css">
+{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="/css/component/header.css">
+<header>
+    <div class="logo">
+        <a href="/"><img src="/static/svg/logo.svg" alt="3Dassets.one" height="40"></a>
+    </div>
+    <div class="logo-slogan">
+        The 3D Asset Search Engine<br>
+        by <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>
+    </div>
+    <nav class="navbar">
+        <a class="prominent-link" href="/">Assets</a>
+        <a class="prominent-link" href="/about-creators">Creators</a>
+        <a class="prominent-link" href="/about-site">About</a>
+    </nav>
+</header>
+<main>
+    <h2>Asset Creators</h2>
+    <p>
+        Below is a list of all asset creators indexed by 3Dassets.one. Click on a creator to browse their assets.
+    </p>
+    <div class="creator-grid">
+        {% for c in creators %}
+        <div class="creator-card">
+            <a class="creator-link" href="/?creator[]={{ c.slug() }}">
+                <img class="creator-logo" src="/static/creator/{{ c.value }}.png" alt="{{ c.title() }}" width="64" height="64">
+                <h3 class="creator-title">{{ c.title() }}</h3>
+            </a>
+            <p class="creator-description">{{ c.description() }}</p>
+            <p class="creator-links">
+                <a class="prominent-link" href="{{ c.base_url() }}" target="_blank" rel="noopener noreferrer">Visit site</a>
+                {% if c.license_url() %}
+                &nbsp;
+                <a class="subtle-link" href="{{ c.license_url() }}" target="_blank" rel="noopener noreferrer">License</a>
+                {% endif %}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+<link rel="stylesheet" href="/css/component/footer.css">
+<footer>
+    <p>
+        <a class="subtle-link" href="https://patreon.com/ambientCG">Patreon</a>
+        &nbsp;•&nbsp;
+        <a class="subtle-link" href="https://github.com/struffel/3d-assets-one">GitHub</a>
+        &nbsp;•&nbsp;
+        <a class="subtle-link" href="https://docs.ambientCG.com/legal">Imprint</a>
+    </p>
+</footer>
+{% endblock %}

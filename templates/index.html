@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="/css/page/index.css">
+{% endblock %}
+
+{% block body %}
+<nav id="asset-filters">
+    <link rel="stylesheet" href="/css/component/header.css">
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/static/svg/logo.svg" alt="3Dassets.one" height="40"></a>
+        </div>
+        <div class="logo-slogan">
+            The 3D Asset Search Engine<br>
+            by <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>
+        </div>
+        <nav class="navbar">
+            <a class="prominent-link" href="/">Assets</a>
+            <a class="prominent-link" href="/about-creators">Creators</a>
+            <a class="prominent-link" href="/about-site">About</a>
+        </nav>
+    </header>
+
+    <form
+        id="asset-filters-form"
+        oninput="window.scrollTo(0,0);"
+        onchange="window.scrollTo(0,0);"
+        hx-get="/render/asset-list"
+        hx-target="main"
+        hx-trigger="change,load,input delay:100ms"
+        hx-swap="innerHTML"
+        hx-push-url="/">
+
+        <label class="form-label" for="q">Tags</label>
+        <input class="text-input" type="text" name="q" value="{{ (get.q or '') | e }}" placeholder="tags...">
+
+        <label class="form-label" for="select-license-type">License</label>
+        <select name="license" id="select-license-type">
+            {% for lt in license_types %}
+            <option class="form-option"
+                {% if (get.license or '') == lt.slug() %}selected{% endif %}
+                value="{{ lt.slug() }}">{{ lt.title() }}</option>
+            {% endfor %}
+        </select>
+
+        <label class="form-label" for="creator[]">Site</label>
+        <select size="{{ creators | length }}" id="multi-select-creator" hx-swap-oob="true" class="multi-select" name="creator[]" multiple>
+            {% for c in creators %}
+            <option
+                class="form-option"
+                id="creator-option-{{ c.value }}"
+                {% if c.slug() in (get.get('creator[]') or []) %}selected{% endif %}
+                value="{{ c.slug() }}"
+                style="--creator-icon: url('/static/creator/{{ c.value }}.png');">
+                <span class="creator-title">{{ c.title() }}</span>
+                <span id="creator-count-{{ c.value }}" class="creator-count">({{ asset_count_by_creator.get(c.value, 0) }})</span>
+            </option>
+            {% endfor %}
+        </select>
+
+        <label class="form-label" for="type[]">Type</label>
+        <select size="{{ asset_types | length }}" class="multi-select" name="type[]" multiple>
+            {% for t in asset_types %}
+            <option class="form-option"
+                {% if t.slug() in (get.get('type[]') or []) %}selected{% endif %}
+                value="{{ t.slug() }}">{{ t.label() }}</option>
+            {% endfor %}
+        </select>
+
+        <label class="form-label" for="sort">Sort by</label>
+        <select name="sort">
+            {% for s in sortings %}
+            <option class="form-option"
+                {% if (get.sort or '') == s.value %}selected{% endif %}
+                value="{{ s.value }}">{{ s.value | capitalize }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    <script src="/js/index.js"></script>
+
+    <link rel="stylesheet" href="/css/component/footer.css">
+    <footer>
+        <p>
+            <a class="subtle-link" href="https://patreon.com/ambientCG">Patreon</a>
+            &nbsp;•&nbsp;
+            <a class="subtle-link" href="https://github.com/struffel/3d-assets-one">GitHub</a>
+            &nbsp;•&nbsp;
+            <a class="subtle-link" href="https://docs.ambientCG.com/legal">Imprint</a>
+        </p>
+    </footer>
+</nav>
+<main></main>
+{% endblock %}

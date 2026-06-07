@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Creator Availability - Admin{% endblock %}
+{% block content %}
+<h1>Creator Availability</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Creator</th>
+            <th>Last Checked</th>
+            <th>Last Available</th>
+            <th>Failed Attempts</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in availability %}
+        <tr>
+            <td>{{ row.creator.title() }}</td>
+            <td>{{ row.last_checked or '—' }}</td>
+            <td>{{ row.last_available or '—' }}</td>
+            <td>{{ row.failed_attempts }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

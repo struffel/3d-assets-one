@@ -1,0 +1,53 @@
+{% if show_welcome %}
+<div id="welcome-message">
+    <div>
+        <p>
+            Welcome to <strong>3Dassets.one</strong>, a search engine for finding free, high-quality, human-made 3D resources.
+            Currently listing <strong>{{ asset_count_total }} assets</strong> from <strong>{{ creators | length }} sources</strong>.
+        </p>
+        <p>
+            This is a side project to <a class="subtle-link" href="https://ambientCG.com">ambientCG</a>, the free texture site.
+            You can support the development via the <a class="subtle-link" href="https://patreon.com/ambientCG">ambientCG Patreon</a>.
+            Suggest new sites via <a class="subtle-link" href="https://github.com/struffel/3d-assets-one/issues">GitHub</a>.
+        </p>
+    </div>
+</div>
+{% endif %}
+
+{% for c in creators %}
+<span
+    id="creator-count-{{ c.value }}"
+    data-count="{{ count_by_creator.get(c.value, 0) }}"
+    hx-swap-oob="true"
+    class="creator-count">
+    ({{ count_by_creator.get(c.value, 0) }})
+</span>
+{% endfor %}
+
+{% for asset in assets %}
+<div class="asset-box">
+    <a target="_blank" href="/go?id={{ asset.id }}">
+        <img class="asset-creator-image only-hover" title="{{ asset.creator.title() }}" width="32" height="32" src="/static/creator/{{ asset.creator.value }}.png">
+        <span class="asset-name only-hover">{{ asset.title }}</span>
+        <img class="asset-image" alt="{{ asset.title | e }}" src="{{ asset.get_thumbnail_url(thumbnail_format) }}">
+    </a>
+    <span class="asset-icons only-hover">
+        {% if asset.creator.license_url() %}
+        <a href="{{ asset.creator.license_url() }}" title="License Details">
+            <img src="/static/svg/scale-balance.svg" width="24" height="24" alt="License Details">
+        </a>
+        {% endif %}
+    </span>
+</div>
+{% endfor %}
+
+{% if assets.next_collection %}
+<div style="opacity:0;transform:translateY(-650px);" id="load-more"
+    hx-get="/render/asset-list?{{ assets.next_collection.to_http_get() }}"
+    hx-trigger="intersect once"
+    hx-swap="outerHTML"></div>
+{% else %}
+<div id="end-reached" class="results-end-text">
+    End of results.
+</div>
+{% endif %}
