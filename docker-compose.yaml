@@ -12,10 +12,10 @@ services:
       - "21:21"
       - "30000-30009:30000-30009"
     volumes:
-      - ./data/ftp:/home/ftpusers
+      - ./data/thumbnail:/home/ftpusers
     environment:
-      FTP_USER_NAME: ${3D1_FTP_USER_NAME:-ftpuser}
-      FTP_USER_PASS: ${3D1_FTP_USER_PASS:-ftppass}
+      FTP_USER_NAME: $3D1_FTP_USER_NAME
+      FTP_USER_PASS: $3D1_FTP_USER_PASS
       FTP_USER_HOME: /home/ftpusers
     restart: unless-stopped
 
@@ -25,7 +25,7 @@ services:
     ports:
       - "7002:80"
     volumes:
-      - ./data/ftp:/usr/share/nginx/html:ro
+      - ./data/thumbnail:/usr/share/nginx/html:ro
     restart: unless-stopped
 
   scraper:
@@ -41,14 +41,13 @@ services:
       3D1_LIBSQL_DATABASE_AUTH_TOKEN: ""
 
       # Admin
-      3D1_ADMIN_USER: ${3D1_ADMIN_USER:-admin}
-      3D1_ADMIN_PASS: ${3D1_ADMIN_PASS:-default}
+      3D1_ADMIN_USER_NAME: $3D1_ADMIN_USER_NAME
+      3D1_ADMIN_USER_PASS: $3D1_ADMIN_USER_PASS
 
       # Storage
-      3D1_FTP_HOST: ${3D1_FTP_HOST:-ftp}
-      3D1_FTP_PORT: ${3D1_FTP_PORT:-21}
-      3D1_FTP_USER_NAME: ${3D1_FTP_USER_NAME:-ftpuser}
-      3D1_FTP_USER_PASS: ${3D1_FTP_USER_PASS:-ftppass}
+      3D1_FTP_HOST: $3D1_FTP_HOST
+      3D1_FTP_USER_NAME: $3D1_FTP_USER_NAME
+      3D1_FTP_USER_PASS: $3D1_FTP_USER_PASS
 
       # Server
       3D1_PORT: "7001"
@@ -73,5 +72,5 @@ services:
       3D1_PORT: "7000"
 
       # CDN
-      3D1_CDN_URL: ${3D1_CDN_URL:-http://localhost:7002}
+      3D1_CDN_URL: http://localhost:7002
     restart: unless-stopped

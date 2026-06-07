@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/struffel/3d-assets-one/internal/model"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
@@ -143,21 +144,21 @@ func AddAssetClick(db *sql.DB, assetID int64) error {
 }
 
 // UpdatePopularityScores recalculates popularity for all assets.
-func UpdatePopularityScores(db *sql.DB) error {
+/*func UpdatePopularityScores(db *sql.DB) error {
 	sql := `UPDATE Asset SET popularityScore = (
 		(clicks / (ABS(JULIANDAY('now') - JULIANDAY(date)) + 1))
 		/ (SELECT (COUNT(*) + 1) FROM Asset a2 WHERE a2.creatorId = Asset.creatorId AND a2.date >= datetime('now', '-14 days'))
 	)`
 	_, err := db.Exec(sql)
 	return err
-}
+}*/
 
 // GetCreatorState reads a per-creator state value from FetchingState.
-func GetCreatorState(db *sql.DB, creatorID int, key string) (string, bool) {
+func GetCreatorState(db *sql.DB, creator model.Creator, key string) (string, bool) {
 	var val string
 	err := db.QueryRow(
 		"SELECT stateValue FROM FetchingState WHERE creatorId = ? AND stateKey = ?",
-		creatorID, key,
+		creator, key,
 	).Scan(&val)
 	if err != nil {
 		return "", false
