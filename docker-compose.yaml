@@ -1,8 +1,32 @@
 services:
   db:
     image: ghcr.io/tursodatabase/libsql-server:latest
+    command: /bin/sqld --db-path /data/3d1.sqlite --http-listen-addr 0.0.0.0:8080
     volumes:
-      - db-data:/var/lib/sqld
+      - ./data:/data
+
+  ftp:
+    image: stilliard/pure-ftpd:hardened
+    container_name: 3d1-ftp
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    volumes:
+      - ./data/ftp:/home/ftpusers
+    environment:
+      FTP_USER_NAME: ${FTP_USER_NAME:-ftpuser}
+      FTP_USER_PASS: ${FTP_USER_PASS:-ftppass}
+      FTP_USER_HOME: /home/ftpusers
+    restart: unless-stopped
+
+  cdn:
+    image: nginx:latest
+    container_name: 3d1-cdn
+    ports:
+      - "8081:80"
+    volumes:
+      - ./data/ftp:/usr/share/nginx/html:ro
+    restart: unless-stopped
 
   web:
     build:
@@ -13,6 +37,8 @@ services:
       - "7000:8080"
     depends_on:
       - db
+    volumes:
+      - ./data/thumbnail:/app/data/thumbnail:ro
     environment:
       BUNNY_DATABASE_URL: http://db:8080
       BUNNY_DATABASE_AUTH_TOKEN: ""
@@ -21,7 +47,5 @@ services:
       BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD:-}
       BUNNY_STORAGE_HOST: ${BUNNY_STORAGE_HOST:-storage.bunnycdn.com}
       BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
+      LOCAL_THUMBNAIL_DIR: /app/data/thumbnail
     restart: unless-stopped
-
-volumes:
-  db-data:

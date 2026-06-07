@@ -42,6 +42,11 @@ func (s *Server) SetupRouter(staticFS fs.FS) *gin.Engine {
 	r.StaticFS("/js", http.FS(mustSubFS(staticFS, "js")))
 	r.StaticFS("/img", http.FS(mustSubFS(staticFS, "img")))
 
+	// Serve thumbnails from local directory when configured (dev mode)
+	if s.Config.LocalThumbnailDir != "" {
+		r.Static("/thumbnail", s.Config.LocalThumbnailDir)
+	}
+
 	// Health check
 	r.GET("/health", func(c *gin.Context) {
 		c.String(http.StatusOK, "ok")

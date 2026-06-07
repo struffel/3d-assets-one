@@ -21,6 +21,9 @@ type Config struct {
 
 	// Server
 	Port string
+
+	// Local thumbnail directory (optional, for dev)
+	LocalThumbnailDir string
 }
 
 // Load reads configuration from environment variables.
@@ -34,6 +37,7 @@ func Load() *Config {
 		CDNBaseURL:        getEnv("BUNNY_CDN_URL", ""),
 		AdminToken:        getEnv("ADMIN_TOKEN", "default"),
 		Port:              getEnv("PORT", "8080"),
+		LocalThumbnailDir: getEnv("LOCAL_THUMBNAIL_DIR", ""),
 	}
 	return c
 }
