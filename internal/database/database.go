@@ -12,13 +12,15 @@ import (
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
+// Embed the SQL migration folder at build time.
+
 //go:embed migrations/*.sql
 var migrationsFS embed.FS
 
 // Connect opens a connection to BunnyDatabase (LibSQL) using the provided URL and auth token.
 func Connect(databaseURL, authToken string) (*sql.DB, error) {
 	if databaseURL == "" {
-		return nil, fmt.Errorf("database URL is empty: set BUNNY_DATABASE_URL")
+		return nil, fmt.Errorf("Database URL is empty: set LIBSQL_DATABASE_URL")
 	}
 
 	connStr := databaseURL
@@ -28,10 +30,10 @@ func Connect(databaseURL, authToken string) (*sql.DB, error) {
 
 	db, err := sql.Open("libsql", connStr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
+		return nil, fmt.Errorf("Failed to open database: %w", err)
 	}
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
+		return nil, fmt.Errorf("Failed to ping database: %w", err)
 	}
 	slog.Info("Connected to database", "url", databaseURL)
 	return db, nil
@@ -40,24 +42,19 @@ func Connect(databaseURL, authToken string) (*sql.DB, error) {
 // Migrate applies all pending SQL migration files.
 // Uses a _migrations table to track which versions have been applied.
 func Migrate(db *sql.DB) error {
-	// Ensure migration tracking table exists
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS "_migrations" ("version" INTEGER PRIMARY KEY)`)
-	if err != nil {
-		return fmt.Errorf("failed to create _migrations table: %w", err)
-	}
 
 	// Get current max version
-	var currentVersion int
-	row := db.QueryRow(`SELECT COALESCE(MAX(version), 0) FROM "_migrations"`)
-	if err := row.Scan(&currentVersion); err != nil {
-		return fmt.Errorf("failed to read migration version: %w", err)
+	var currentUserVersion int
+	row := db.QueryRow(`PRAGMA USER_VERSION;`)
+	if err := row.Scan(&currentUserVersion); err != nil {
+		return fmt.Errorf("Failed to read migration version: %w", err)
 	}
-	slog.Info("Current migration version", "version", currentVersion)
+	slog.Info("Current migration version", "version", currentUserVersion)
 
 	// Read migration files
 	entries, err := fs.ReadDir(migrationsFS, "migrations")
 	if err != nil {
-		return fmt.Errorf("failed to read migrations directory: %w", err)
+		return fmt.Errorf("Failed to read migrations directory: %w", err)
 	}
 
 	// Sort by filename
@@ -66,33 +63,35 @@ func Migrate(db *sql.DB) error {
 	})
 
 	for _, entry := range entries {
+
+		// Skip everything that isn't an sql file
 		if entry.IsDir() {
 			continue
 		}
-		name := entry.Name()
-		if !strings.HasSuffix(name, ".sql") {
+		fileName := entry.Name()
+		if !strings.HasSuffix(fileName, ".sql") {
 			continue
 		}
 
 		// Parse version number from filename (e.g., "001_initial.sql" -> 1)
 		var version int
-		_, err := fmt.Sscanf(name, "%03d_", &version)
+		_, err := fmt.Sscanf(fileName, "%03d_", &version)
 		if err != nil {
-			slog.Warn("Skipping non-migration file", "file", name)
+			slog.Warn("Skipping non-migration file", "file", fileName)
 			continue
 		}
 
-		if version <= currentVersion {
+		if version <= currentUserVersion {
 			continue
 		}
 
 		// Read and execute migration
-		content, err := migrationsFS.ReadFile("migrations/" + name)
+		content, err := migrationsFS.ReadFile("migrations/" + fileName)
 		if err != nil {
-			return fmt.Errorf("failed to read migration %s: %w", name, err)
+			return fmt.Errorf("Failed to read migration %s: %w", fileName, err)
 		}
 
-		slog.Info("Running migration", "version", version, "file", name)
+		slog.Info("Running migration", "version", version, "file", fileName)
 
 		// Split by semicolons and execute each statement (libsql HTTP doesn't support multi-statement)
 		statements := splitStatements(string(content))
@@ -102,13 +101,13 @@ func Migrate(db *sql.DB) error {
 				continue
 			}
 			if _, err := db.Exec(stmt); err != nil {
-				return fmt.Errorf("migration %d failed on statement %q: %w", version, stmt, err)
+				return fmt.Errorf("Migration %d failed on statement %q: %w", version, stmt, err)
 			}
 		}
 
 		// Record migration
-		if _, err := db.Exec(`INSERT INTO "_migrations" ("version") VALUES (?)`, version); err != nil {
-			return fmt.Errorf("failed to record migration %d: %w", version, err)
+		if _, err := db.Exec(`PRAGMA USER_VERSION = ?;`, version); err != nil {
+			return fmt.Errorf("Failed to record migration %d: %w", version, err)
 		}
 
 		slog.Info("Applied migration", "version", version)

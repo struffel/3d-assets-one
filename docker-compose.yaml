@@ -1,7 +1,7 @@
 services:
   db:
     image: ghcr.io/tursodatabase/libsql-server:latest
-    command: /bin/sqld --db-path /data/3d1.sqlite --http-listen-addr 0.0.0.0:8080
+    command: /bin/sqld --db-path /data/3d1.sqlite --http-listen-addr 0.0.0.0:5000
     volumes:
       - ./data:/data
 
@@ -14,8 +14,8 @@ services:
     volumes:
       - ./data/ftp:/home/ftpusers
     environment:
-      FTP_USER_NAME: ${FTP_USER_NAME:-ftpuser}
-      FTP_USER_PASS: ${FTP_USER_PASS:-ftppass}
+      FTP_USER_NAME: ${3D1_FTP_USER_NAME:-ftpuser}
+      FTP_USER_PASS: ${3D1_FTP_USER_PASS:-ftppass}
       FTP_USER_HOME: /home/ftpusers
     restart: unless-stopped
 
@@ -23,29 +23,55 @@ services:
     image: nginx:latest
     container_name: 3d1-cdn
     ports:
-      - "8081:80"
+      - "7002:80"
     volumes:
       - ./data/ftp:/usr/share/nginx/html:ro
     restart: unless-stopped
 
-  web:
+  scraper:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: 3d1-web
+      dockerfile: Dockerfile.scraper
+    container_name: 3d1-scraper
+    depends_on:
+      - public
+    environment:
+      # SQL
+      3D1_LIBSQL_DATABASE_URL: http://db:5000
+      3D1_LIBSQL_DATABASE_AUTH_TOKEN: ""
+
+      # Admin
+      3D1_ADMIN_USER: ${3D1_ADMIN_USER:-admin}
+      3D1_ADMIN_PASS: ${3D1_ADMIN_PASS:-default}
+
+      # Storage
+      3D1_FTP_HOST: ${3D1_FTP_HOST:-ftp}
+      3D1_FTP_PORT: ${3D1_FTP_PORT:-21}
+      3D1_FTP_USER_NAME: ${3D1_FTP_USER_NAME:-ftpuser}
+      3D1_FTP_USER_PASS: ${3D1_FTP_USER_PASS:-ftppass}
+
+      # Server
+      3D1_PORT: "7001"
+    restart: unless-stopped
+  public:
+    build:
+      context: .
+      dockerfile: Dockerfile.public
+    container_name: 3d1-server
     ports:
-      - "7000:8080"
+      - "7000:7000"
     depends_on:
       - db
     volumes:
       - ./data/thumbnail:/app/data/thumbnail:ro
     environment:
-      BUNNY_DATABASE_URL: http://db:8080
-      BUNNY_DATABASE_AUTH_TOKEN: ""
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-default}
-      BUNNY_STORAGE_ZONE: ${BUNNY_STORAGE_ZONE:-}
-      BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD:-}
-      BUNNY_STORAGE_HOST: ${BUNNY_STORAGE_HOST:-storage.bunnycdn.com}
-      BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
-      LOCAL_THUMBNAIL_DIR: /app/data/thumbnail
+      # SQL
+      3D1_LIBSQL_DATABASE_URL: http://db:5000
+      3D1_LIBSQL_DATABASE_AUTH_TOKEN: ""
+
+      # Server
+      3D1_PORT: "7000"
+
+      # CDN
+      3D1_CDN_URL: ${3D1_CDN_URL:-http://localhost:7002}
     restart: unless-stopped

@@ -33,8 +33,8 @@ func NewServer(db *sql.DB, cfg *config.Config) *Server {
 	}
 }
 
-// SetupRouter creates and configures the Gin engine with all routes.
-func (s *Server) SetupRouter(staticFS fs.FS) *gin.Engine {
+// SetupPublicRouter creates a Gin engine with only end-user-facing routes.
+func (s *Server) SetupPublicRouter(staticFS fs.FS) *gin.Engine {
 	r := gin.Default()
 
 	// Serve static files (css, js, img)
@@ -68,7 +68,23 @@ func (s *Server) SetupRouter(staticFS fs.FS) *gin.Engine {
 	api.GET("/creators", s.handleAPICreators)
 	api.GET("/types", s.handleAPITypes)
 
-	// Admin (basic auth)
+	return r
+}
+
+// SetupAdminRouter creates a Gin engine with only admin routes.
+func (s *Server) SetupAdminRouter(staticFS fs.FS) *gin.Engine {
+	r := gin.Default()
+
+	// Serve static files needed by admin templates
+	r.StaticFS("/css", http.FS(mustSubFS(staticFS, "css")))
+	r.StaticFS("/img", http.FS(mustSubFS(staticFS, "img")))
+
+	// Health check
+	r.GET("/health", func(c *gin.Context) {
+		c.String(http.StatusOK, "ok")
+	})
+
+	// Admin routes (basic auth)
 	admin := r.Group("/admin", s.adminAuth())
 	admin.GET("/availability", s.handleAdminAvailability)
 	admin.GET("/editor", s.handleAdminEditor)
@@ -81,7 +97,7 @@ func (s *Server) SetupRouter(staticFS fs.FS) *gin.Engine {
 // adminAuth returns Gin middleware for HTTP Basic Auth.
 func (s *Server) adminAuth() gin.HandlerFunc {
 	return gin.BasicAuth(gin.Accounts{
-		"admin": s.Config.AdminToken,
+		s.Config.AdminUser: s.Config.AdminPass,
 	})
 }
 

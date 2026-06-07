@@ -106,7 +106,7 @@ func (m *mockStorage) PublicURL(path string) string             { return "https:
 func TestSaveVariationsProduces8Files(t *testing.T) {
 	img := decodeFile(t, "dirt.png")
 	store := &mockStorage{uploads: make(map[string][]byte)}
-	proc := NewProcessor(store)
+	proc := NewThumbnailProcessor(store)
 
 	if err := proc.SaveVariations(context.Background(), 999, img); err != nil {
 		t.Fatalf("SaveVariations: %v", err)
@@ -123,7 +123,7 @@ func TestSaveVariationsProduces8Files(t *testing.T) {
 func TestSaveVariationsRejectsUniformImage(t *testing.T) {
 	img := decodeFile(t, "black.jpg")
 	store := &mockStorage{uploads: make(map[string][]byte)}
-	proc := NewProcessor(store)
+	proc := NewThumbnailProcessor(store)
 
 	if err := proc.SaveVariations(context.Background(), 999, img); err == nil {
 		t.Error("expected SaveVariations to reject uniform image")

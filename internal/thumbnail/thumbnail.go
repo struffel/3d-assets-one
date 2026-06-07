@@ -16,18 +16,18 @@ import (
 	"github.com/struffel/3d-assets-one/internal/storage"
 )
 
-// Processor handles thumbnail generation and upload.
-type Processor struct {
+// ThumbnailProcessor handles thumbnail generation and upload.
+type ThumbnailProcessor struct {
 	store storage.ObjectStorage
 }
 
-// NewProcessor creates a thumbnail processor backed by the given storage.
-func NewProcessor(store storage.ObjectStorage) *Processor {
-	return &Processor{store: store}
+// NewThumbnailProcessor creates a thumbnail processor backed by the given storage.
+func NewThumbnailProcessor(store storage.ObjectStorage) *ThumbnailProcessor {
+	return &ThumbnailProcessor{store: store}
 }
 
 // SaveVariations generates all 8 thumbnail variants and uploads them.
-func (p *Processor) SaveVariations(ctx context.Context, assetID int64, src image.Image) error {
+func (p *ThumbnailProcessor) SaveVariations(ctx context.Context, assetID int64, src image.Image) error {
 	if err := ValidateImage(src); err != nil {
 		return fmt.Errorf("source image invalid: %w", err)
 	}
@@ -54,7 +54,7 @@ func (p *Processor) SaveVariations(ctx context.Context, assetID int64, src image
 }
 
 // DeleteVariations removes all 8 thumbnail variants for an asset.
-func (p *Processor) DeleteVariations(ctx context.Context, assetID int64) {
+func (p *ThumbnailProcessor) DeleteVariations(ctx context.Context, assetID int64) {
 	for _, f := range model.AllThumbnailFormats() {
 		remotePath := "thumbnail/" + f.Value() + "/" + strconv.FormatInt(assetID, 10) + "." + f.Extension()
 		p.store.Delete(ctx, remotePath) // best-effort

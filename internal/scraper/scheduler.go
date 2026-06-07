@@ -18,12 +18,12 @@ import (
 type Scheduler struct {
 	db        *sql.DB
 	scrapers  map[model.Creator]CreatorScraper
-	thumbProc *thumbnail.Processor
+	thumbProc *thumbnail.ThumbnailProcessor
 	interval  time.Duration
 }
 
 // NewScheduler creates a background scraper scheduler.
-func NewScheduler(db *sql.DB, thumbProc *thumbnail.Processor, interval time.Duration) *Scheduler {
+func NewScheduler(db *sql.DB, thumbProc *thumbnail.ThumbnailProcessor, interval time.Duration) *Scheduler {
 	return &Scheduler{
 		db:        db,
 		scrapers:  AllScrapers(db),

@@ -11,21 +11,19 @@ import (
 	"github.com/jlaffaye/ftp"
 )
 
-// FTPStorage implements ObjectStorage using FTP (Bunny Storage).
+// FTPStorage implements ObjectStorage using FTP.
 type FTPStorage struct {
-	host       string
-	user       string
-	password   string
-	cdnBaseURL string
+	host     string
+	user     string
+	password string
 }
 
 // NewFTPStorage creates an FTP-backed ObjectStorage.
-func NewFTPStorage(host, zone, password, cdnBaseURL string) *FTPStorage {
+func NewFTPStorage(host, user, password string) *FTPStorage {
 	return &FTPStorage{
-		host:       host,
-		user:       zone,
-		password:   password,
-		cdnBaseURL: strings.TrimRight(cdnBaseURL, "/"),
+		host:     host,
+		user:     user,
+		password: password,
 	}
 }
 
@@ -65,10 +63,6 @@ func (s *FTPStorage) Delete(ctx context.Context, remotePath string) error {
 	defer conn.Quit()
 
 	return conn.Delete(remotePath)
-}
-
-func (s *FTPStorage) PublicURL(remotePath string) string {
-	return s.cdnBaseURL + "/" + strings.TrimLeft(remotePath, "/")
 }
 
 // mkdirAll creates directory and parents, ignoring "already exists" errors.
