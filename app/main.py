@@ -15,11 +15,12 @@ from app.routes.admin.router import router as admin_router
 app = FastAPI(title="3Dassets.one")
 
 # Static files
-public_dir = Path(__file__).parent.parent / "public"
-app.mount("/thumbnail", StaticFiles(directory=str(public_dir / "thumbnail")), name="thumbnail")
-app.mount("/static", StaticFiles(directory=str(public_dir / "static")), name="static")
-app.mount("/css", StaticFiles(directory=str(public_dir / "css")), name="css")
-app.mount("/js", StaticFiles(directory=str(public_dir / "js")), name="js")
+static_dir = Path(__file__).parent.parent / "static"
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+# Thumbnails
+thumbnail_dir = Path(__file__).parent.parent / "data" / "thumbnail"
+app.mount("/thumbnail", StaticFiles(directory=thumbnail_dir), name="thumbnail")
 
 # Routes
 app.include_router(index_router)
