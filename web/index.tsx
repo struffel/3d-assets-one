@@ -1,18 +1,19 @@
 import { Hono } from "hono";
+import { Header, SearchForm, AssetList } from "./components.tsx";
+import type { StoredAsset } from "./asset.ts";
+import { getAssets, insertDemoAsset } from "./db.ts";
 
 const app = new Hono();
-
-app.get("/", (c) => {
-  return c.html(`
-    <html>
-      <body>
-        <form id="asset-filters-form">
-          <input type="text" name="q" placeholder="search tags..." />
-        </form>
-        <main>Loading...</main>
-      </body>
-    </html>
-  `);
+app.get("/",  async (c) => {
+  // await insertDemoAsset("Paving Stones");
+  const assets = await getAssets();
+  return c.html(
+    <>
+      <Header siteName="3Dassets.one" />
+      <SearchForm />
+      <AssetList assets={assets} />
+    </>
+  );
 });
 
 app.get("/search", (c) => {
