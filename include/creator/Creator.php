@@ -20,6 +20,7 @@ use creator\logic\CreatorLogicThreeDScans;
 use creator\logic\CreatorLogicLocationTextures;
 use creator\logic\CreatorLogicTwinbru;
 use creator\logic\CreatorLogicLightbeans;
+use creator\logic\CreatorLogicCc0Materials;
 use database\Database;
 use DateTime;
 use Exception;
@@ -52,6 +53,7 @@ enum Creator: int
 	case LOCATION_TEXTURES = 19;
 	case TWINBRU = 21;
 	case LIGHTBEANS = 22;
+	case CC0MATERIALS = 23;
 
 	public static function fromValueOrSlug(mixed $value): self
 	{
@@ -83,7 +85,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'location-textures',
 			self::PBR_PX => "pbr-px",
 			self::TWINBRU => "twinbru",
-			self::LIGHTBEANS => "lightbeans"
+			self::LIGHTBEANS => "lightbeans",
+			self::CC0MATERIALS => 'cc0materials'
 		};
 	}
 
@@ -106,7 +109,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'Location Textures',
 			self::PBR_PX => 'PBRPX',
 			self::TWINBRU => 'Twinbru',
-			self::LIGHTBEANS => 'Lightbeans'
+			self::LIGHTBEANS => 'Lightbeans',
+			self::CC0MATERIALS => 'CC0 Materials'
 		};
 	}
 
@@ -129,7 +133,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'Locationtextures.com is an online platform providing high quality royalty-free photo reference packs for games and film industry. We offer free packs and every pack comes with free samples.',
 			self::PBR_PX => 'We are a small team from China, passionate about CG production. Through PBRPX, we provide artists with completely free, unrestricted digital assets, allowing them to unleash their creativity.',
 			self::TWINBRU => 'Browse our library of more than 13 000 digital fabric twins to download 3D fabric textures or order physical fabric samples.',
-			self::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.'
+			self::LIGHTBEANS => 'We Connect Manufacturers with Architects and Designers - Thousands of digitized products for your projects.',
+			self::CC0MATERIALS => 'Free seamless PBR materials made in Substance Designer, released under CC0 with OpenGL and DirectX normal maps.'
 		};
 	}
 
@@ -144,6 +149,7 @@ enum Creator: int
 			self::CGBOOKCASE,
 			self::GPUOPENMATLIB,
 			self::TEXTURECAN,
+			self::CC0MATERIALS,
 			=> CreatorLicenseType::PUBLIC_DOMAIN,
 
 			self::NOEMOTIONHDRS
@@ -179,6 +185,7 @@ enum Creator: int
 			self::PBR_PX => 'https://pbrpx.com/privacy-policy/',
 			self::TWINBRU => "https://textures.twinbru.com/en/products?page=1&page_size=50#:~:text=The%20right%20to%20download%20pictures%20provides%20you%20a%20non%2Dtransferable%2C%20non%2Dexclusive%2C%20always%20terminable%20limited%20right%20to%20use%20this%20image%20in%20order%20to%20promote%20the%20sale%20of%20the%20fabrics%20shown%20in%20the%20pictures.",
 			self::LIGHTBEANS => "https://lightbeans.com/en/pages/texture-terms",
+			self::CC0MATERIALS => 'https://cc0materials.com/license',
 			default => NULL
 		};
 	}
@@ -202,7 +209,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES => 'https://locationtextures.com/panoramas/free-panoramas/',
 			self::PBR_PX => 'https://library.pbrpx.com/',
 			self::TWINBRU => 'https://textures.twinbru.com',
-			self::LIGHTBEANS => 'https://lightbeans.com'
+			self::LIGHTBEANS => 'https://lightbeans.com',
+			self::CC0MATERIALS => 'https://cc0materials.com'
 		};
 	}
 
@@ -230,7 +238,8 @@ enum Creator: int
 			self::LOCATION_TEXTURES,
 			self::PBR_PX,
 			self::TWINBRU,
-			self::LIGHTBEANS
+			self::LIGHTBEANS,
+			self::CC0MATERIALS
 		];
 
 		do {
@@ -343,6 +352,7 @@ enum Creator: int
 			self::PBR_PX => new CreatorLogicPbrPx(),
 			self::TWINBRU => new CreatorLogicTwinbru(),
 			self::LIGHTBEANS => new CreatorLogicLightbeans(),
+			self::CC0MATERIALS => new CreatorLogicCc0Materials(),
 			// This becomes relevant when new creators are added without logic
 			//default => throw new InvalidArgumentException("No logic defined for creator " . $this->title()),
 		};
